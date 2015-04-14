@@ -1,0 +1,31 @@
+<html>
+	<head>
+		<script type="text/javascript" src="javascript/jquery-1.11.0.min.js"></script>
+		<script type="text/javascript" src="javascript/validate.js"></script>
+	</head>
+	<body>
+		Name: <input type="text" id="name" value="" validdata="y" /><br>
+		Age: <input type="text" id="age" value="" validdata="y" /><br>
+		Height: <input type="text" id="height" value="" validdata="y" /><br>
+		Weight: <input type="text" id="weight" value="" validdata="y" /><br>
+		Eye color: <input type="text" id="eye" value="" validdata="y" /><br>
+		<select id="gender" validdata="y">
+			<option value="">Please select one...</option>
+			<option value="y">Male</option>
+			<option value="y">Female</option>
+		</select>
+		<br>
+		<input type="checkbox" validdata="y" name="ethnicity" id="caucasion" value="white" />Caucasian&nbsp;
+		<input type="checkbox" validdata="y" name="ethnicity" id="black" value="black" />African American&nbsp;
+		<input type="checkbox" validdata="y" name="ethnicity" id="chinese" value="chinese" />Chinese&nbsp;
+		<input type="checkbox" validdata="y" name="ethnicity" id="inuit" value="inuit" />Inuit&nbsp;
+		<br>How did you hear about us?
+
+		<input type="radio" validdata="y" name="source" value="radio" />Radio&nbsp;&nbsp;
+		<input type="radio" validdata="y" name="source" value="tv" />TV&nbsp;&nbsp;
+		<input type="radio" validdata="y" name="source" value="internet" />Internet<br>
+
+		<input type="hidden" validdata="y" value="hiddenval" id="hiddenfield" />
+		<input type="button" value="Validate!" onclick="checkValid()" />
+	</body>
+</html>

@@ -1,0 +1,13 @@
+<IfModule mod_rewrite.c>
+	RewriteEngine On
+
+	# Some sort of broken clickfraud hack
+	RewriteRule ^doubleclick/DARTIframe.html - [F]
+
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^([^\.]+)$ $1.php [NC,L]
+
+</IfModule>
+<IfModule !mod_rewrite.c>
+	ErrorDocument 404 /error.php
+</IfModule>
