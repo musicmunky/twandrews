@@ -1,0 +1,56 @@
+<!-- Modal window for indicating if the day is a payday, a holiday, or a kelly day -->
+<div id="dateclassifier" title="Change Date Type">
+	<form id="dcform">
+		<fieldset>
+			<input type="hidden" id="datemth" value="" />
+			<input type="hidden" id="dateday" value="" />
+			<div class="fielddivs" style="padding-top:15px;">
+				<div class="typedivs">
+					<span style="float:left;">Holiday: </span>
+					<input type="checkbox" id="holiday" class="typebox" />
+				</div>
+			</div>
+			<div class="fielddivs">
+				<div class="typedivs">
+					<span style="float:left;">Kelly:</span>
+					<input type="checkbox" id="kelly" class="typebox" />
+				</div>
+			</div>
+			<div class="fielddivs" style="margin-bottom:15px;">
+				<div class="typedivs">
+					<span style="float:left;">Pay Day: </span>
+					<input type="checkbox" id="payday" class="typebox" />
+				</div>
+			</div>
+			<div class="fielddivs" style="text-align: center;">
+				<input type="button" class="formbuttons" value="Update Type" onclick="changeDateTypes()" />
+				<input type="button" class="formbuttons" value="Cancel" onclick="hideDateForm()" />
+			</div>
+		</fieldset>
+	</form>
+</div>
+
+<!-- Modal window for setting the first workday of the month...may eventually be removed for a programatic approach -->
+<div id="setfirstwork" title="Set Initial Work Date">
+	<form id="fwform">
+		<fieldset>
+			<input type="hidden" id="fwmonthnum" value="" />
+			<input type="hidden" id="fwmonthname" value="" />
+			<div class="fielddivs" style="padding-top:15px;padding-bottom:15px;">
+				<div class="typedivs" style="width:100%;text-align:center;">
+					<span id="fwmonthspan" style="margin-right:10px;"></span>
+					<select id="fwdayselect" style="background-color:#7a7a7a;border:medium none;color:#efefef;">
+						<option value=""></option>
+						<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+					</select>
+				</div>
+			</div>
+			<div class="fielddivs" style="text-align: center;">
+				<input type="button" class="formbuttons" value="Set Date" onclick="changeFwDate()" />
+				<input type="button" class="formbuttons" value="Cancel" onclick="hideFwForm()" />
+			</div>
+		</fieldset>
+	</form>
+</div>

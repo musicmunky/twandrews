@@ -1,0 +1,330 @@
+body,html {
+	/*font-family: 'Lato', serif;*/
+	/*font-family: 'Ubuntu', serif;*/
+	font-family: 'Open Sans', serif;
+	height:0 !important;
+	margin:0;
+}
+
+th {
+	background-color: #FFFFCC;
+    border: 1px solid #000;
+    font-weight: bold;
+}
+
+a {
+	outline:none !important;
+}
+
+/* beg sticky header css */
+.header {
+    background: #343434;
+	border-bottom:1px solid #232323;
+	color:#EFEFEF;
+    position: fixed;
+    width: 100%;
+    height: 75px;
+    top: 0;
+    z-index: 2000;
+}
+
+.header-content {
+	width:1065px;
+	margin-left:auto;
+	margin-right:auto;
+	height:75px;
+	line-height:1.5;
+}
+.header-nav {
+	padding:25px;
+	float:right;
+	cursor:pointer;
+}
+.main-content {
+	width:1065px;
+	margin-left:auto;
+	margin-right:auto;
+	margin-top:85px;
+}
+.title {
+	width:100%;
+	font-size:24px;
+	float:left;
+}
+.arrowdiv {
+	height:20px;
+	float:left;
+	width:100%;
+}
+.spanbtn {
+	display:block !important;
+	text-align:center;
+	width:55px;
+	font-size:21px;
+	cursor:pointer;
+}
+.divider {
+	background-color: #555;
+	border-radius: 10px;
+	cursor: default;
+	height: 100%;
+	margin-left: 5px;
+	margin-right: 5px;
+	margin-top: 0;
+	padding: 0;
+	width: 2px;
+	float:right;
+}
+
+/* beg animation css for year div */
+@-webkit-keyframes flipcss1 {
+	0% {
+		-webkit-transform: scale(1,1);
+		transform: scale(1,1);
+		opacity:1;
+	}
+
+	100% {
+		-webkit-transform: scale(1,.0001);
+		transform: scale(1,.0001);
+		opacity:0;
+	}
+}
+
+@keyframes flipcss1 {
+	0% {
+		-webkit-transform: scale(1,1);
+		transform: scale(1,1);
+		opacity:1;
+	}
+
+	100% {
+		-webkit-transform: scale(1,.0001);
+		transform: scale(1,.0001);
+		opacity:0;
+	}
+}
+
+
+@-webkit-keyframes flipcss2 {
+	0% {
+		-webkit-transform: scale(1,.0001);
+		transform: scale(1,.0001);
+		opacity:0;
+	}
+	100% {
+		-webkit-transform: scale(1,1);
+		transform: scale(1,1);
+		opacity:1;
+	}
+}
+
+@keyframes flipcss2 {
+	0% {
+		-webkit-transform: scale(1,.0001);
+		transform: scale(1,.0001);
+		opacity:0;
+	}
+	100% {
+		-webkit-transform: scale(1,1);
+		transform: scale(1,1);
+		opacity:1;
+	}
+}
+
+.flipcss1 {
+	-webkit-animation-name: flipcss1;
+	animation-name: flipcss1;
+	-webkit-animation-duration: .5s;
+	animation-duration: .5s;
+	-webkit-animation-fill-mode: both;
+	animation-fill-mode: both;
+}
+
+.flipcss2 {
+	-webkit-animation-name: flipcss2;
+	animation-name: flipcss2;
+	-webkit-animation-duration: .5s;
+	animation-duration: .5s;
+	-webkit-animation-fill-mode: both;
+	animation-fill-mode: both;
+}
+/* end animation css for year div */
+/* end sticky header css */
+
+
+/* beg legend css */
+.noselect {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.legcont {
+	float: left;
+	height: 30px;
+	margin-top: 10px;
+	width: 100%;
+	margin-left:10px;
+}
+
+#legworktext:hover, #legkellytext:hover, #legholidaytext:hover, #legpaydaytext:hover {
+	font-weight:bold;
+}
+
+.legexmpl {
+	background-color: #fff;
+	border: 1px solid #000;
+	border-radius:4px;
+	float: left;
+	height: 22px;
+	font-size:14px;
+	margin-right: 10px;
+	margin-top: -3px;
+	padding-top: 4px;
+	text-align: center;
+	width: 30px;
+}
+
+.container {
+    background-color: #343434;
+    display: none;
+    margin-left: -280px;
+    margin-top: 26px;
+    position: fixed;
+    text-align: left;
+    width: 383px;
+    z-index: 999;
+	border-top: 1px solid #000;
+	height:165px;
+	box-shadow: 0 5px 15px 5px #343434;
+}
+
+.container-open {
+	display: block;
+}
+/* end legend css */
+
+.logoutlink {
+    color: #efefef;
+    outline: medium none;
+    text-decoration: none;
+}
+
+.navbuttons {
+	font-size:18px;
+	height:34px;
+	padding-left:10px;
+	padding-right:10px;
+	background-color:#7A7A7A;
+	color:#EFEFEF;
+	border:medium none;
+	border-radius:5px;
+	font-family: 'Open Sans', serif;
+	cursor:pointer;
+}
+
+.calselect {
+	margin-left:5px;
+	font-size:20px;
+	width:100px;
+	text-align:center;
+	margin-right:5px;
+	font-family: 'Open Sans', serif;
+	height:30px;
+}
+
+.dc-dialog-title {
+	font-size:14px !important;
+}
+
+.ui-widget-content.dc-dialog {
+    border: 1px solid #7F7F7F;
+}
+
+.typedivs {
+	width:120px;
+	margin:0 auto;
+}
+
+.typebox {
+	float:right;
+	margin-top:6px;
+	outline:none;
+}
+
+.clickclass {
+	cursor: pointer;
+    display: inline-block;
+    text-align: center;
+    width: 30px;
+}
+
+[id^=td_]:hover {
+	background-color:#DADADA !important;
+}
+
+.fielddivs {
+	width:100%;
+	height:25px;
+}
+
+.formbuttons {
+	font-family: 'Open Sans', serif !important;
+	background-color:#7A7A7A;
+	border-radius:4px;
+	color:#EDEDED;
+	border:medium none;
+	font-size:14px !important;
+	width:110px;
+	height:24px;
+	cursor:pointer;
+}
+
+div.monthFloat {
+	border: 1px solid;
+    float: left;
+    margin: 5px;
+    width: 250px;
+}
+div.month {
+	width: 250px;
+}
+
+td.calendar-header-day {
+	border: 1px solid #000;
+	font-family: 'Open Sans', serif;
+    font-size: 11px;
+    font-weight: bold;
+    text-align: center;
+    width: 30px;
+	background-color: #CCFFCC;
+}
+td.calendar-day-off {
+	font-size:14px;
+	text-align: center;
+	border:1px solid #000;
+}
+td.calendar-day-work {
+	font-size:14px;
+	font-weight: bold;
+	color: red;
+	text-align: center;
+	border: 1px solid #000;
+}
+td.calendar-day-kelly {
+	font-size:14px;
+	font-weight: bold;
+	color: blue;
+	text-align: center;
+	border: 1px solid #000;
+}
+table.calendar-table {
+	border: 1px solid;
+    border-collapse: collapse;
+    height: 250px;
+    width: 100%;
+}

@@ -1,0 +1,27 @@
+
+
+.tdheader {
+	background-color: #ccffcc !important;
+    /*border: 1px solid;*/
+    font-family: georgia;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    /*width: 75px;*/
+}
+
+.mainheader {
+	font-size:20px !important;
+	padding-top:5px;
+	padding-bottom:5px;
+}
+
+.weekcol {
+	font-weight:bold;
+}
+
+td {
+	text-align:center;
+	font-family:monospace;
+	font-size:14px;
+}
