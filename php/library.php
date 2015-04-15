@@ -16,7 +16,7 @@
 	require 'connect.php';
 	date_default_timezone_set('America/New_York');
 
-	$webaddress = "http://thedoghousediaries.com/";
+	$webaddress = "http://twandrews.com/";
 
 	if(isset($_POST['method']) && !empty($_POST['method']))
 	{
