@@ -4,28 +4,12 @@
 	require 'php/library.php';
 
 	date_default_timezone_set('America/New_York');
-/*
-	if(isset($_GET['logout']))
-	{
-		session_destroy();
-		$_SESSION = array();
-		header("Location: login.php");
-		exit;
-	}
 
 	if(!isset($_SESSION))
 	{
-		session_name('andrewscal');
+		session_name('andrewsresume');
 		session_start();
 	}
-
-	if(!isset($_SESSION['username']) || !isset($_SESSION['userid']))
-	{
-		header('Location: login.php');
-	}
-	else
-	{}
-*/
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11-strict.dtd">

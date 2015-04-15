@@ -828,7 +828,7 @@ FUSION.lib = {
 
 		}
 
-		// Using indent_by to filter out recursive calls, so this only happens on the 
+		// Using indent_by to filter out recursive calls, so this only happens on the
 		// primary call [i.e. at the end of the algorithm]
 		if (is_publish_to_body  &&  indent_by === 0)
 		{
@@ -846,7 +846,7 @@ FUSION.lib = {
 					head.appendChild(style_dump);
 				}
 
-				// Thank you Tim Down [http://stackoverflow.com/users/96100/tim-down] 
+				// Thank you Tim Down [http://stackoverflow.com/users/96100/tim-down]
 				// for the following addRule function
 				var addRule;
 				if (typeof document.styleSheets != "undefined" && document.styleSheets) {

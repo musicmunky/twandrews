@@ -21,6 +21,8 @@ jQuery(document).ready(function() {
 
 window.onscroll = function onScroll(event)
 {
+	//var CHECKME = event;  //FUSION.lib.vardump(event);
+	//console.log("CHECKME: " + CHECKME);
 	setHighlight();
 }
 
@@ -44,7 +46,10 @@ function setHighlight()
 
 
 
+
+/*****************************************/
 /* code to play with later...for science */
+/*****************************************/
 function smoothScroll(eID, tf)
 {
 	var startY = currentYPosition();
@@ -97,20 +102,9 @@ function elmYPosition(eID)
 }
 
 
-function currentYPosition() {
-/*
-	// Firefox, Chrome, Opera, Safari
-	if (self.pageYOffset) return self.pageYOffset;
-
-	// Internet Explorer 6 - standards mode
-	if (document.documentElement && document.documentElement.scrollTop)
-		return document.documentElement.scrollTop;
-
-	// Internet Explorer 6, 7 and 8
-	if (document.body.scrollTop) return document.body.scrollTop;
-*/
-	var c = document.documentElement.scrollTop || document.body.scrollTop;
-	return c;
-//	return 0;
+function currentYPosition()
+{
+	var cyp = document.documentElement.scrollTop || document.body.scrollTop;
+	return cyp;
 }
 
