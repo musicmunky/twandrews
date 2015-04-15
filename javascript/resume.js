@@ -1,11 +1,9 @@
 //start with the jQuery stuff...
-//jQuery(function() {
 jQuery(document).ready(function() {
 
 	setHighlight();
 
 	jQuery('.sidebar-nav').click(function(e) {
-		//e.preventDefault();
 		var navdiv = this;
 		jQuery('html,body').animate({
 			scrollTop: jQuery("#" + jQuery(navdiv).attr("id") + "-content").offset().top
