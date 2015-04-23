@@ -110,10 +110,8 @@ function refreshTimesheet()
 				FUSION.lib.modifyIETable("maintabletbody", mainhtml);
 				FUSION.lib.modifyIETable("sidetabletbody", sidehtml);
 
-				//var oh = FUSION.get.node('sidetablewrapper').offsetHeight;
-				var oh = $('#sidetablewrapper').height();
-				var wh = window.innerHeight;
-				//FUSION.get.node("mainwrapper").style.height = (wh > oh) ? wh + "px" : oh + "px";
+				var wh = FUSION.get.pageHeight();
+				FUSION.get.node("mainwrapper").style.height = wh + "px";
 			}
 			FUSION.set.overlayMouseNormal();
 			return false;
@@ -165,7 +163,7 @@ function showNewTimeForm(i)
 				var fsp = [];
 				var ssp = [];
 				var ampm = "";
-				var dstr = m + "/" + d + "/" + y;
+				var dstr = FUSION.lib.padZero(m, 2) + "/" + FUSION.lib.padZero(d, 2) + "/" + y;
 
 				var start 	= response['content']['start'];
 				var end 	= response['content']['end'];

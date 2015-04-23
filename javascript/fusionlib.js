@@ -7,6 +7,18 @@ if(!loadjq){
 
 FUSION.get = {
 
+	pageHeight: function() {
+		try {
+			var body = document.body;
+			var html = document.documentElement;
+			return FUSION.lib.getMax([body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight]);
+		}
+		catch(err) {
+			FUSION.error.logError(err);
+			return 0;
+		}
+	},
+
 	browser: function() {
 		var br = {};
 		var ua = navigator.userAgent, tem,
@@ -231,7 +243,7 @@ FUSION.remove = {
 
 	dTRowById: function(t, r) {
 		try {
-			var remrow = document.getElementById(r);
+			var remrow = document.get.node(r);
 			if(remrow)
 			{
 				var table = jQuery("#" + t).DataTable();
@@ -339,7 +351,19 @@ FUSION.error = {
 //BEGIN LIBRARY GENERIC METHODS
 FUSION.lib = {
 
+	titleCase: function(str) {
+		try {
+			return str.replace(/\w\S*/g, function(txt){ return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase(); });
+		}
+		catch(err) {
+			FUSION.error.logError(err);
+			return "";
+		}
+	},
+
 	dragable: function(cel, del) {
+		//cel = div to click and drag
+		//del = containing div
 		var p = FUSION.get.node(cel);
 		var t = FUSION.get.node(del);
 		var drag = false;
@@ -351,18 +375,18 @@ FUSION.lib = {
 			var move = function(x,y) {
 				var l = t.style.left ? parseInt(t.style.left) : 0;
 				var o = t.style.top ?  parseInt(t.style.top)  : 0;
-				t.style.left = (l+x) + "px";
-				t.style.top  = (o+y) + "px";
+				t.style.left = (l + x) + "px";
+				t.style.top  = (o + y) + "px";
 			}
 			var mouseMoveHandler = function(e) {
 				e = e || window.event;
 
-				if(!drag){return true};
+				if(!drag){ return true };
 
 				var x = FUSION.get.mouseX(e);
 				var y = FUSION.get.mouseY(e);
 				if (x != offsetX || y != offsetY) {
-					move(x-offsetX,y-offsetY);
+					move(x - offsetX, y - offsetY);
 					offsetX = x;
 					offsetY = y;
 				}
@@ -370,7 +394,7 @@ FUSION.lib = {
 			}
 			var start_drag = function(e) {
 				e = e || window.event;
-
+				p.style.cursor = "-moz-grabbing";
 				offsetX = FUSION.get.mouseX(e);
 				offsetY = FUSION.get.mouseY(e);
 				drag = true; // basically we're using this to detect dragging
@@ -384,7 +408,7 @@ FUSION.lib = {
 			}
 			var stop_drag = function() {
 				drag = false;
-
+				p.style.cursor = "-moz-grab";
 				// restore previous mousemove event handler if necessary:
 				if(mousemoveTemp) {
 					document.body.onmousemove = mousemoveTemp;
@@ -415,13 +439,14 @@ FUSION.lib = {
 		var odid = "alert" + FUSION.lib.getRandomInt(1000,9999);
 		var idid = "inner_" + odid;
 		var mdid = "message_" + odid;
+		var bttn = "button_" + odid;
 
 		var wht = jQuery(window).height();
 		var top = (wht / 2) - (hgt / 2) - 100;
 
 		var ao = FUSION.lib.createHtmlElement({"type":"div",
 											   "attributes":{"id":odid, "class":"fl_alert_overlay"},
-											   "style":{"display":"block"}});
+											   "style":{"display":"block", "height":FUSION.get.pageHeight() + "px"}});
 
 		var aw = FUSION.lib.createHtmlElement({"type":"div",
 											   "attributes":{"id":idid, "class":"fl_alert_wrapper"},
@@ -441,14 +466,14 @@ FUSION.lib = {
 
 		var ab = FUSION.lib.createHtmlElement({"type":"input",
 											   "onclick":"FUSION.remove.nodeById('" + odid + "')",
-											   "attributes":{"type":"button","class":"fl_alert_button","value":btn}});
+											   "attributes":{"type":"button","class":"fl_alert_button","value":btn,"id":bttn}});
 		amd.innerHTML = msg;
 		abd.appendChild(ab);
 		aw.appendChild(amd);
 		aw.appendChild(abd);
 		ao.appendChild(aw);
 		document.body.appendChild(ao);
-
+		FUSION.get.node(bttn).focus();
 		FUSION.lib.dragable(idid, idid);
 	},
 
@@ -696,10 +721,10 @@ FUSION.lib = {
 	* numerious calls to this function], but any string value can be passed.
 	*
 	* @param mixed var_value - the variable to be dumped
-	* @param string var_name - ideally the name of the variable, which will be used 
+	* @param string var_name - ideally the name of the variable, which will be used
 	*       to label the dump.  If this argumment is omitted, then the dump will
 	*       display without a label.
-	* @param boolean - annonymous third parameter. 
+	* @param boolean - annonymous third parameter.
 	*       On TRUE publishes the result to the DOM document body.
 	*       On FALSE a string is returned.
 	*       Default is TRUE.

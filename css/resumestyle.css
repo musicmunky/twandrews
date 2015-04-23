@@ -28,11 +28,16 @@ html, body {
 }
 
 .sidebar-nav:hover {
-	background-color:#333;
+	background-color:#262626;
 }
-
+/*
+.sidebar-nav:hover span {
+	background-color:#262626;
+	color: #A5D1F4;
+}
+*/
 .sidebar-nav-active {
-	background-color:#333;
+	background-color:#262626;
 }
 
 .sidebar-link {

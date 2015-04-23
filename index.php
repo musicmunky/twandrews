@@ -100,6 +100,9 @@
 					<li <?php echo $prdtext; ?>><a href="icecoder/index.php" target="_blank">
 							<span class="glyphicon glyphicon-ok-sign navspan nsokay" aria-hidden="true"></span>
 							ICEcoder</a></li>
+					<li <?php echo $prdtext; ?>><a href="https://github.com/musicmunky/twandrews" target="_blank">
+							<span class="glyphicon glyphicon-ok-sign navspan nsokay" aria-hidden="true"></span>
+							Github</a></li>
 					<li <?php echo $devtext; ?>><a href="resume.php" target="_blank">
 							<span class="glyphicon glyphicon-exclamation-sign navspan nswarning" aria-hidden="true"></span>
 							Tim's Resume</a></li>
