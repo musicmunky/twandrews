@@ -37,11 +37,18 @@
 	<body>
 		<div id="maincontainer" class="container">
 			<div id="sidebar" class="sidebar">
-				<div id="home" title="home" class="sidebar-nav"><span class="sidebar-link glyphicon glyphicon-home"></span></div>
-				<div id="about" title="about" class="sidebar-nav"><span class="sidebar-link glyphicon glyphicon-user"></span></div>
-				<div id="education" title="education" class="sidebar-nav"><span class="sidebar-link glyphicon glyphicon-education"></span></div>
-				<div id="experience" title="experience" class="sidebar-nav"><span class="sidebar-link glyphicon glyphicon-briefcase"></span></div>
-				<div id="interests" title="interests" class="sidebar-nav"><span class="sidebar-link glyphicon glyphicon-info-sign"></span></div>
+				<div id="sidebarwrapper" class="sidebarwrapper">
+					<div id="home" title="home" class="sidebar-nav">
+						<span class="sidebar-link glyphicon glyphicon-home"></span>home</div>
+					<div id="about" title="about" class="sidebar-nav">
+						<span class="sidebar-link glyphicon glyphicon-user"></span>about</div>
+					<div id="education" title="education" class="sidebar-nav">
+						<span class="sidebar-link glyphicon glyphicon-education"></span>education</div>
+					<div id="experience" title="experience" class="sidebar-nav">
+						<span class="sidebar-link glyphicon glyphicon-briefcase"></span>experience</div>
+					<div id="interests" title="interests" class="sidebar-nav">
+						<span class="sidebar-link glyphicon glyphicon-info-sign"></span>interests</div>
+				</div>
 			</div>
 			<div id="content" class="content">
 				<div id="home-content" class="content-section" style="background-color:blue;"></div>

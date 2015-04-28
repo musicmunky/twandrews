@@ -4,6 +4,7 @@ html, body {
 	margin: 0;
 	padding: 0;
 	background-color:#262626;
+	font-family: 'Open Sans', serif;
 }
 
 .container {
@@ -20,22 +21,26 @@ html, body {
 	opacity:0.8;
 }
 
+.sidebarwrapper {
+	position: absolute;
+    height: 500px;
+    top: calc(50% - 250px);
+}
+
 .sidebar-nav {
 	height:60px;
 	width:60px;
 	padding:20px;
 	cursor:pointer;
+	color: #efefef;
+	text-align:center;
+	font-size:12px;
 }
 
 .sidebar-nav:hover {
 	background-color:#262626;
 }
-/*
-.sidebar-nav:hover span {
-	background-color:#262626;
-	color: #A5D1F4;
-}
-*/
+
 .sidebar-nav-active {
 	background-color:#262626;
 }
@@ -45,9 +50,9 @@ html, body {
 	display: block;
 	font-size: 40px;
 	height: 50px;
-	padding-top: 10px;
 	text-align: center;
 	width: 100%;
+	margin-bottom:-5px;
 }
 
 .content {
