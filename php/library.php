@@ -158,7 +158,6 @@
 				"Saturday" 	=> -1  //as with Sunday, stop early, no need for an extra red row
 		);
 
-		$count = 0;
 		$did = 0;
 		$mid = 0;
 		$daysback = $begadddays[$firstday];
@@ -169,7 +168,6 @@
 
 		for($i = $daysback; $i <= $daysfrwd; $i++)
 		{
-			$count++;
 			$class = "tablerow";
 			$sideclass = "";
 			$btnclass  = "tdbtn";
@@ -284,8 +282,6 @@
 					<td style='text-align:left;' id='note_" . $mid . "_" . $did . "'>" . $note . "</td></tr>";
 		}
 
-		$height = 170 + 20 * (11 + $count) . "px";
-
 		$pp1exp  = getWorkingDays($pp1start, $pp1end) * 8;
 		$pp2exp  = getWorkingDays($pp2start, $pp2end) * 8;
 
@@ -329,7 +325,6 @@
 				"mainhtml"	 => $maintablehtml,
 				"sidehtml"	 => $sidetablehtml,
 				"finalhtml"	 => $finalsidetablehtml,
-				"height"	 => $height,
 				"headstr"	 => $headstring
 			)
 		);

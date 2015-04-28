@@ -18,14 +18,7 @@ jQuery(document).ready(function() {
 
 });
 
-
-window.onscroll = function onScroll(event)
-{
-	//var CHECKME = event;  //FUSION.lib.vardump(event);
-	//console.log("CHECKME: " + CHECKME);
-	setHighlight();
-}
-
+window.onscroll = function onScroll(event) { setHighlight(); }
 
 function setHighlight()
 {

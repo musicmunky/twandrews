@@ -16,6 +16,31 @@ a {
 	outline:none !important;
 }
 
+/* begin sticky footer css */
+
+.footer {
+	position: fixed;
+	bottom: 0;
+	height: 30px;
+	opacity: .9;
+	width: 100%;
+	background-color: #343434;
+	border-top: 1px solid #232323;;
+	z-index: 1000;
+	font-size:14px;
+	color:#EFEFEF;
+	line-height:30px;
+}
+
+.innerfooter {
+	width: 1065px;
+	margin-left:auto;
+	margin-right:auto;
+}
+
+/* end sticky footer css */
+
+
 /* beg sticky header css */
 .header {
     background: #343434;

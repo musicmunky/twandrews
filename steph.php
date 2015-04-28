@@ -119,6 +119,11 @@
 			</div>
 		</div>
 		<div style="width:100%;"></div>
+		<div class="footer">
+			<div class="innerfooter" style="text-align:center;">
+				<span>Steph's <span id="footeryear"><?php echo $cyear; ?></span> Work Schedule</span>
+			</div>
+		</div>
 		<?php include "includes/dialogs.html" ?>
 	</body>
 </html>

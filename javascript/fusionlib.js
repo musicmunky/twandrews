@@ -243,7 +243,7 @@ FUSION.remove = {
 
 	dTRowById: function(t, r) {
 		try {
-			var remrow = document.get.node(r);
+			var remrow = FUSION.get.node(r);
 			if(remrow)
 			{
 				var table = jQuery("#" + t).DataTable();

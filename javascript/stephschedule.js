@@ -343,6 +343,7 @@ function refreshCalendarResponse(h)
 				jQuery(tdiv).bind('animationend webkitAnimationEnd MSAnimationEnd oAnimationEnd', function (e) {
 					jQuery(tdiv).removeClass('flipcss2');
 				});
+				FUSION.get.node("footeryear").innerHTML = d['t'];
 			});
 			FUSION.get.node("tablediv").innerHTML = hash['table'];
 		}
