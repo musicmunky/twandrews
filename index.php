@@ -115,6 +115,12 @@
 					<li <?php echo $devtext; ?>><a href="steph/stephtest.php" target="_blank">
 							<span class="glyphicon glyphicon-exclamation-sign navspan nswarning" aria-hidden="true"></span>
 							Recipe Project</a></li>
+					<li <?php echo $devtext; ?>><a href="socktest.html" target="_blank">
+							<span class="glyphicon glyphicon-exclamation-sign navspan nswarning" aria-hidden="true"></span>
+							WebSockets Testing</a></li>
+					<li <?php echo $devtext; ?>><a href="weather.php" target="_blank">
+							<span class="glyphicon glyphicon-exclamation-sign navspan nswarning" aria-hidden="true"></span>
+							Weather App</a></li>
 				</ul>
 			</div>
 			<div style="width:100%;font-weight:bold;font-size:21px;margin-top:20px;">
