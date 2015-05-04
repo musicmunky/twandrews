@@ -1,3 +1,63 @@
+function getWeather()
+{
+	var val = FUSION.get.node("searchbox").value;
+	if(!val.match(/^(\d){5}$/))
+	{
+		FUSION.lib.alert("Please enter a valid zip code!");
+		return false;
+	}
+
+	var info = {
+		"type": "POST",
+		"path": "php/library.php",
+		"data": {
+			"method": "getWeatherInfo",
+			"libcheck": true,
+			"zipcode": val
+		},
+		"func": getWeatherResponse
+	};
+
+	FUSION.lib.ajaxCall(info);
+}
+
+function getWeatherResponse(h)
+{
+	var hash = h || {};
+	var wnd = hash['wind'];
+	var loc = hash['location'];
+	var frc = hash['forecast'];
+	var con = hash['conditions'];
+	var ast = hash['astronomy'];
+	var atm = hash['atmosphere'];
+
+	FUSION.get.node("location").innerHTML = loc.city + ", " + loc.region;
+	FUSION.get.node("date").innerHTML = frc[0]['dstr'];
+	FUSION.get.node("dayofweek").innerHTML = frc[0]['day'];
+	FUSION.get.node("condition").innerHTML = con.text;
+	FUSION.get.node("condimg").src = frc[0]['img'];
+	FUSION.get.node("high").innerHTML = "HIGH: " + frc[0].high;
+	FUSION.get.node("low").innerHTML = "LOW: " + frc[0].low;
+	FUSION.get.node("sunrise").innerHTML = "SUNRISE: " + ast.sunrise;
+	FUSION.get.node("sunset").innerHTML = "SUNSET: " + ast.sunset;
+	FUSION.get.node("windspeed").innerHTML  = "WIND SPEED: " + wnd.speed;
+	FUSION.get.node("winddirection").innerHTML = "DIRECTION: " + wnd.direction;
+	FUSION.get.node("windchill").innerHTML = "CHILL: " + wnd.chill;
+
+	var j = 0;
+	for(var i = 1; i < frc.length; i++)
+	{
+		j = i + 1;
+		FUSION.get.node("dayofweek" + j).innerHTML  = frc[i]['date'];
+		FUSION.get.node("condition" + j).innerHTML  = frc[i].text;
+		FUSION.get.node("condimg" + j).src = frc[i].img;
+		FUSION.get.node("high" + j).innerHTML 		= frc[i].high;
+		FUSION.get.node("low" + j).innerHTML 		= frc[i].low;
+		FUSION.get.node("icon" + j).className 		= "condition-icon " + frc[i].text.replace(/\s/g, "-");
+	}
+}
+
+/*
 var days_labels		= ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 var months_labels	= [ 'January', 'February', 'March', 'April', 'May', 'June', 'July',
@@ -62,21 +122,22 @@ var csscodes = {
 	47: "isolated-thundershowers",
 	3200: "not-available"
 };
-
-
+*/
+/*
 function testLoad()
 {
 	google.load('feeds', '1', {"callback": initialize});
 }
-
+*/
 //google.load("feeds", "1");
 //google.setOnLoadCallback(initialize);
-google.load('feeds', '1', {"callback": initialize});
+//google.load('feeds', '1', {"callback": initialize});
 //google.feeds.Feed.XML_FORMAT;
 
 
 function initialize()
 {
+	/*
 	var feed = new google.feeds.Feed("http://weather.yahooapis.com/forecastrss?w=2503308");
 	feed.setResultFormat(google.feeds.Feed.XML_FORMAT);
 	feed.load(function(result) {
@@ -114,9 +175,9 @@ function initialize()
 			FUSION.get.node("condimg").src = imgstr + conel.code.value + ".gif";
 			FUSION.get.node("high").innerHTML = "HIGH: " + att.high.value;
 			FUSION.get.node("low").innerHTML = "LOW: " + att.low.value;
-			//FUSION.get.node("humidity").innerHTML  = "HUMIDITY: " + atmel.humidity.value;
-			//FUSION.get.node("humidity").innerHTML += "<br>PRESSURE: " + atmel.pressure.value;
-			//FUSION.get.node("humidity").innerHTML += "<br>VISIBILITY: " + atmel.visibility.value;
+			FUSION.get.node("humidity").innerHTML  = "HUMIDITY: " + atmel.humidity.value;
+			FUSION.get.node("humidity").innerHTML += "<br>PRESSURE: " + atmel.pressure.value;
+			FUSION.get.node("humidity").innerHTML += "<br>VISIBILITY: " + atmel.visibility.value;
 			FUSION.get.node("sunrise").innerHTML = "SUNRISE: " + astel.sunrise.value;
 			FUSION.get.node("sunset").innerHTML = "SUNSET: " + astel.sunset.value;
 			FUSION.get.node("wind").innerHTML  = "WIND SPEED: " + spd;
@@ -129,7 +190,7 @@ function initialize()
 			var frc = "";
 			var dst = "";
 			var j = 0;
-/*
+
 			for(var i = 2; i < ywf.length; i++)
 			{
 				j = i + 1;
@@ -151,50 +212,52 @@ function initialize()
 				FUSION.get.node("high" + j).innerHTML 		= (att.high) ? att.high.value + "&deg;" : "";
 				FUSION.get.node("low" + j).innerHTML 		= (att.low)  ? att.low.value + "&deg;" : "";
 				FUSION.get.node("icon" + j).className 		= "condition-icon " + txt.replace(/\s/g, "-");
+
+				var container = document.getElementById("forecast");
+				var fed = result.feed.entries;
+				var ent = result.feed.entries[0].content;
+				ent = ent.replace(/\r?\n|\r/g, "");
+				var entar = ent.split(/\<br\s*[\/]?\>/g);
+				var parentdiv = document.createElement("div");
+				var childdiv = null;
+				for(var i = 0; i < entar.length; i++)
+				{
+					if(entar[i].match(/^(sun|mon|tue|wed|thu|fri|sat){1}\s+-/i))
+					{
+						var a = entar[i].split(/\s*-\s?/);
+						var day = a[0];
+						var war = a[1].split(" ");
+						var idx = war.indexOf("High:");
+						var ht = war[idx + 1];
+						var lt = war[idx + 3];
+						var td = war.slice(0,idx).join(" ");
+
+						var nam = document.createElement("div");
+						var tdy = document.createElement("div");
+						var hgh = document.createElement("div");
+						var low = document.createElement("div");
+
+						nam.innerHTML = day;
+						tdy.innerHTML = td.replace(/\./g, "");
+						hgh.innerHTML = "High: " + ht;
+						low.innerHTML = "Low: " + lt;
+
+						childdiv = document.createElement("div");
+						childdiv.setAttribute("id", "cd_" + i);
+						childdiv.appendChild(nam);
+						childdiv.appendChild(tdy);
+						childdiv.appendChild(hgh);
+						childdiv.appendChild(low);
+						parentdiv.appendChild(childdiv);
+					}
+				}
+				container.appendChild(parentdiv);
 			}
-*/
 		}
 	});
+*/
 }
-google.setOnLoadCallback(initialize);
+
+//google.setOnLoadCallback(initialize);
 
 
-/*var container = document.getElementById("forecast");
-var fed = result.feed.entries;
-var ent = result.feed.entries[0].content;
-ent = ent.replace(/\r?\n|\r/g, "");
-var entar = ent.split(/\<br\s*[\/]?\>/g);
-var parentdiv = document.createElement("div");
-var childdiv = null;
-for(var i = 0; i < entar.length; i++)
-{
-	if(entar[i].match(/^(sun|mon|tue|wed|thu|fri|sat){1}\s+-/i))
-	{
-		var a = entar[i].split(/\s*-\s?/);
-		var day = a[0];
-		var war = a[1].split(" ");
-		var idx = war.indexOf("High:");
-		var ht = war[idx + 1];
-		var lt = war[idx + 3];
-		var td = war.slice(0,idx).join(" ");
-
-		var nam = document.createElement("div");
-		var tdy = document.createElement("div");
-		var hgh = document.createElement("div");
-		var low = document.createElement("div");
-
-		nam.innerHTML = day;
-		tdy.innerHTML = td.replace(/\./g, "");
-		hgh.innerHTML = "High: " + ht;
-		low.innerHTML = "Low: " + lt;
-
-		childdiv = document.createElement("div");
-		childdiv.setAttribute("id", "cd_" + i);
-		childdiv.appendChild(nam);
-		childdiv.appendChild(tdy);
-		childdiv.appendChild(hgh);
-		childdiv.appendChild(low);
-		parentdiv.appendChild(childdiv);
-	}
-}
-container.appendChild(parentdiv);*/

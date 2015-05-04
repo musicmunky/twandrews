@@ -14,6 +14,7 @@
 
 	define('INCLUDE_CHECK',true);
 	require 'connect.php';
+	require 'yweather.php';
 	date_default_timezone_set('America/New_York');
 
 	$webaddress = "http://twandrews.com/";
@@ -51,6 +52,8 @@
 			case 'getFwInfo': getFwInfo($_POST);
 				break;
 			case 'setFwInfo': setFwInfo($_POST);
+				break;
+			case 'getWeatherInfo': getWeatherInfo($_POST);
 				break;
 			default: noFunction($_POST);
 				break;
@@ -1232,5 +1235,40 @@
 			$workingDays += $no_remaining_days;
 		}
 		return $workingDays;
+	}
+
+
+	function getWeatherInfo($P)
+	{
+		$P = escapeArray($P);
+
+		$yw = new yWeather();
+		$id = $yw->getWoeidByZip($P['zipcode']);
+		$yw->setUrl("http://weather.yahooapis.com/forecastrss?w=" . $id);
+		$yw->loadFeed();
+
+		$content = array();
+		$ast = $yw->getAstronomy();
+		$con = $yw->getConditions();
+		$loc = $yw->getLocation();
+		$atm = $yw->getAtmosphere();
+		$wnd = $yw->getWind();
+		$frc = $yw->getForecast();
+
+		$content['astronomy'] = $ast;
+		$content['conditions'] = $con;
+		$content['location'] = $loc;
+		$content['atmosphere'] = $atm;
+		$content['wind'] = $wnd;
+		$content['forecast'] = $frc;
+
+		unset($yw);
+
+		$result = array(
+				"status" => "success",
+				"message" => "",
+				"content" => $content
+		);
+		echo json_encode($result);
 	}
 ?>

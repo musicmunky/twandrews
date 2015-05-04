@@ -59,7 +59,9 @@
 			3200 => "not-available"
 		);
 
-		public function __construct($newrssfd = "http://weather.yahooapis.com/forecastrss?w=2503308") {
+		public function __construct($newrssfd = "http://weather.yahooapis.com/forecastrss?w=12766722") {
+			//12766722
+			//2503308
 			$this->rssfd = $newrssfd;
     	}
 
@@ -176,8 +178,10 @@
 				if($tmp->length > 0){
 					for($i = 0; $i < $tmp->length; $i++)
 					{
-						$frc = $tmp->item($i);
+						$frc  = $tmp->item($i);
 						$date = date("D, M j", strtotime($frc->getAttribute('date')));
+						$day  = date("l", strtotime($frc->getAttribute('date')));
+						$dstr = date("M j, Y", strtotime($frc->getAttribute('date')));
 						$code = $frc->getAttribute('code');
 						$arr[$i] = array(
 									"code" => $code,
@@ -185,7 +189,8 @@
 									"text" => $frc->getAttribute('text'),
 									"high" => $frc->getAttribute('high') . "&deg;",
 									"low"  => $frc->getAttribute('low') . "&deg;",
-									"day"  => $frc->getAttribute('day'),
+									"day"  => $day,
+									"dstr" => $dstr,
 									"img"  => $this->imgurl . $code . ".gif");
 					}
 				}
@@ -279,8 +284,9 @@
 					$wnd = $tmp->item(0);
 					$spd = $wnd->getAttribute('speed');
 					$arr['speed'] = $spd;
-					$arr['chill'] = $wnd->getAttribute('chill');
+					$arr['chill'] = $wnd->getAttribute('chill') . "&deg;";
 					$arr['direction'] = "N/A";
+					//$arr['direction'] = $wnd->getAttribute('direction');
 					if($spd > 0)
 					{
 						$d = $wnd->getAttribute('direction');
@@ -313,32 +319,59 @@
 			return preg_match('/^(?:(?:https?|ftp):\/\/)(?:\S+(?::\S*)?@)?(?:(?!10(?:\.\d{1,3}){3})(?!127(?:\.\d{1,3}){3})(?!169\.254(?:\.\d{1,3}){2})(?!192\.168(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\x{00a1}-\x{ffff}0-9]+-?)*[a-z\x{00a1}-\x{ffff}0-9]+)(?:\.(?:[a-z\x{00a1}-\x{ffff}0-9]+-?)*[a-z\x{00a1}-\x{ffff}0-9]+)*(?:\.(?:[a-z\x{00a1}-\x{ffff}]{2,})))(?::\d{2,5})?(?:\/[^\s]*)?$/u', $u);
 		}
 
-	}
-/*
-	$doc = new DOMDocument();
-	//$doc->load('http://weather.yahooapis.com/forecastrss?p=SFXX0044&u=c');
-	$doc->load("http://weather.yahooapis.com/forecastrss?w=2503308");
 
-	//now I get all elements inside this document with the following name "channel", this is the 'root'
-	$channel = $doc->getElementsByTagName("channel");
-
-	//now I go through each item withing $channel
-	foreach($channel as $chnl)
-	{
-		//I then find the 'item' element inside that loop
-		$item = $chnl->getElementsByTagName("item");
-		foreach($item as $itemgotten)
+		function getIpInfo()
 		{
-			//now I search within '$item' for the element "description"
-			$describe = $itemgotten->getElementsByTagName("description");
+			$ip = $this->getClientIp();
+			$arr = array();
+			if($ip != "UNKNOWN")
+			{
+				$arr = file_get_contents("http://ipinfo.io/" . $ip);
+			}
+			return json_decode($arr, true);
+		}
 
-			//once I find it I create a variable named "$description" and assign the value of the Element to it
-			$description = $describe->item(0)->nodeValue;
 
-			//and display it on-screen
-			echo $description;
+		function getClientIp()
+		{
+			$ipaddress = "";
+			if (getenv('HTTP_CLIENT_IP'))
+				$ipaddress = getenv('HTTP_CLIENT_IP');
+			else if(getenv('HTTP_X_FORWARDED_FOR'))
+				$ipaddress = getenv('HTTP_X_FORWARDED_FOR');
+			else if(getenv('HTTP_X_FORWARDED'))
+				$ipaddress = getenv('HTTP_X_FORWARDED');
+			else if(getenv('HTTP_FORWARDED_FOR'))
+				$ipaddress = getenv('HTTP_FORWARDED_FOR');
+			else if(getenv('HTTP_FORWARDED'))
+				$ipaddress = getenv('HTTP_FORWARDED');
+			else if(getenv('REMOTE_ADDR'))
+				$ipaddress = getenv('REMOTE_ADDR');
+			else
+				$ipaddress = 'UNKNOWN';
+			return $ipaddress;
+		}
+
+
+
+		function getWoeidByZip($z)
+		{
+			$q = "select%20woeid%20from%20geo.places%20where%20text%3D'" . $z . "'%20limit%201";
+			$response = file_get_contents("https://query.yahooapis.com/v1/public/yql?format=json&q=" . $q);
+			if($response)
+			{
+				try {
+					$response = json_decode($response, true);
+					//return $response;
+					//return urlencode($q);
+					return $response['query']['results']['place']['woeid'];
+				}
+				catch(Exception $e) {
+					return $e->getMessage();
+				}
+			}
+			return 0;
 		}
 	}
-*/
 
 ?>
