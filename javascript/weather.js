@@ -1,5 +1,21 @@
-
 $( document ).ready(function() {
+
+	//IE doesn't like Google fonts...apparently it's Google's fault
+	//at the moment, but whatever...load Web Safe font for IE users
+	var gbr = FUSION.get.browser();
+	var nde = "footerbrowserok";
+	var dbr = "detectedbrowserok";
+	var fbt = gbr.browser + " " + gbr.version;
+	if(gbr.browser && gbr.browser == "IE"){
+	//if(true){
+		document.body.style.fontFamily = "'Trebuchet MS', Helvetica, sans-serif";
+		fbt = "Internet Explorer " + gbr.version;
+		nde = "footerbrowserbad";
+		dbr = "detectedbrowserbad";
+	}
+
+	FUSION.get.node(dbr).style.display = "block";
+	FUSION.get.node(nde).innerHTML = "Detected Browser: " + fbt;
 
 	if(supportsHtml5Storage())
 	{
@@ -173,8 +189,23 @@ function addCityDiv(h, ls)
 													"title":hash.city + ", " + hash.region,
 													"class":"citylink"
 												}});
-		var spn = FUSION.lib.createHtmlElement({"type":"span", "onclick":"removeCityDiv(" + hash['woeid'] + ")",
+		var gbr = FUSION.get.browser();
+		var brs = gbr['browser'];
+		var spn = "";
+
+		if(brs == "IE")
+		{
+			spn = FUSION.lib.createHtmlElement({"type":"span", "onclick":"removeCityDiv(" + hash['woeid'] + ")",
+												"text":"X",
+												"style":{ "cursor":"pointer", "width":"10%", "color":"#666", "font-weight":"bold" },
+												"attributes":{ "title":"Remove Location" }});
+		}
+		else
+		{
+			spn = FUSION.lib.createHtmlElement({"type":"span", "onclick":"removeCityDiv(" + hash['woeid'] + ")",
 												"attributes":{ "class":"glyphicon glyphicon-remove removespan", "title":"Remove Location" }});
+		}
+
 		ndv.appendChild(lnk);
 		ndv.appendChild(spn);
 
@@ -204,23 +235,20 @@ function getWeatherResponse(h)
 
 	FUSION.get.node("searchbox").value = "";
 
-	FUSION.get.node("location").innerHTML 	= loc.city + ", " + loc.region;
-	FUSION.get.node("dayofweek").innerHTML 	= frc[0].day;
-	FUSION.get.node("date").innerHTML 		= frc[0].dstr;
+	FUSION.get.node("footerlocation").innerHTML = loc.city + ", " + loc.region;
+	FUSION.get.node("location").innerHTML 		= loc.city + ", " + loc.region;
+	FUSION.get.node("date").innerHTML 			= frc[0].day + " / " + frc[0].dstr;
 
 	FUSION.get.node("condition").innerHTML  = con.text + ", " + con.temp + "&deg;";
 	FUSION.get.node("condimg").src 			= con.img;
 
-	FUSION.get.node("high").innerHTML 		= "HIGH: " + frc[0].high;
-	FUSION.get.node("low").innerHTML 		= "LOW: "  + frc[0].low;
-	FUSION.get.node("dailyfrc").innerHTML 	= "FORECAST: " + frc[0].text;
+	FUSION.get.node("high").innerHTML 		= frc[0].high;
+	FUSION.get.node("low").innerHTML 		= frc[0].low;
+	FUSION.get.node("dailyfrc").innerHTML 	= frc[0].text;
 
-	FUSION.get.node("sunrise").innerHTML = "SUNRISE: " + ast.sunrise;
-	FUSION.get.node("sunset").innerHTML  = "SUNSET: "  + ast.sunset;
-
-	FUSION.get.node("windspeed").innerHTML 		= "WIND SPEED: " + wnd.speed;
-	FUSION.get.node("winddirection").innerHTML  = "DIRECTION: " + wnd.direction;
-	FUSION.get.node("windchill").innerHTML 		= "CHILL: " + wnd.chill;
+	FUSION.get.node("sunrise").innerHTML = ast.sunrise;
+	FUSION.get.node("sunset").innerHTML  = ast.sunset;
+	FUSION.get.node("wind").innerHTML 	 = wnd.speed + " mph, " + wnd.direction + ", " + wnd.chill;
 
 	var j = 0;
 	for(var i = 1; i < frc.length; i++)
@@ -231,7 +259,6 @@ function getWeatherResponse(h)
 		FUSION.get.node("condimg" + j).src 			= frc[i].img;
 		FUSION.get.node("high" + j).innerHTML 		= frc[i].high;
 		FUSION.get.node("low" + j).innerHTML 		= frc[i].low;
-		FUSION.get.node("icon" + j).className 		= "condition-icon " + frc[i].text.replace(/\s/g, "-");
 	}
 
 	if(adv)

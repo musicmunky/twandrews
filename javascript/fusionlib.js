@@ -24,7 +24,7 @@ FUSION.get = {
 		var ua = navigator.userAgent, tem,
 		M = ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
 		if(/trident/i.test(M[1])){
-			tem=  /\brv[ :]+(\d+)/g.exec(ua) || [];
+			tem = /\brv[ :]+(\d+)/g.exec(ua) || [];
 			br['browser'] = "IE";
 			br['version'] = tem[1] || 0;
 			return br;

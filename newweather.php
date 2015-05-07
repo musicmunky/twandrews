@@ -18,33 +18,18 @@
 
 	unset($yw);
 
-/*
-	$cmdstr = shell_exec("ps -aef | grep php | grep -v grep");
-	$matches = array();
-	$cmdarr = explode("\n", $cmdstr);
-	$procs = array();
-	foreach ($cmdarr as $value)
-	{
-		if(preg_match("/^\w+\s+(\d+)\s+.*$/", $value, $matches))
-		{
-			array_push($procs, $matches[1]);
-		}
-	}
-*/
 	//echo "<pre>";
 	//var_dump($procs);
 	//echo "</pre>";
-
-
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11-strict.dtd">
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-		<title>My Weather</title>
+		<title>Weather (new design)</title>
 		<link rel="shortcut icon" href="images/faviconweather.ico" />
-		<link rel='stylesheet' type="text/css" href='css/weather.css'  media="screen" charset="utf-8">
+		<link rel='stylesheet' type="text/css" href='css/newweather.css'  media="screen" charset="utf-8">
 		<link rel='stylesheet' type="text/css" href='css/fusionlib.css' media="screen" charset="utf-8">
 		<link rel='stylesheet' type="text/css" href='css/jquery-ui.min.css' media="screen" charset="utf-8">
 		<link rel='stylesheet' type="text/css" href='css/bootstrap.css' media="screen" charset="utf-8">
@@ -81,7 +66,7 @@
 						<span>Search by Zip Code: </span>
 						<form onsubmit="getWeather();return false;" style="width:260px;float:right;height:100%;">
 							<input type="text" id="searchbox" value="" style="color:#222;width:200px;text-align:right;" />
-							<button class="srchbtn">
+							<button style="margin-right:10px;background:none repeat scroll 0% 0% #FFF;border:0px none;height:40px;outline:none;">
 								<span class="glyphicon glyphicon-search"></span>
 							</button>
 						</form>
@@ -198,19 +183,11 @@
 					</div>
 				</div>
 			</div>
+
 		</div>
-		<div class="footer">
-			<div class="innerfooter" style="text-align:center;">
-				<span id="detectedbrowserok" style="display:none;float:left;margin-left:10px;">
-					<span id="footerbrowserok" class="cldclr" style="float:left;margin-right:10px;"></span>
-					<span class="glyphicon glyphicon-thumbs-up" style="display:block;float:right;line-height:30px;color:green;"></span>
-				</span>
-				<span id="detectedbrowserbad" style="display:none;float:left;margin-left:10px;">
-					<span id="footerbrowserbad" class="wrmclr" style="cursor:pointer;"
-						  onclick="FUSION.lib.alert({'message':'It looks like you\'re running IE, so some features may not work.<br>Try switching to a fully supported browser like Chrome or Firefox for the full experience!','width':'450'})"></span>
-				</span>
-				<span style="float:right;margin-right:10px;">Daily forecast for <span id="footerlocation"></span></span>
-			</div>
-		</div>
+
+		<!--<div style="margin-left:auto;margin-right:auto;height:100px;width:800px;background-color:#fff;">
+			<?php //echo $cmdstr; ?>
+		</div>-->
 	</body>
 </html>
