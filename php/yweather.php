@@ -60,8 +60,6 @@
 		);
 
 		public function __construct($newrssfd = "http://weather.yahooapis.com/forecastrss?w=12766722") {
-			//12766722
-			//2503308
 			$this->rssfd = $newrssfd;
     	}
 
@@ -227,8 +225,11 @@
 				$tmp = $this->fddoc->getElementsByTagNameNS("http://xml.weather.yahoo.com/ns/rss/1.0", "condition");
 				if($tmp->length > 0){
 					$con = $tmp->item(0);
+					$code = $con->getAttribute('code');
 					$arr['text'] = $con->getAttribute('text');
-					$arr['code'] = $con->getAttribute('code');
+					$arr['code'] = $code;
+					$arr['temp'] = $con->getAttribute('temp');
+					$arr['img']  = $this->imgurl . $code . ".gif";
 				}
 			}
 			catch(Exception $e) {
@@ -286,7 +287,6 @@
 					$arr['speed'] = $spd;
 					$arr['chill'] = $wnd->getAttribute('chill') . "&deg;";
 					$arr['direction'] = "N/A";
-					//$arr['direction'] = $wnd->getAttribute('direction');
 					if($spd > 0)
 					{
 						$d = $wnd->getAttribute('direction');
@@ -362,8 +362,6 @@
 			{
 				try {
 					$response = json_decode($response, true);
-					//return $response;
-					//return urlencode($q);
 					return $response['query']['results']['place']['woeid'];
 				}
 				catch(Exception $e) {

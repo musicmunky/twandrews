@@ -1242,8 +1242,14 @@
 	{
 		$P = escapeArray($P);
 
+		//are we just loading existing info?
+		$load = isset($P['load']) ? $P['load'] : false;
+		//should (can) we create a new localStorage entry?
+		$lcst = isset($P['localstore']) ? $P['localstore'] : true;
+
+		//all pretty self-explanatory
 		$yw = new yWeather();
-		$id = $yw->getWoeidByZip($P['zipcode']);
+		$id = $load ? $P['woeid'] : $yw->getWoeidByZip($P['zipcode']);
 		$yw->setUrl("http://weather.yahooapis.com/forecastrss?w=" . $id);
 		$yw->loadFeed();
 
@@ -1255,13 +1261,17 @@
 		$wnd = $yw->getWind();
 		$frc = $yw->getForecast();
 
-		$content['astronomy'] = $ast;
-		$content['conditions'] = $con;
-		$content['location'] = $loc;
-		$content['atmosphere'] = $atm;
-		$content['wind'] = $wnd;
-		$content['forecast'] = $frc;
+		$content['astronomy'] 	= $ast;
+		$content['conditions'] 	= $con;
+		$content['location'] 	= $loc;
+		$content['atmosphere'] 	= $atm;
+		$content['wind'] 		= $wnd;
+		$content['forecast'] 	= $frc;
+		$content['woeid'] 		= $id;
+		$content['adddiv'] 		= $load ? false : true;
+		$content['localstore']  = $lcst;
 
+		//clear the weather object for garbage collection
 		unset($yw);
 
 		$result = array(
@@ -1271,4 +1281,5 @@
 		);
 		echo json_encode($result);
 	}
+
 ?>

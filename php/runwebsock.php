@@ -2,6 +2,7 @@
 <?php
 
 require_once('websockets.php');
+date_default_timezone_set('America/New_York');
 
 class echo_server extends WebSocketServer
 {
@@ -10,7 +11,7 @@ class echo_server extends WebSocketServer
 	{
 		if($message == 'help')
 		{
-			$reply = 'Following commands are available - date, hi';
+			$reply = 'Following commands are available:<br>"date" - returns the date<br>"hi" - says hello';
 		}
 		else if($message == 'date')
 		{
@@ -18,7 +19,7 @@ class echo_server extends WebSocketServer
 		}
 		else if($message == 'hi')
 		{
-			$reply = "Hello user. This is a websocket server.";
+			$reply = "Hello user! This is a websocket server!";
 		}
 		else
 		{
@@ -37,7 +38,7 @@ class echo_server extends WebSocketServer
 	protected function connected ($user)
 	{
 		//Send welcome message to user
-		$welcome_message = 'Hello. Welcome to the Websocket server. Type help to see what commands are available.';
+		$welcome_message = 'Hello!<br>Welcome to the Websocket server!<br>Type "help" to see what commands are available.';
 		$this->send($user, $welcome_message);
 	}
 
