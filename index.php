@@ -97,6 +97,9 @@
 					<li <?php echo $prdtext; ?>><a href="steph.php" target="_blank">
 							<span class="glyphicon glyphicon-ok-sign navspan nsokay" aria-hidden="true"></span>
 							Steph's Work Schedule</a></li>
+					<li <?php echo $prdtext; ?>><a href="weather" target="_blank">
+							<span class="glyphicon glyphicon-ok-sign navspan nsokay" aria-hidden="true"></span>
+							Weather App</a></li>
 					<li <?php echo $prdtext; ?>><a href="adminer/andrewsdb.php" target="_blank">
 							<span class="glyphicon glyphicon-ok-sign navspan nsokay" aria-hidden="true"></span>
 							Adminer</a></li>
@@ -121,9 +124,7 @@
 					<li <?php echo $devtext; ?>><a href="socktest.html" target="_blank">
 							<span class="glyphicon glyphicon-exclamation-sign navspan nswarning" aria-hidden="true"></span>
 							WebSockets Testing</a></li>
-					<li <?php echo $devtext; ?>><a href="weather" target="_blank">
-							<span class="glyphicon glyphicon-exclamation-sign navspan nswarning" aria-hidden="true"></span>
-							Weather App</a></li>
+
 				</ul>
 			</div>
 			<div style="width:100%;font-weight:bold;font-size:21px;margin-top:20px;">
