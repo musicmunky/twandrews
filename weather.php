@@ -128,7 +128,7 @@
 									<div id="sunset"></div>
 								</div>
 							</div>
-							<div class="tfcheader" style="border-top:1px solid #EEE;padding-top:5px;">
+							<div class="tfcheader" style="border-top:1px solid #EEE;font-size:25px;line-height:1.3em;">
 								<div class="w50fl">
 									<span class="wrmclr" id="high"></span>
 								</div>
