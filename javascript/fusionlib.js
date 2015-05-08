@@ -258,9 +258,9 @@ FUSION.remove = {
 		}
 	},
 
-	nodeById: function(id) {
+	node: function(el) {
 		try {
-			var elm = FUSION.get.node(id);
+			var elm = FUSION.get.node(el);
 			var par = elm.parentNode;
 			par.removeChild(elm);
 			return true;
@@ -465,7 +465,7 @@ FUSION.lib = {
 											    "attributes":{"class":"fl_alert_button_div"}});
 
 		var ab = FUSION.lib.createHtmlElement({"type":"input",
-											   "onclick":"FUSION.remove.nodeById('" + odid + "')",
+											   "onclick":"FUSION.remove.node('" + odid + "')",
 											   "attributes":{"type":"button","class":"fl_alert_button","value":btn,"id":bttn}});
 		amd.innerHTML = msg;
 		abd.appendChild(ab);
@@ -537,7 +537,7 @@ FUSION.lib = {
 			var tbl = document.getElementById(tid);
 			spn.innerHTML = "<table><tbody id='" + tid + "'>" + d;
 			tbl.parentNode.replaceChild(spn.firstChild.firstChild,tbl);
-			FUSION.remove.nodeById(sid);
+			FUSION.remove.node(sid);
 
 			return true;
 		}

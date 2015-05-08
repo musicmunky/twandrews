@@ -192,7 +192,7 @@ function removeCityDiv(id)
 	var yn = confirm("Are you sure you'd like to remove this entry?");
 	if(yn)
 	{
-		FUSION.remove.nodeById("ocd" + woeid);
+		FUSION.remove.node("ocd" + woeid);
 		try{
 			//attempt to remove the localStorage item...sometimes causes
 			//an issue in older versions of IE...because of course it does
@@ -224,7 +224,7 @@ function addCityDiv(h, ls)
 		//techincally it removes the last div, which *should* be the oldest,
 		//but I should really do a sort here to make sure...I'll come back to it
 		var eid = els[3].id;
-		FUSION.remove.nodeById(eid);
+		FUSION.remove.node(eid);
 		localStorage.removeItem(eid);
 	}
 
@@ -233,8 +233,12 @@ function addCityDiv(h, ls)
 	{
 		//begin creating the location box - just a div that holds a link and a span,
 		//pretty straight-forward
-		var ndv = FUSION.lib.createHtmlElement({"type":"div", "attributes":{ "id": "ocd" + hash['woeid'], "class":"citydiv" }});
-		var lnk = FUSION.lib.createHtmlElement({"type":"a", "onclick":"loadWeather(" + hash['woeid'] + ")",
+		var ndv = FUSION.lib.createHtmlElement({"type":"div",
+												"attributes":{
+													"id": "ocd" + hash['woeid'], "class":"citydiv" }});
+
+		var lnk = FUSION.lib.createHtmlElement({"type":"a",
+												"onclick":"loadWeather(" + hash['woeid'] + ")",
 												"text": hash.city + ", " + hash.region,
 												"attributes":{
 													"href":"javascript:void(0);",
@@ -252,15 +256,23 @@ function addCityDiv(h, ls)
 
 		if(brs == "IE")
 		{
-			spn = FUSION.lib.createHtmlElement({"type":"span", "onclick":"removeCityDiv(" + hash['woeid'] + ")",
+			spn = FUSION.lib.createHtmlElement({"type":"span",
+												"onclick":"removeCityDiv(" + hash['woeid'] + ")",
 												"text":"X",
-												"style":{ "cursor":"pointer", "width":"10%", "color":"#666", "font-weight":"bold" },
+												"style":{
+													"cursor":"pointer",
+													"width":"10%",
+													"color":"#666",
+													"font-weight":"bold" },
 												"attributes":{ "title":"Remove Location" }});
 		}
 		else
 		{
-			spn = FUSION.lib.createHtmlElement({"type":"span", "onclick":"removeCityDiv(" + hash['woeid'] + ")",
-												"attributes":{ "class":"glyphicon glyphicon-remove removespan", "title":"Remove Location" }});
+			spn = FUSION.lib.createHtmlElement({"type":"span",
+												"onclick":"removeCityDiv(" + hash['woeid'] + ")",
+												"attributes":{
+													"class":"glyphicon glyphicon-remove removespan",
+													"title":"Remove Location" }});
 		}
 
 		ndv.appendChild(lnk);
