@@ -237,12 +237,15 @@ function addCityDiv(h, ls)
 												"attributes":{
 													"id": "ocd" + hash['woeid'], "class":"citydiv" }});
 
+		var regstr = (typeof hash.region !== undefined && !FUSION.lib.isBlank(hash.region)) ?
+					hash.city + ", " + hash.region : hash.city;
+
 		var lnk = FUSION.lib.createHtmlElement({"type":"a",
 												"onclick":"loadWeather(" + hash['woeid'] + ")",
-												"text": hash.city + ", " + hash.region,
+												"text": regstr,
 												"attributes":{
 													"href":"javascript:void(0);",
-													"title":hash.city + ", " + hash.region,
+													"title": regstr,
 													"class":"citylink"
 												}});
 		//check the browser - IE is so fickle with glyphicons, so rather than deal with
@@ -311,8 +314,11 @@ function getWeatherResponse(h)
 	FUSION.get.node("searchbox").value = "";
 
 	//fill the main section with today's forecast info
-	FUSION.get.node("footerlocation").innerHTML = loc.city + ", " + loc.region;
-	FUSION.get.node("location").innerHTML 		= loc.city + ", " + loc.region;
+	var regstr = (typeof loc.region !== undefined && !FUSION.lib.isBlank(loc.region)) ?
+					loc.city + ", " + loc.region : loc.city;
+
+	FUSION.get.node("footerlocation").innerHTML = regstr;
+	FUSION.get.node("location").innerHTML 		= regstr;
 	FUSION.get.node("date").innerHTML 			= frc[0].day + " / " + frc[0].dstr;
 
 	FUSION.get.node("condition").innerHTML  = con.text + ", " + con.temp + "&deg;";
