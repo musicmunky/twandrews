@@ -1,79 +1,175 @@
 <?php
 	//require 'php/shutdown.php';
 	define('LIBRARY_CHECK',true);
-	require 'php/library.php';
-	//require 'php/yweather.php';
+	require 'php/weatherlib.php';
 
 	date_default_timezone_set('America/New_York');
 
-	if(!isset($_SESSION))
+	$title = "My Weather v2";
+
+	/**
+	*
+	*	TODO:
+	*		- Implement Google Geocode API location searching
+	*		- Implement Forecast.io API weather lookup
+	*		- Integrate F.io with the existing javascript
+	*		- Implement Skycons, as well as alternatives for non-html5 browsers
+	*/
+/*
+	$cmdstr = shell_exec("ps -aef | grep php | grep -v grep");
+	$matches = array();
+	$cmdarr = explode("\n", $cmdstr);
+	$procs = array();
+	foreach ($cmdarr as $value)
 	{
-		session_name('andrewsweather');
-		session_start();
+		if(preg_match("/^\w+\s+(\d+)\s+.*$/", $value, $matches))
+		{
+			array_push($procs, $matches[1]);
+		}
+	}
+*/
+
+//  	$lat = "39.3919764";
+//  	$lng = "-76.9873477";
+
+// 	$lat = "100000.000";
+// 	$lng = "9999999";
+// 	$apinfo = mysql_fetch_assoc(mysql_query("SELECT APIKEY, URL FROM weatherapikeys WHERE SERVICE='forecast';"));
+// 	$apikey = $apinfo['APIKEY'];
+// 	$apiurl = $apinfo['URL'];
+// 	$apikey = "foobar";
+// 	$requrl = $apiurl . $apikey . "/" . $lat . "," . $lng . "?exclude=minutely";
+// 	$content = file_get_contents($requrl);
+
+// 	$reqstat = explode(" ", $http_response_header[0]);
+// 	$numreqs = explode(" ", $http_response_header[8]);
+
+	//$apiinfo = mysql_fetch_assoc(mysql_query("SELECT APIKEY, URL FROM weatherapikeys WHERE SERVICE='google';"));
+	//$key = $apiinfo['APIKEY'];
+	//$url = $apiinfo['URL'];
+	//$requrl = $url . "address=London" . "&key=" . $key;
+	//$content = file_get_contents($requrl);
+
+	$dayhtml  = "";
+	$hourhtml = "";
+	for($i = 2; $i <= 5; $i++)
+	{
+		$dayhtml .= "<div class='day' id='day{$i}'>
+						<div id='dayofweek{$i}' class='dayofweek'></div>
+						<div class='condition'>
+							<span id='condition{$i}' class='conspan'></span>
+							<img id='condimg{$i}' src='' />
+						</div>
+						<div class='tempdiv' style='float:left;'>
+							<span id='high{$i}' class='wrmclr'></span>
+						</div>
+						<div class='tempdiv' style='float:right;'>
+							<span id='low{$i}' class='cldclr'></span>
+						</div>
+					</div>";
 	}
 
-	$yw = new yWeather();
-	$ip = $yw->getIpInfo();
-	$id = $yw->getWoeidByZip($ip['postal']);
+//	new css clases needed:
+//		hourofday
+//		hourcondition
+// 		..others?? (probably definitely yes)
+//
+//	INFO TO DISPLAY:
+//		Time/Hour
+//		Condition (Icon)
+//		Condition (Text)
+//		Temperature
+//		Chance of Precipitation
+//		Wind Info (Like this: NW 3 mph)
+//
+	for($j = 1; $j <= 8; $j++)
+	{
+		$style = "";//($j == 1) ? " style='margin-left:15px;border-left:1px solid #DDD;'" : "";
+		$hourhtml .= "<div class='hour' id='hour{$j}'" . $style . ">
+						<div id='hourofday{$j}' class='hourofday'></div>
+					</div>";
+	}
 
-	unset($yw);
-
-	//echo "<pre>";
-	//var_dump($procs);
-	//echo "</pre>";
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11-strict.dtd">
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-		<title>Weather (new design)</title>
+		<title><?php echo $title; ?></title>
 		<link rel="shortcut icon" href="images/faviconweather.ico" />
 		<link rel='stylesheet' type="text/css" href='css/newweather.css'  media="screen" charset="utf-8">
 		<link rel='stylesheet' type="text/css" href='css/fusionlib.css' media="screen" charset="utf-8">
 		<link rel='stylesheet' type="text/css" href='css/jquery-ui.min.css' media="screen" charset="utf-8">
 		<link rel='stylesheet' type="text/css" href='css/bootstrap.css' media="screen" charset="utf-8">
-		<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans">
 		<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Lato">
-		<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Ubuntu">
+<!--	<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans">//-->
+<!--	<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Ubuntu">//-->
 		<script language="javascript" type="text/javascript" src="javascript/jquery-1.11.0.min.js"></script>
 		<script language="javascript" type="text/javascript" src="javascript/jquery-ui-1.10.4.custom.min.js"></script>
+		<script language="javascript" type="text/javascript" src="javascript/skycons.js"></script>
 		<script language="javascript" type="text/javascript" src="javascript/fusionlib.js"></script>
 		<script language="javascript" type="text/javascript" src="https://www.google.com/jsapi"></script>
-		<script language="javascript" type="text/javascript" src="javascript/weather.js"></script>
+		<script language="javascript" type="text/javascript" src="javascript/newweather.js"></script>
+
+		<script>
+
+		</script>
 	</head>
 	<body>
-		<input type="hidden" id="localwoeid" value="<?php echo $id; ?>" />
-		<input type="hidden" id="localzipcode" value="<?php echo $ip['postal']; ?>" />
+		<!-- default to NYC if there's no localStorage -->
+		<input type="hidden" id="localzipcode" value="10001" />
 
 		<div id="header" class="header">
 			<div id="headercont" class="header-content">
-				<div style="float:left;width:250px;padding-left:50px;">
-					<div class="title">
-						<img id="logo" src="images/weatherlogo.png" style="width:40px;margin-top:10px;margin-right:10px;float:left;" />
-						<div id="titlediv" style="float:left;cursor:default;">
-							My Weather
+				<div class="header-logo">
+					<div style="float:left;width:250px;">
+						<div class="title">
+							<img id="logo" src="images/weatherlogo.png" style="width:40px;margin-top:10px;margin-right:10px;float:left;" />
+							<div id="titlediv" style="float:left;cursor:default;">
+								<?php echo $title; ?>
+							</div>
+						</div>
+					</div>
+					<div style="float:left;height:100%;">
+						<div id="datewrapper" style="width:200px;float:left;height:100%;">
+							<span id="date" class="headspan"></span>
 						</div>
 					</div>
 				</div>
-				<div style="float:left;height:100%;">
-					<div id="datewrapper" style="width:200px;float:left;height:100%;">
-						<span id="date" class="headspan"></span>
-					</div>
-				</div>
-				<div style="float:right;height:100%;padding-right:50px;">
+
+				<div class="header-search">
 					<div class="w100fl" style="text-align:right;font-size:16px;height:100%;line-height:4em;">
-						<span>Search by Zip Code: </span>
-						<form onsubmit="getWeather();return false;" style="width:260px;float:right;height:100%;">
-							<input type="text" id="searchbox" value="" style="color:#222;width:200px;text-align:right;" />
-							<button style="margin-right:10px;background:none repeat scroll 0% 0% #FFF;border:0px none;height:40px;outline:none;">
+						<span style="float:left;">Search: </span>
+<!--						<form onsubmit="getWeather();return false;" style="width:260px;float:right;height:100%;">//-->
+<!--						<form onsubmit="getGeoInfo();return false;" style="width:260px;float:left;height:100%;">//-->
+						<form onsubmit="runSearch();return false;" style="width:260px;float:left;height:100%;">
+							<input type="text" id="searchbox" value="" class="searchbox" />
+							<button class="srchbtn">
 								<span class="glyphicon glyphicon-search"></span>
 							</button>
 						</form>
+						<span style="height:100%;line-height:60px;float:left;" class="glyphicon glyphicon-cog"></span>
 					</div>
 				</div>
 			</div>
 		</div>
+
+
+
+<!--			<canvas id="icon1" width="50" height="50"></canvas>//-->
+<!--			<canvas id="icon2" width="50" height="50"></canvas>//-->
+<!--
+		<div id='displayinfodiv' style='width:100%;height:500px;margin-top:60px;overflow-y:scroll;'>
+			<?php //echo "<p>RESPONSE CODE: " . $reqstat[1] . "&emsp;&emsp;&emsp;&emsp;CALLS MADE TODAY: " . $numreqs[1] . "</p>"; ?>
+
+			<pre>
+				<?php //var_dump(json_decode($content, true)); ?>
+
+			</pre>
+		</div>
+-->
+
 
 		<div id="mainwrapper" class="mainwrapper">
 			<div class="oldcitywrapper">
@@ -91,8 +187,8 @@
 						</div>
 					</div>
 
-					<div class="w50fl">
-						<div class="tfcdiv" style="">
+					<div class="w50fl tfcbtm">
+						<div class="tfcdiv">
 							<div class="tfcheader" style="border-bottom:1px solid #EEE;margin-bottom:5px;">
 								Today's Forecast
 							</div>
@@ -105,89 +201,55 @@
 							</div>
 							<div class="tfcdivinner">
 								<div class="w100fl">
-									<div class="w50fl">Sunrise:</div>
+									<div class="innerw50fl">Sunrise:</div>
 									<div id="sunrise"></div>
 								</div>
 								<div class="w100fl">
-									<div class="w50fl">Sunset:</div>
+									<div class="innerw50fl">Sunset:</div>
 									<div id="sunset"></div>
 								</div>
 							</div>
-							<div class="tfcheader" style="border-top:1px solid #EEE;padding-top:5px;">
-								<div class="w50fl">
+							<div class="tfcheader" style="border-top:1px solid #EEE;font-size:25px;line-height:1.3em;">
+								<div class="innerw50fl">
 									<span class="wrmclr" id="high"></span>
 								</div>
-								<div class="w50fl">
+								<div class="innerw50fl">
 									<span class="cldclr" id="low"></span>
 								</div>
 							</div>
 						</div>
 					</div>
 				</div>
+				<div id="hourwrapper" class="w100fl hourwrapper">
+					<?php echo $hourhtml; ?>
+				</div>
 				<div id="daywrapper" class="w100fl" style="margin-top:15px;">
-					<div class="w50fl">
-						<div class="day" id="day2">
-							<div id="dayofweek2" class="dayofweek"></div>
-							<div class="condition">
-								<span id="condition2" class="conspan"></span>
-								<img id="condimg2" src="" />
-							</div>
-							<div class="tempdiv" style="float:left;">
-								<span id="high2" class="wrmclr"></span>
-							</div>
-							<div class="tempdiv" style="float:right;">
-								<span id="low2" class="cldclr"></span>
-							</div>
-						</div>
-						<div class="day" id="day3">
-							<div id="dayofweek3" class="dayofweek"></div>
-							<div class="condition">
-								<span id="condition3" class="conspan"></span>
-								<img id="condimg3" src="" />
-							</div>
-							<div class="tempdiv" style="float:left;">
-								<span id="high3" class="wrmclr"></span>
-							</div>
-							<div class="tempdiv" style="float:right;">
-								<span id="low3" class="cldclr"></span>
-							</div>
-						</div>
-					</div>
-					<div class="w50fl">
-						<div class="day" id="day4">
-							<div id="dayofweek4" class="dayofweek"></div>
-							<div class="condition">
-								<span id="condition4" class="conspan"></span>
-								<img id="condimg4" src="" />
-							</div>
-							<div class="tempdiv" style="float:left;">
-								<span id="high4" class="wrmclr"></span>
-							</div>
-							<div class="tempdiv" style="float:right;">
-								<span id="low4" class="cldclr"></span>
-							</div>
-						</div>
-						<div class="day" id="day5">
-							<div id="dayofweek5" class="dayofweek"></div>
-							<div class="condition">
-								<span id="condition5" class="conspan"></span>
-								<img id="condimg5" src="" />
-							</div>
-							<div class="tempdiv" style="float:left;">
-								<span id="high5" class="wrmclr"></span>
-							</div>
-							<div class="tempdiv" style="float:right;">
-								<span id="low5" class="cldclr"></span>
-							</div>
-						</div>
-					</div>
+					<?php echo $dayhtml; ?>
 				</div>
 			</div>
-
 		</div>
+		<div class="footer">
+			<div class="innerfooter" style="text-align:center;">
+				<div class="footer-content-left">
+					<span>Daily weather for <span id="footerlocation"></span></span>
+				</div>
+				<div class="footer-content-center">
+					<span id="detectedbrowserok" style="display:none;margin-left:10px;">
+						<span id="footerbrowserok" class="cldclr" style="margin-right:10px;"></span>
+						<span class="glyphicon glyphicon-thumbs-up" style="color:green;"></span>
+					</span>
+					<span id="detectedbrowserbad" style="display:none;margin-left:10px;">
+						<span id="footerbrowserbad" class="wrmclr" style="cursor:pointer;"
+							  onclick="FUSION.lib.alert({'message':'It looks like you\'re running IE, so some features may not work.<br>Try switching to a fully supported browser like Chrome or Firefox for the full experience!','width':'450'})"></span>
+					</span>
+				</div>
+				<div class="footer-content-right">
+					<span>
+						Powered by <a href="http://forecast.io/" style="text-decoration:none;outline:none;" class="cldclr" target="_blank">Forecast</a>
+					</span>
+				</div>
 
-		<!--<div style="margin-left:auto;margin-right:auto;height:100px;width:800px;background-color:#fff;">
-			<?php //echo $cmdstr; ?>
-		</div>-->
+			</div>
+		</div>
 	</body>
 </html>

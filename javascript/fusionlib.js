@@ -57,6 +57,28 @@ FUSION.get = {
 		}
 	},
 
+	byName: function(el) {
+		try {
+			var elm = (typeof el === "string") ? document.getElementsByName(el) : [];
+			return elm;
+		}
+		catch(err) {
+			FUSION.error.logError(err);
+			return [];
+		}
+	},
+
+	byTagName: function(el) {
+		try {
+			var elm = (typeof el === "string") ? document.getElementsByTagName(el) : [];
+			return elm;
+		}
+		catch(err) {
+			FUSION.error.logError(err);
+			return [];
+		}
+	},
+
 	mouseX: function(e) {
 		if (e.pageX) {
 			return e.pageX;
@@ -173,7 +195,7 @@ FUSION.get = {
 
 	elementsByAttr: function(attr) {
 		var matchingElements = [];
-		var allElements = document.getElementsByTagName('*');
+		var allElements = FUSION.get.byTagName('*');
 		for (var i = 0; i < allElements.length; i++)
 		{
 			if (allElements[i].getAttribute(attr))
@@ -533,8 +555,8 @@ FUSION.lib = {
 			var tempspan = FUSION.lib.createHtmlElement({"type":"span", "style":{"visibility":"hidden"}, "attributes":{"id":sid}});
 			document.body.appendChild(tempspan);
 
-			var spn = document.getElementById(sid);
-			var tbl = document.getElementById(tid);
+			var spn = FUSION.get.node(sid);
+			var tbl = FUSION.get.node(tid);
 			spn.innerHTML = "<table><tbody id='" + tid + "'>" + d;
 			tbl.parentNode.replaceChild(spn.firstChild.firstChild,tbl);
 			FUSION.remove.node(sid);
@@ -679,8 +701,8 @@ FUSION.lib = {
 
 	sendErrorEmail: function(id) {
 		var uid = id;
-		var msg = document.getElementById("errormessage").value;
-		var fst = document.getElementById("fullstacktrace").value;
+		var msg = FUSION.get.node("errormessage").value;
+		var fst = FUSION.get.node("fullstacktrace").value;
 		hideGeneralError();
 		var info = {
 			"type": "POST",
@@ -857,16 +879,16 @@ FUSION.lib = {
 		// primary call [i.e. at the end of the algorithm]
 		if (is_publish_to_body  &&  indent_by === 0)
 		{
-			var div_dump = document.getElementById('div_dump');
+			var div_dump = FUSION.get.node('div_dump');
 			if (!div_dump)
 			{
 				div_dump = document.createElement('div');
 				div_dump.id = 'div_dump';
 
-				var style_dump = document.getElementsByTagName("style")[0];
+				var style_dump = FUSION.get.byTagName("style")[0];
 				if (!style_dump)
 				{
-					var head = document.getElementsByTagName("head")[0];
+					var head = FUSION.get.byTagName("head")[0];
 					style_dump = document.createElement("style");
 					head.appendChild(style_dump);
 				}
@@ -903,7 +925,7 @@ FUSION.lib = {
 				style_dump = null;
 			}
 
-			var pre_dump = document.getElementById('pre_dump');
+			var pre_dump = FUSION.get.node('pre_dump');
 			if (!pre_dump)
 			{
 				pre_dump = document.createElement('pre');

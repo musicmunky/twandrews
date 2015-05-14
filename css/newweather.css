@@ -4,8 +4,8 @@ html, body {
 	margin: 0;
 	padding: 0;
 	background-color:#EEE;
-/* 	font-family: 'Open Sans', serif; */
 	font-family: 'Lato', serif;
+/* 	font-family: 'Open Sans', serif; */
 /* 	font-family:"Trebuchet MS", Helvetica, sans-serif; */
 /* 	font-family:"Palatino Linotype", "Book Antiqua", Palatino, serif; */
 }
@@ -20,6 +20,7 @@ html, body {
 	border-right:1px solid #ddd;
 	padding-left:10px;
 	padding-right:10px;
+	min-height:700px;
 }
 
 .oldcitywrapper {
@@ -31,6 +32,40 @@ html, body {
 	background-color:#FFF;
 	color:#333;
 }
+
+.srchbtn {
+	margin-right:10px;
+	border:0px none;
+	outline:medium none;
+/* 	display:block; */
+	float:right;
+	background-color:#FFF;
+	line-height:60px;
+	height:60px;
+}
+
+/* begin sticky footer css */
+.footer {
+	position: fixed;
+	bottom: 0;
+	height: 30px;
+	opacity: .9;
+	width: 100%;
+	background-color: #FFF;
+	z-index: 1000;
+	font-size:14px;
+	color:#666;
+	line-height:30px;
+	box-shadow:0 0 1px 1px rgba(0, 0, 0, 0.15), 0 0 1px 1px rgba(0, 0, 0, 0.03), 0 0 1px 1px rgba(0, 0, 0, 0.03), 0 0 1px 1px rgba(0, 0, 0, 0.12)
+}
+
+.innerfooter {
+	width: 1020px;
+	margin-left:auto;
+	margin-right:auto;
+}
+/* end sticky footer css */
+
 
 /* beg sticky header css */
 .header {
@@ -93,11 +128,15 @@ html, body {
 /* end sticky header css */
 
 #forecast {
-	height: 500px;
 	width: 100%;
 }
 
 .w50fl {
+	width:50%;
+	float:left;
+}
+
+.innerw50fl {
 	width:50%;
 	float:left;
 }
@@ -146,15 +185,39 @@ html, body {
 }
 
 .day {
-    border: 1px solid #ddd;
-	border-radius:15px;
-    box-shadow: 0 0 3px 0 #ddd;
+ 	border-radius:4px;
+    box-shadow: 0 0 1px 1px #CCC;
     float: left;
     height: 175px;
     margin: 0 15px;
     position: relative;
     text-align: center;
-    width: 218px;
+    width: 220px;
+}
+
+.hourofday {
+	height:175px;
+	width: 95px;
+	margin-left:15px;
+	box-shadow: 0 0 1px 1px #CCC;
+	border-radius: 4px;
+}
+
+.hour {
+    float: left;
+    height: 175px;
+    position: relative;
+    text-align: center;
+    width: 125px;
+}
+
+.searchbox {
+	color:#222;
+	width:200px;
+	text-align:left;
+	border:1px solid #DDD;
+	height:22px;
+	padding-left:5px;
 }
 
 .headspan {
@@ -170,9 +233,8 @@ html, body {
 	margin:10px auto;
 	width:470px;
 	height:125px;
-	box-shadow:0px 0px 3px 0px #DDD;
-	border:1px solid #DDD;
-	border-radius:15px;
+	box-shadow:0 0 1px 1px #CCC;
+ 	border-radius:4px;
 }
 
 .tfcdivinner {
@@ -208,7 +270,6 @@ html, body {
 .dayofweek {
 	margin-top:8px;
 	font-size:20px;
-/* 	font-weight:bold; */
 	letter-spacing:1px;
 	text-align:center;
 }
@@ -242,7 +303,7 @@ html, body {
 .tempdiv {
 	width:50%;
 	line-height:40px;
-	font-size:25px;
+	font-size:23px;
 	height:40px;
 }
 
@@ -253,8 +314,6 @@ html, body {
 	background-color:#dc470c;
 	font-size:18px;
 	font-weight:bold;
-/* 	-webkit-border-radius: 40px; */
-/* 	border-radius: 40px; */
 	padding:11px 0 10px 2%;
 }
 
@@ -265,8 +324,6 @@ html, body {
 	background-color:#53aecc;
 	font-size:18px;
 	font-weight:bold;
-/* 	-webkit-border-radius:40px; */
-/* 	border-radius:40px; */
 	padding:11px 0 10px 2%;
 }
 
@@ -281,6 +338,111 @@ html, body {
 	color:#53aecc;
 	float:right;
 	margin-left:-10px;
+}
+
+.tfcbtm {}
+
+.hourwrapper {
+	margin-top:15px;
+	margin-bottom:10px;
+}
+
+.header-logo {
+	height:100%;
+	float:left;
+	padding-left:50px;
+	width:450px;
+}
+
+.header-search {
+	float:right;
+	height:100%;
+	padding-right:50px;
+	width:330px;
+}
+
+.footer-content-left {
+	width:33%;
+	float:left;
+	text-align:left;
+}
+
+.footer-content-center {
+	width:33%;
+	float:left;
+}
+
+.footer-content-right {
+	width:33%;
+	float:right;
+	text-align:right;
+}
+
+@media (max-width: 1000px) {
+
+	.header {
+		height:125px;
+	}
+
+	.header-logo,
+	.header-search {
+		float:none;
+		height:50%;
+		padding:0px;
+		margin-left:auto;
+		margin-right:auto;
+	}
+
+	.day {
+		margin-bottom:20px;
+	}
+
+	.tfcbtm {
+		margin-top:30px;
+	}
+	.hour {
+		margin-top:20px;
+	}
+
+	.hourwrapper {
+		margin-top:0px;
+	}
+
+	.mainwrapper {
+		width:500px;
+		height:1430px;
+	}
+
+	.oldcitywrapper {
+		padding-top:126px;
+		height:84px;
+		width:520px;
+	}
+
+	.citydiv {
+		width:50%;
+		height:50%;
+	}
+
+	.w50fl {
+		float:none;
+		width:100%;
+	}
+
+	.footer {
+		height:93px;
+	}
+
+	.innerfooter{
+		width:520px;
+	}
+
+	.footer-content-right,
+	.footer-content-center,
+	.footer-content-left {
+		width:100%;
+		text-align:center;
+	}
 }
 
 /* Weather Conditions */

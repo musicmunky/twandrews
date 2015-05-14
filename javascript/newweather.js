@@ -6,6 +6,48 @@
 
 $( document ).ready(function() {
 
+	//var con = document.createElement('canvas').getContext;
+	//var bool = !!document.createElement('canvas').getContext;
+	//alert("BOOL IS: " + bool);
+
+	// by default, icons are black but you can color them
+	//var skycons = new Skycons({"color": "pink"});
+	var skycons = new Skycons();
+	// on Android, a nasty hack is needed: {"resizeClear": true}
+
+	// If you want to add more colors :
+	// var skycons = new Skycons({"monochrome": false});
+	// you can now customize the color of different parts
+	// main, moon, fog, cloud, snow, leaf, rain, sun
+	// var skycons = new Skycons({
+	//  "monochrome": false,
+	//  "colors" : {
+	//    "cloud" : "#F00"
+	//  }
+	//  });
+
+
+	// you can add a canvas by it's ID...
+//	skycons.add("icon1", Skycons.PARTLY_CLOUDY_DAY);
+
+	// ...or by the canvas DOM element itself.
+//	skycons.add(document.getElementById("icon2"), Skycons.RAIN);
+
+	// if you're using the Forecast API, you can also supply
+	// strings: "partly-cloudy-day" or "rain".
+
+	// start animation!
+//	skycons.play();
+
+	// you can also halt animation with skycons.pause()
+
+	// want to change the icon? no problem:
+	//skycons.set("icon1", Skycons.PARTLY_CLOUDY_NIGHT);
+
+	// want to remove one altogether? no problem:
+	//skycons.remove("icon2");
+
+
 	//IE doesn't like Google fonts...apparently it's Google's fault
 	//at the moment, but whatever...load Web Safe font for IE users
 	//and set the browser info in the footer
@@ -109,7 +151,8 @@ $( document ).ready(function() {
 });
 
 
-function supportsHtml5Storage() {
+function supportsHtml5Storage()
+{
 	//generic function to check if the browser can handle
 	//and use localStorage, or if they're living in the stone age
 	try
@@ -122,6 +165,53 @@ function supportsHtml5Storage() {
 		return false;
 	}
 }
+
+
+function runSearch()
+{
+	var val = FUSION.get.node("searchbox").value;
+	if(FUSION.lib.isBlank(val)){
+		FUSION.lib.alert("<p style='margin:5px;'>Please enter a search string!</p>");
+		return false;
+	}
+
+	val = val.replace(/\s/ig, "+");
+	var info = {
+		"type": "POST",
+		"path": "php/weatherlib.php",
+		"data": {
+			"method": "getWeatherInfo",
+			"libcheck": true,
+			"searchstring": val
+		},
+		"func": runSearchResponse
+	};
+	FUSION.lib.ajaxCall(info);
+}
+
+
+function runSearchResponse(h)
+{
+	var hash = h || {};
+	var rc = hash['result_count'];
+	if(parseInt(rc) > 1)
+	{
+		alert("RESULTS RETURNED: " + rc);
+// 		Need to add code and figure out a way to display
+// 		multiple results from the google search
+	}
+	else
+	{
+		processForecast(hash);
+	}
+}
+
+
+function processForecast(h)
+{
+	var hash = h || {};
+}
+
 
 function getWeather()
 {
@@ -197,7 +287,8 @@ function removeCityDiv(id)
 			//attempt to remove the localStorage item...sometimes causes
 			//an issue in older versions of IE...because of course it does
 			localStorage.removeItem("ocd" + woeid);
-		}catch(err){
+		}
+		catch(err){
 			FUSION.error.logError(err);
 		}
 	}

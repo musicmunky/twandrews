@@ -80,7 +80,7 @@
 					<div class="w100fl" style="text-align:right;font-size:16px;height:100%;line-height:4em;">
 						<span>Search by Zip Code: </span>
 						<form onsubmit="getWeather();return false;" style="width:260px;float:right;height:100%;">
-							<input type="text" id="searchbox" value="" style="color:#222;width:200px;text-align:right;" />
+							<input type="text" id="searchbox" value="" class="searchbox" />
 							<button class="srchbtn">
 								<span class="glyphicon glyphicon-search"></span>
 							</button>

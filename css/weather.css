@@ -182,7 +182,7 @@ html, body {
 
 .day {
     border: 1px solid #DDD;
-/* 	border-radius:15px; */
+ 	border-radius:4px;
     box-shadow: 0 0 1px 0 #DDD;
     float: left;
     height: 175px;
@@ -190,6 +190,15 @@ html, body {
     position: relative;
     text-align: center;
     width: 218px;
+}
+
+.searchbox {
+	color:#222;
+	width:200px;
+	text-align:left;
+	border:1px solid #DDD;
+	height:22px;
+	padding-left:5px;
 }
 
 .headspan {
@@ -207,7 +216,7 @@ html, body {
 	height:125px;
 	box-shadow:0 0 1px 0 #DDD;
 	border:1px solid #DDD;
-/* 	border-radius:15px; */
+ 	border-radius:4px;
 }
 
 .tfcdivinner {
