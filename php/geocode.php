@@ -259,7 +259,7 @@
 					{
 						if($addcomps[$j]['types'][0] == $kval)
 						{
-							$rval = $addcomps[$j]['short_name'];
+							$rval = ($kval == "locality") ? $addcomps[$j]['long_name'] : $addcomps[$j]['short_name'];
 							$flag = 1;
 							break;
 						}

@@ -44,11 +44,18 @@
 // 	$reqstat = explode(" ", $http_response_header[0]);
 // 	$numreqs = explode(" ", $http_response_header[8]);
 
-	//$apiinfo = mysql_fetch_assoc(mysql_query("SELECT APIKEY, URL FROM weatherapikeys WHERE SERVICE='google';"));
-	//$key = $apiinfo['APIKEY'];
-	//$url = $apiinfo['URL'];
-	//$requrl = $url . "address=London" . "&key=" . $key;
-	//$content = file_get_contents($requrl);
+// 	$apiinfo = mysql_fetch_assoc(mysql_query("SELECT APIKEY, URL FROM weatherapikeys WHERE SERVICE='google';"));
+// 	$key = $apiinfo['APIKEY'];
+// 	$url = $apiinfo['URL'];
+// 	$requrl = $url . "address=New+York,+NY" . "&key=" . $key;
+// 	$content = file_get_contents($requrl);
+
+
+
+
+
+//Example string to work with...figure out length / display problems:
+//Partly cloudy starting in the afternoon, continuing until evening.
 
 	$dayhtml  = "";
 	$hourhtml = "";
@@ -57,8 +64,8 @@
 		$dayhtml .= "<div class='day' id='day{$i}'>
 						<div id='dayofweek{$i}' class='dayofweek'></div>
 						<div class='condition'>
+							<canvas id='condimg{$i}' height='50' width='50' style='float:left;padding-top:10px;'></canvas>
 							<span id='condition{$i}' class='conspan'></span>
-							<img id='condimg{$i}' src='' />
 						</div>
 						<div class='tempdiv' style='float:left;'>
 							<span id='high{$i}' class='wrmclr'></span>
@@ -69,24 +76,23 @@
 					</div>";
 	}
 
-//	new css clases needed:
-//		hourofday
-//		hourcondition
-// 		..others?? (probably definitely yes)
-//
-//	INFO TO DISPLAY:
-//		Time/Hour
-//		Condition (Icon)
-//		Condition (Text)
-//		Temperature
-//		Chance of Precipitation
-//		Wind Info (Like this: NW 3 mph)
-//
+
 	for($j = 1; $j <= 8; $j++)
 	{
-		$style = "";//($j == 1) ? " style='margin-left:15px;border-left:1px solid #DDD;'" : "";
-		$hourhtml .= "<div class='hour' id='hour{$j}'" . $style . ">
-						<div id='hourofday{$j}' class='hourofday'></div>
+		$hourhtml .= "<div class='hour' id='hour{$j}'>
+						<div id='hourofday{$j}' class='hourofday'>
+							<div class='hrtimediv' id='hrdisplay{$j}' style='font-size:16px;'></div>
+							<div class='hrconddiv' id='hrcondtion{$j}'></div>
+							<div class='hricondiv' id='hricondiv{$j}'>
+								<canvas id='hricon{$j}' width='40' height='40'></canvas>
+							</div>
+							<div class='hrtimediv' id='hrtemp{$j}'></div>
+							<div class='hrtimediv' id='hrrain{$j}'>
+								<img src='images/iconic/rain-2x.png' class='hrrainchanceicon' />
+								<span id='hrrainchance{$j}'></span>
+							</div>
+							<div class='hrtimediv' id='hrwind{$j}'></div>
+						</div>
 					</div>";
 	}
 
@@ -141,35 +147,33 @@
 				<div class="header-search">
 					<div class="w100fl" style="text-align:right;font-size:16px;height:100%;line-height:4em;">
 						<span style="float:left;">Search: </span>
-<!--						<form onsubmit="getWeather();return false;" style="width:260px;float:right;height:100%;">//-->
-<!--						<form onsubmit="getGeoInfo();return false;" style="width:260px;float:left;height:100%;">//-->
+<!--						<form onsubmit="getWeather();return false;" style="width:260px;float:right;height:100%;"> -->
+<!--						<form onsubmit="getGeoInfo();return false;" style="width:260px;float:left;height:100%;"> -->
 						<form onsubmit="runSearch();return false;" style="width:260px;float:left;height:100%;">
-							<input type="text" id="searchbox" value="" class="searchbox" />
+							<input type="text" id="searchbox" value="" class="searchbox"
+								   onkeyup="hideSearchDiv(this)" onchange="hideSearchDiv(this)" />
 							<button class="srchbtn">
-								<span class="glyphicon glyphicon-search"></span>
+								<img src="images/iconic/magnifying-glass-2x.png" style="width:15px;height:15px;" />
 							</button>
 						</form>
-						<span style="height:100%;line-height:60px;float:left;" class="glyphicon glyphicon-cog"></span>
+						<span style="height:100%;line-height:60px;float:left;display:inline-block;">
+							<img src="images/iconic/cog-6x.png" style="width:15px;height:15px;cursor:pointer;" />
+						</span>
 					</div>
+					<div id="locselect" class="locdiv"></div>
 				</div>
 			</div>
 		</div>
 
-
-
-<!--			<canvas id="icon1" width="50" height="50"></canvas>//-->
-<!--			<canvas id="icon2" width="50" height="50"></canvas>//-->
 <!--
 		<div id='displayinfodiv' style='width:100%;height:500px;margin-top:60px;overflow-y:scroll;'>
 			<?php //echo "<p>RESPONSE CODE: " . $reqstat[1] . "&emsp;&emsp;&emsp;&emsp;CALLS MADE TODAY: " . $numreqs[1] . "</p>"; ?>
-
 			<pre>
-				<?php //var_dump(json_decode($content, true)); ?>
+ 				<?php //var_dump(json_decode($content, true)); ?>
 
 			</pre>
 		</div>
 -->
-
 
 		<div id="mainwrapper" class="mainwrapper">
 			<div class="oldcitywrapper">
@@ -181,8 +185,10 @@
 						<div class="tfcdiv" style="font-size:25px;">
 							<span id="location" class="locationspan" style="text-align:center;"></span>
 							<div style="float:left;margin-left:15px;width:445px;text-align:center;">
-								<img id="condimg" src="" />
-								<span id="condition"></span>
+								<div style="height:60px;display:inline-block;">
+									<canvas width="50" height="50" id="condimg" style="float:left;padding-top:5px;padding-right:5px;"></canvas>
+									<span id="condition" style="height:60px;line-height:60px;float:left;"></span>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -192,10 +198,10 @@
 							<div class="tfcheader" style="border-bottom:1px solid #EEE;margin-bottom:5px;">
 								Today's Forecast
 							</div>
-							<div class="tfcdivinner" style="position:relative;">
-								<div id="dailyfrc" style="margin-left:15px;float:left;height:55px;overflow:hidden;width:85%;"></div>
+							<div class="tfcdivinner" style="position:relative;width:41%;">
+								<div id="dailyfrc" style="margin-left:15px;float:left;height:45px;overflow:hidden;width:85%;/*font-size:14px;*/"></div>
 							</div>
-							<div class="tfcdivinner" style="position:relative;">
+							<div class="tfcdivinner" style="position:relative;width:25%;">
 								<div style="margin-left:5px;width:90%;float:left;">Wind:</div>
 								<div id="wind" style="margin-left:5px;width:95%;float:left;"></div>
 							</div>
@@ -233,16 +239,7 @@
 				<div class="footer-content-left">
 					<span>Daily weather for <span id="footerlocation"></span></span>
 				</div>
-				<div class="footer-content-center">
-					<span id="detectedbrowserok" style="display:none;margin-left:10px;">
-						<span id="footerbrowserok" class="cldclr" style="margin-right:10px;"></span>
-						<span class="glyphicon glyphicon-thumbs-up" style="color:green;"></span>
-					</span>
-					<span id="detectedbrowserbad" style="display:none;margin-left:10px;">
-						<span id="footerbrowserbad" class="wrmclr" style="cursor:pointer;"
-							  onclick="FUSION.lib.alert({'message':'It looks like you\'re running IE, so some features may not work.<br>Try switching to a fully supported browser like Chrome or Firefox for the full experience!','width':'450'})"></span>
-					</span>
-				</div>
+<!--				<div class="footer-content-center"></div>//-->
 				<div class="footer-content-right">
 					<span>
 						Powered by <a href="http://forecast.io/" style="text-decoration:none;outline:none;" class="cldclr" target="_blank">Forecast</a>

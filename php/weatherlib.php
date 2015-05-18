@@ -31,6 +31,8 @@
 		{
 			case 'getGoogleInfo': getGoogleInfo($_POST);
 				break;
+			case 'getForecastInfo': getForecastInfo($_POST);
+				break;
 			case 'getWeatherInfo': getWeatherInfo($_POST);
 				break;
 			default: noFunction($_POST);
@@ -67,31 +69,28 @@
 			$girsp = $gi['content'];
 			$content['result_count'] = $girsp['result_count'];
 
+			$locs = $girsp['locations'];
+			$singlepid = "";
+			foreach($locs as $pid => $data)
+			{
+				$singlepid = $pid;
+				$content["geocodeid" . $pid] = $data;
+			}
+
 			if($girsp['result_count'] > 1)
 			{
 				$status = "success";
-				$locs = $girsp['locations'];
-				foreach($locs as $pid => $data)
-				{
-					$content[$pid] = $data;
-				}
 			}
 			else
 			{
-				$content['lat'] 	= $girsp['lat'];
-				$content['lng'] 	= $girsp['lng'];
-				$content['city'] 	= $girsp['city'];
-				$content['state'] 	= $girsp['state'];
-				$content['country'] = $girsp['country'];
-				$content['zip'] 	= $girsp['zip'];
-				$content['address'] = $girsp['address'];
+				$fi = getForecastInfo(array("latitude" => $girsp['locations'][$singlepid]['lat'],
+											"longitude" => $girsp['locations'][$singlepid]['lng']), false);
 
-				$fi = getForecastInfo(array("latitude" => $girsp['lat'], "longitude" => $girsp['lng']), false);
-				if($fi['status'] == "200")
+				if($fi['statuscode'] == "200")
 				{
 					$status = "success";
-					$daly = array_slice($fi['content']['daily']['data'], 1, 5);
-					$hrly = array_slice($fi['content']['hourly']['data'], 0, 8);
+					$daly = $fi['content']['daily'];
+					$hrly = $fi['content']['hourly'];
 					$crnt = $fi['content']['current'];
 					$content['daily'] 	= $daly;
 					$content['hourly'] 	= $hrly;
@@ -150,7 +149,7 @@
 						"placeid"	=> $pids[$i],
 						"lat" 		=> $lats[$i],
 						"lng" 		=> $lngs[$i],
-						"city" 		=> $city[$i]['short_name'],
+						"city" 		=> $city[$i]['long_name'],
 						"state" 	=> $stat[$i]['short_name'],
 						"country" 	=> $ctry[$i]['short_name'],
 						"zip" 		=> $zipc[$i]['short_name'],
@@ -161,14 +160,21 @@
 			}
 			else
 			{
-				$rsp['placeid'] = $gc->getPlaceID();
-				$rsp['lat'] 	= $gc->getLatitude();
-				$rsp['lng'] 	= $gc->getLongitude();
-				$rsp['city'] 	= $gc->getCity();
-				$rsp['state'] 	= $gc->getState();
-				$rsp['country'] = $gc->getCountry();
-				$rsp['zip'] 	= $gc->getZipCode();
-				$rsp['address'] = $gc->getFormattedAddress();
+				//this else statement (and the if statement in general)
+				//might be unnecessary - you should be able to simply
+				//run it as is and if there is only one result, it *should*
+				//still return the correct stuff...test it out later
+				$pid = $gc->getPlaceID();
+				$rsp['locations'][$pid] = array(
+					"placeid" 	=> $pid,
+					"lat" 		=> $gc->getLatitude(),
+					"lng" 		=> $gc->getLongitude(),
+					"city" 		=> $gc->getCity(),
+					"state" 	=> $gc->getState(),
+					"country" 	=> $gc->getCountry(),
+					"zip" 		=> $gc->getZipCode(),
+					"address" 	=> $gc->getFormattedAddress()
+				);
 			}
 		}
 		else
@@ -202,26 +208,41 @@
 		$lat = $P['latitude'];
 		$lng = $P['longitude'];
 
-
+		$status = "success";
 		$fc = new Forecastio(true);
 		$fc->loadForecastData($lat, $lng);
-		$status = $fc->getStatus();
+		$fcstatus = $fc->getStatus();
 		$content = array();
 
-		if($status == "200")
+		if(isset($P['geoinfo']) && $ajax)
 		{
+			$content['result_count'] = 1;
+			$content['geocodeid' . $P['geoinfo']['placeid']] = $P['geoinfo'];
+		}
+
+		if($fcstatus == "200")
+		{
+			$hrly = $fc->getHourlyForecast();
+			$daly = $fc->getDailyForecast();
+			$harr = array_slice($hrly['data'], 1, 8);
+			$darr = array_slice($daly['data'], 0, 5);
+			$content['daily'] 	= $darr;
+			$content['hourly'] 	= $harr;
 			$content['current'] = $fc->getCurrentForecast();
-			$content['hourly'] 	= $fc->getHourlyForecast();
-			$content['daily'] 	= $fc->getDailyForecast();
+		}
+		else
+		{
+			$status = "failure";
 		}
 
 		//clear the weather object for garbage collection
 		unset($fc);
 
 		$result = array(
-				"status" => $status,
-				"message" => "",
-				"content" => $content
+				"status" 		=> $status,
+				"statuscode" 	=> $fcstatus,
+				"message" 		=> "",
+				"content" 		=> $content
 		);
 		if($ajax){
 			echo json_encode($result);

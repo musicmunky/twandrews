@@ -3,6 +3,11 @@
 //for other function definitions and such.
 //also uses jQuery, because I'm inherently lazy and jQuery
 //makes life so much easier sometimes.
+var directions = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE",
+				  "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
+var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+			  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+var days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 $( document ).ready(function() {
 
@@ -12,23 +17,26 @@ $( document ).ready(function() {
 
 	// by default, icons are black but you can color them
 	//var skycons = new Skycons({"color": "pink"});
-	var skycons = new Skycons();
+// 	var skycons = new Skycons();
 	// on Android, a nasty hack is needed: {"resizeClear": true}
 
 	// If you want to add more colors :
 	// var skycons = new Skycons({"monochrome": false});
 	// you can now customize the color of different parts
 	// main, moon, fog, cloud, snow, leaf, rain, sun
-	// var skycons = new Skycons({
-	//  "monochrome": false,
-	//  "colors" : {
-	//    "cloud" : "#F00"
-	//  }
-	//  });
+	var skycons = new Skycons({
+		"monochrome": true,
+		"colors" : {
+			"main": "#444"
+		}
+	});
 
 
 	// you can add a canvas by it's ID...
-//	skycons.add("icon1", Skycons.PARTLY_CLOUDY_DAY);
+	skycons.add("condimg2", Skycons.PARTLY_CLOUDY_DAY);
+	skycons.add("condimg3", Skycons.RAIN);
+	skycons.add("condimg4", Skycons.PARTLY_CLOUDY_NIGHT);
+	skycons.add("condimg5", Skycons.PARTLY_CLOUDY_DAY);
 
 	// ...or by the canvas DOM element itself.
 //	skycons.add(document.getElementById("icon2"), Skycons.RAIN);
@@ -37,7 +45,7 @@ $( document ).ready(function() {
 	// strings: "partly-cloudy-day" or "rain".
 
 	// start animation!
-//	skycons.play();
+	skycons.play();
 
 	// you can also halt animation with skycons.pause()
 
@@ -51,20 +59,22 @@ $( document ).ready(function() {
 	//IE doesn't like Google fonts...apparently it's Google's fault
 	//at the moment, but whatever...load Web Safe font for IE users
 	//and set the browser info in the footer
+
 	var gbr = FUSION.get.browser();
-	var nde = "footerbrowserok";
-	var dbr = "detectedbrowserok";
-	var fbt = gbr.browser + " " + gbr.version;
+// 	var nde = "footerbrowserok";
+// 	var dbr = "detectedbrowserok";
+// 	var fbt = gbr.browser + " " + gbr.version;
 	if(gbr.browser && gbr.browser == "IE")
 	{
 		document.body.style.fontFamily = "'Trebuchet MS', Helvetica, sans-serif";
-		fbt = "Internet Explorer " + gbr.version;
-		nde = "footerbrowserbad";
-		dbr = "detectedbrowserbad";
+// 		fbt = "Internet Explorer " + gbr.version;
+// 		nde = "footerbrowserbad";
+// 		dbr = "detectedbrowserbad";
 	}
 
-	FUSION.get.node(dbr).style.display = "block";
-	FUSION.get.node(nde).innerHTML = "Detected Browser: " + fbt;
+// 	FUSION.get.node(dbr).style.display = "block";
+// 	FUSION.get.node(nde).innerHTML = "Detected Browser: " + fbt;
+
 
 	var val = FUSION.get.node("localzipcode").value;
 	var info = {};
@@ -167,11 +177,25 @@ function supportsHtml5Storage()
 }
 
 
+function hideSearchDiv(t)
+{
+	if(FUSION.lib.isBlank(t.value)){
+		var ls = FUSION.get.node("locselect");
+		ls.style.height = "0px";
+		ls.innerHTML = "";
+		ls.style.display = "none";
+	}
+}
+
+
 function runSearch()
 {
 	var val = FUSION.get.node("searchbox").value;
 	if(FUSION.lib.isBlank(val)){
-		FUSION.lib.alert("<p style='margin:5px;'>Please enter a search string!</p>");
+		var atxt  = "<p style='margin:15px 5px 5px;text-align:center;font-size:16px;font-weight:bold;color:#D00;'>";
+			atxt += "Please enter a search string!";
+			atxt += "</p>";
+		FUSION.lib.alert(atxt);
 		return false;
 	}
 
@@ -190,15 +214,64 @@ function runSearch()
 }
 
 
+function locationClick(h)
+{
+	var hash = JSON.parse(h);
+	var info = {
+		"type": "POST",
+		"path": "php/weatherlib.php",
+		"data": {
+			"method": "getForecastInfo",
+			"libcheck": true,
+			"latitude": hash.lat,
+			"longitude": hash.lng,
+			"geoinfo": hash
+		},
+		"func": runSearchResponse
+	};
+	FUSION.lib.ajaxCall(info);
+}
+
+
 function runSearchResponse(h)
 {
 	var hash = h || {};
 	var rc = hash['result_count'];
+
 	if(parseInt(rc) > 1)
 	{
-		alert("RESULTS RETURNED: " + rc);
-// 		Need to add code and figure out a way to display
-// 		multiple results from the google search
+		var locsel = FUSION.get.node("locselect");
+		locsel.innerHTML = "";
+
+		var geoinfo = {};
+		var locs = 0;
+		for(var key in hash)
+		{
+			if(/^geocodeid/.test(key) && locs < 5)
+			{
+				locs++;
+				geoinfo = hash[key];
+				var div = FUSION.lib.createHtmlElement({"type":"div",
+														"attributes":{"class":"loclinkdiv"}});
+				var lnk = FUSION.lib.createHtmlElement({"type":"a","text":geoinfo.address,
+														"style":{
+															"text-decoration":"none",
+															"color":"#EEE",
+															"display":"block",
+															"width":"90%",
+															"height":"40px",
+															"margin-left":"5%",
+															"margin-right":"5%"
+														},
+														"onclick":"locationClick('" + JSON.stringify(geoinfo) + "')",
+													    "attributes":{"href":"javascript:void(0)"}});
+				div.appendChild(lnk);
+				locsel.appendChild(div);
+			}
+		}
+		locsel.style.height = (locs * 40) + "px";
+		locsel.style.display = "block";
+
 	}
 	else
 	{
@@ -207,10 +280,147 @@ function runSearchResponse(h)
 }
 
 
+
+
+
+
+
 function processForecast(h)
 {
+	//the catch-all function for most responses from the server
+	//basically just fills in the information for a given location
+	//based on the array returned by the server to the AJAX request
+	//names should make it clear what each line is doing
 	var hash = h || {};
+
+	var geoinfo = {};
+	for(var key in hash)
+	{
+		if(/^geocodeid/.test(key))
+		{
+			geoinfo = hash[key];
+		}
+	}
+
+	//NEED TO REEXAMINE THE OBJSIZE FUNCTION...ITS ADDING A CHILD FOR THE NUMBER OF RESULTS
+	if(FUSION.get.objSize(geoinfo) > 1)
+	{
+		var regstr = "";
+		if(typeof geoinfo.country !== undefined && geoinfo.country == "US")
+		{
+			regstr = (typeof geoinfo.state !== undefined && !FUSION.lib.isBlank(geoinfo.state)) ?
+						geoinfo.city + ", " + geoinfo.state : geoinfo.city;
+		}
+		else
+		{
+			var statestr = (typeof geoinfo.state !== undefined && !FUSION.lib.isBlank(geoinfo.state) && geoinfo.state != "NO_DATA") ?
+								", " + geoinfo.state : "";
+			var cntrystr = (typeof geoinfo.country !== undefined && !FUSION.lib.isBlank(geoinfo.country) && geoinfo.country != "NO_DATA") ?
+								", " + geoinfo.country : "";
+			regstr = geoinfo.city + statestr + cntrystr;
+		}
+		FUSION.get.node("footerlocation").innerHTML = geoinfo.address;
+		FUSION.get.node("location").innerHTML 		= regstr;
+		var sb = FUSION.get.node("searchbox");
+		sb.value = "";
+		hideSearchDiv(sb);
+
+
+		var hrly = hash['hourly'];
+		var rain = 0;
+		var wind = 0;
+		var drct = "";
+		var wstr = "N/A 0 kph";
+		var hobj = {};
+
+		var ipp = 0;
+		var skycons = new Skycons({
+			"monochrome": true,
+			"colors" : {
+				"main": "#444"
+			}
+		});
+
+		for(var i = 0; i < hrly.length; i++)
+		{
+			ipp = i + 1;
+			FUSION.get.node("hrdisplay" + ipp).innerHTML = getTime(hrly[i]['time']);
+			FUSION.get.node("hrcondtion" + ipp).innerHTML = hrly[i]['summary'];
+			FUSION.get.node("hrtemp" + ipp).innerHTML = Math.round(hrly[i]['temperature']) + "&deg; C";
+			rain = Math.round(hrly[i]['precipProbability'] * 100);
+			rain += "%";
+			FUSION.get.node("hrrainchance" + ipp).innerHTML = rain;
+			wind = hrly[i]['windSpeed'];
+			drct = hrly[i]['windBearing'];
+			if(hrly[i]['windSpeed'] > 0){
+				wstr = getWindBearing(hrly[i]['windBearing']) + " " + Math.round(hrly[i]['windSpeed']) + " kph";
+			}
+			FUSION.get.node("hrwind" + ipp).innerHTML = wstr;
+			skycons.add("hricon" + ipp, hrly[i]['icon']);
+		}
+
+		var crnt = hash['current'];
+		var daly = hash['daily'];
+
+		FUSION.get.node("condition").innerHTML  = crnt['summary'] + ", " + Math.round(crnt['temperature']) + "&deg;";
+		skycons.add("condimg", crnt['icon']);
+
+		var wind = "N/A 0 kph";
+		if(crnt['windSpeed'] > 0) {
+			wind = getWindBearing(crnt['windBearing']) + " " + Math.round(crnt['windSpeed']) + " kph";
+		}
+		FUSION.get.node("wind").innerHTML		= wind;
+		FUSION.get.node("sunrise").innerHTML	= getTime(daly[0]['sunriseTime']);
+		FUSION.get.node("sunset").innerHTML		= getTime(daly[0]['sunsetTime']);
+		FUSION.get.node("high").innerHTML 		= Math.round(daly[0]['temperatureMax']) + "&deg;";
+		FUSION.get.node("low").innerHTML 		= Math.round(daly[0]['temperatureMin']) + "&deg;";
+		FUSION.get.node("dailyfrc").innerHTML 	= daly[0]['summary'];
+
+		var d = 0;
+		var dstr = "";
+		var k = 0;
+		for(var j = 1; j < 5; j++)
+		{
+			k = j + 1;
+			d = new Date(daly[j]['time'] * 1000);
+			dstr = days[d.getDay()] + ", " + months[d.getMonth()] + " " + d.getDate();
+			FUSION.get.node("dayofweek" + k).innerHTML  = dstr;
+			FUSION.get.node("condition" + k).innerHTML  = daly[j]['summary'];
+			FUSION.get.node("high" + k).innerHTML 		= Math.round(daly[j]['temperatureMax']) + "&deg;";
+			FUSION.get.node("low" + k).innerHTML 		= Math.round(daly[j]['temperatureMin']) + "&deg;";
+			skycons.add("condimg" + k, daly[j]['icon']);
+		}
+
+		skycons.play();
+
+
+/*
+	//quick check to see if a new location div is required
+	//this should be false if the user clicks an existing location div
+	//to load info for that area
+	if(adv)
+	{
+		addCityDiv({
+			"woeid": hash['woeid'],
+			"city": loc.city,
+			"region": loc.region,
+			"order": Math.floor(Date.now() / 1000)
+		}, lcs);
+	}
+*/
+	}
+
 }
+
+
+
+
+
+
+
+
+
+
 
 
 function getWeather()
@@ -344,33 +554,18 @@ function addCityDiv(h, ls)
 		//yes, I know that this doesn't account for older versions of FF/Chrome/etc, BUT
 		//let's be honest...if someone is using those browsers, they're probably updating
 		//them too (or at least have something newer than FF v4)
-		var gbr = FUSION.get.browser();
-		var brs = gbr['browser'];
-		var spn = {};
+		//var gbr = FUSION.get.browser();
+		//var brs = gbr['browser'];
 
-		if(brs == "IE")
-		{
-			spn = FUSION.lib.createHtmlElement({"type":"span",
+		var img = FUSION.lib.createHtmlElement({"type":"img",
 												"onclick":"removeCityDiv(" + hash['woeid'] + ")",
-												"text":"X",
-												"style":{
-													"cursor":"pointer",
-													"width":"10%",
-													"color":"#666",
-													"font-weight":"bold" },
-												"attributes":{ "title":"Remove Location" }});
-		}
-		else
-		{
-			spn = FUSION.lib.createHtmlElement({"type":"span",
-												"onclick":"removeCityDiv(" + hash['woeid'] + ")",
+												"style":{"width":"12px","height":"12px"},
 												"attributes":{
-													"class":"glyphicon glyphicon-remove removespan",
+													"src":"../images/iconic/x-6x.png",
+													"class":"removespan",
 													"title":"Remove Location" }});
-		}
-
 		ndv.appendChild(lnk);
-		ndv.appendChild(spn);
+		ndv.appendChild(img);
 
 		//another concession for IE...insertBefore has issues in IE if there are no
 		//existing elements in the parent div.  Because of course it does.
@@ -453,3 +648,48 @@ function getWeatherResponse(h)
 //older versions of IE don't like it, so this makes it forward AND
 //backwards compatible.  Thanks stranger from Stackoverflow!
 if (!Date.now) { Date.now = function() { return new Date().getTime(); }}
+
+
+function getWindBearing(b)
+{
+	var brng = b || 0;
+	var drct = Math.floor((brng + 11.25) / 22.5);
+	if(drct < 16){
+		return directions[drct];
+	}
+	else{
+		return "N/A";
+	}
+
+}
+
+
+function getTime(ts)
+{
+	if(typeof ts === "undefined" || typeof ts !== "number" || FUSION.lib.isBlank(ts))
+	{
+		alert("Invalid timestamp given: " + ts + "\nUnable to determine time");
+		return "";
+	}
+	else
+	{
+		var date  	= new Date(ts * 1000);
+		var hours 	= date.getHours();
+		var minutes = "0" + date.getMinutes();
+		var hour  	= hours > 11 ? (hours % 12) : (parseInt(hours) == 0) ? 12 : hours;
+		var hour  	= 0;
+		var ampm  	= "AM";
+
+		if(hours > 11) {
+			hour = (hours == 12) ? hours : hours % 12;
+			ampm = "PM";
+		}
+		else if(hours == 0) {
+			hour = 12;
+		}
+		else {
+			hour = hours;
+		}
+		return hour + ':' + minutes.substr(minutes.length-2) + " " + ampm;
+	}
+}

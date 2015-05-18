@@ -21,7 +21,7 @@
 		* @param String $units
 		* @param String $language
 		*/
-		function __construct($loadfromdb, $apikey = "", $apiurl = "", $units = 'auto', $language = 'en')
+		function __construct($loadfromdb, $apikey = "", $apiurl = "", $units = 'ca', $language = 'en')
 		{
 			if($loadfromdb)
 			{
