@@ -62,6 +62,7 @@
 		$message = "";
 		$content = array();
 
+		$unt = (isset($P['units']) && $P['units'] != "") ? $P['units'] : "ca";
 		$gi = getGoogleInfo($P['searchstring'], false);
 
 		if($gi['status'] == "OK")
@@ -84,7 +85,8 @@
 			else
 			{
 				$fi = getForecastInfo(array("latitude" => $girsp['locations'][$singlepid]['lat'],
-											"longitude" => $girsp['locations'][$singlepid]['lng']), false);
+											"longitude" => $girsp['locations'][$singlepid]['lng'],
+										    "units" => $unt), false);
 
 				if($fi['statuscode'] == "200")
 				{
@@ -92,9 +94,11 @@
 					$daly = $fi['content']['daily'];
 					$hrly = $fi['content']['hourly'];
 					$crnt = $fi['content']['current'];
-					$content['daily'] 	= $daly;
-					$content['hourly'] 	= $hrly;
-					$content['current'] = $crnt;
+					$tmzn = $fi['content']['timezone'];
+					$content['daily'] 		= $daly;
+					$content['hourly'] 		= $hrly;
+					$content['current'] 	= $crnt;
+					$content['timezone']	= $tmzn;
 				}
 				else
 				{
@@ -117,7 +121,9 @@
 
 	function getGoogleInfo($s, $ajax = true)
 	{
-		$search  = urlencode($s);
+		//$search  = urlencode($s);
+		$tmp = escapeArray(array($s)); //trying this to see if Google can handle apostrophe's better this way...
+		$search = $tmp[0];
 		$status  = "";
 		$message = "";
 		$rsp	 = array();
@@ -138,6 +144,7 @@
 				$lats = $gc->getLatitude("a");
 				$lngs = $gc->getLongitude("a");
 				$city = $gc->getCity("a");
+				$sbrb = $gc->getSuburb("a");
 				$stat = $gc->getState("a");
 				$zipc = $gc->getZipCode("a");
 				$ctry = $gc->getCountry("a");
@@ -149,6 +156,7 @@
 						"placeid"	=> $pids[$i],
 						"lat" 		=> $lats[$i],
 						"lng" 		=> $lngs[$i],
+						"suburb"	=> $sbrb[$i]['long_name'],
 						"city" 		=> $city[$i]['long_name'],
 						"state" 	=> $stat[$i]['short_name'],
 						"country" 	=> $ctry[$i]['short_name'],
@@ -169,6 +177,7 @@
 					"placeid" 	=> $pid,
 					"lat" 		=> $gc->getLatitude(),
 					"lng" 		=> $gc->getLongitude(),
+					"suburb"	=> $gc->getSuburb(),
 					"city" 		=> $gc->getCity(),
 					"state" 	=> $gc->getState(),
 					"country" 	=> $gc->getCountry(),
@@ -207,9 +216,10 @@
 		}
 		$lat = $P['latitude'];
 		$lng = $P['longitude'];
+		$unt = (isset($P['units']) && $P['units'] != "") ? $P['units'] : "ca";
 
 		$status = "success";
-		$fc = new Forecastio(true);
+		$fc = new Forecastio(true, "", "", $unt);
 		$fc->loadForecastData($lat, $lng);
 		$fcstatus = $fc->getStatus();
 		$content = array();
@@ -226,9 +236,10 @@
 			$daly = $fc->getDailyForecast();
 			$harr = array_slice($hrly['data'], 1, 8);
 			$darr = array_slice($daly['data'], 0, 5);
-			$content['daily'] 	= $darr;
-			$content['hourly'] 	= $harr;
-			$content['current'] = $fc->getCurrentForecast();
+			$content['daily'] 		= $darr;
+			$content['hourly'] 		= $harr;
+			$content['current'] 	= $fc->getCurrentForecast();
+			$content['timezone']	= $fc->getTimezone();
 		}
 		else
 		{

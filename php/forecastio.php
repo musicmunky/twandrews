@@ -21,7 +21,7 @@
 		* @param String $units
 		* @param String $language
 		*/
-		function __construct($loadfromdb, $apikey = "", $apiurl = "", $units = 'ca', $language = 'en')
+		function __construct($loadfromdb, $apikey = "", $apiurl = "", $units = "ca", $language = "en")
 		{
 			if($loadfromdb)
 			{
@@ -155,7 +155,7 @@
 		*/
 		public function getHourlyForecast()
 		{
-				return $this->getForecastData('hourly');
+				return $this->getForecastData("hourly");
 		}
 
 		/**
@@ -165,9 +165,21 @@
 		*/
 		public function getDailyForecast()
 		{
-			return $this->getForecastData('daily');
+			return $this->getForecastData("daily");
 		}
 
+		/**
+		* Will return a hash object of the location timezone as text
+		* and the offset in hours from GMT
+		*
+		* @return \getTimezone|array
+		*/
+		public function getTimezone()
+		{
+			$txt = $this->getForecastData("timezone");
+			$off = $this->getForecastData("offset");
+			return array("timezone" => $txt, "offset" => $off);
+		}
 
 		public function getStatus()
 		{
@@ -184,218 +196,6 @@
 			return $this->apiurl;
 		}
 
-	}
-
-
-	/**
-	* Wrapper for get data by getters
-	*/
-	class ForecastIOConditions
-	{
-		private $raw_data;
-		function __construct($raw_data)
-		{
-			$this->raw_data = $raw_data;
-		}
-
-		/**
-		* Will return the temperature
-		*
-		* @return String
-		*/
-		function getTemperature()
-		{
-			return $this->raw_data->temperature;
-		}
-
-		/**
-		* get the min temperature
-		*
-		* only available for week forecast
-		*
-		* @return type
-		*/
-		function getMinTemperature()
-		{
-			return $this->raw_data->temperatureMin;
-		}
-
-		/**
-		* get max temperature
-		*
-		* only available for week forecast
-		*
-		* @return type
-		*/
-		function getMaxTemperature()
-		{
-			return $this->raw_data->temperatureMax;
-		}
-
-		/**
-		* get apparent temperature (heat index/wind chill)
-		*
-		* only available for current conditions
-		*
-		* @return type
-		*/
-		function getApparentTemperature()
-		{
-			return $this->raw_data->apparentTemperature;
-		}
-
-		/**
-		* Get the summary of the conditions
-		*
-		* @return String
-		*/
-		function getSummary()
-		{
-			return $this->raw_data->summary;
-		}
-
-		/**
-		* Get the icon of the conditions
-		*
-		* @return String
-		*/
-		function getIcon()
-		{
-			return $this->raw_data->icon;
-		}
-
-		/**
-		* Get the time, when $format not set timestamp else formatted time
-		*
-		* @param String $format
-		* @return String
-		*/
-		function getTime($format = null)
-		{
-			if (!isset($format)) {
-				return $this->raw_data->time;
-			} else {
-				return date($format, $this->raw_data->time);
-			}
-		}
-
-		/**
-		* Get the pressure
-		*
-		* @return String
-		*/
-		function getPressure()
-		{
-			return $this->raw_data->pressure;
-		}
-
-		/**
-		* Get the dew point
-		*
-		* Available in the current conditions
-		*
-		* @return String
-		*/
-		function getDewPoint()
-		{
-			return $this->raw_data->dewPoint;
-		}
-
-		/**
-		* get humidity
-		*
-		* @return String
-		*/
-		function getHumidity()
-		{
-			return $this->raw_data->humidity;
-		}
-
-		/**
-		* Get the wind speed
-		*
-		* @return String
-		*/
-		function getWindSpeed()
-		{
-			return $this->raw_data->windSpeed;
-		}
-
-		/**
-		* Get wind direction
-		*
-		* @return type
-		*/
-		function getWindBearing()
-		{
-			return $this->raw_data->windBearing;
-		}
-
-		/**
-		* get precipitation type
-		*
-		* @return type
-		*/
-		function getPrecipitationType()
-		{
-			return $this->raw_data->precipType;
-		}
-
-		/**
-		* get the probability 0..1 of precipitation type
-		*
-		* @return type
-		*/
-		function getPrecipitationProbability()
-		{
-			return $this->raw_data->precipProbability;
-		}
-
-		/**
-		* Get the cloud cover
-		*
-		* @return type
-		*/
-		function getCloudCover()
-		{
-			return $this->raw_data->cloudCover;
-		}
-
-		/**
-		* get sunrise time
-		*
-		* only available for week forecast
-		*
-		* @param String $format String to format date pph date
-		*
-		* @return type
-		*/
-		function getSunrise($format = null)
-		{
-			if (!isset($format)) {
-				return $this->raw_data->sunriseTime;
-			} else {
-				return date($format, $this->raw_data->sunriseTime);
-			}
-		}
-
-		/**
-		* get sunset time
-		*
-		* only available for week forecast
-		*
-		* @param String $format String to format date pph date
-		*
-		* @return type
-		*/
-		function getSunset($format = null)
-		{
-			if (!isset($format)) {
-				return $this->raw_data->sunsetTime;
-			} else {
-				return date($format, $this->raw_data->sunsetTime);
-			}
-		}
 	}
 
 ?>

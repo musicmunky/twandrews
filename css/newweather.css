@@ -29,7 +29,7 @@ html, body {
 
 .oldcitywrapper {
 	padding-top:61px;
-	margin:0 0 10px -10px;
+	margin:0 0 15px -10px;
 	border-bottom:1px solid rgba(0,0,0,0.07);
 	height:42px;
 	width:1020px;
@@ -190,7 +190,7 @@ html, body {
 }
 
 .citydiv:hover {
-	background-color:#EEE;
+	background-color:#EEE !important;
 }
 
 .citylink {
@@ -202,6 +202,7 @@ html, body {
 	float:left;width:85%;
 	margin-left:5px;
 	overflow:hidden;
+	text-overflow:ellipsis;
 }
 
 .removespan {
@@ -209,6 +210,7 @@ html, body {
 	display:block;
 	height:35%;
 	margin-top:14px;
+	margin-left:3px;
 	cursor:pointer;
 	width:10%;
 	color:#666;
@@ -286,15 +288,18 @@ html, body {
 .cldclr { color:#2A6496; }
 
 .locationspan {
-	width:445px;
-	display:block;
-	float:left;
-	text-align:left;
-	font-size:24px;
-	font-weight:bold;
-	line-height:2.5em;
-	color:#333;
-	margin-left:15px;
+    color: #333;
+    display: block;
+    float: left;
+    font-size: 24px;
+    font-weight: bold;
+    line-height: 2.5em;
+    margin-left: 15px;
+    overflow: hidden;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 445px;
 }
 
 .dayofweek {
@@ -315,6 +320,7 @@ html, body {
 	color:#333;
 	border-bottom:1px solid #EEE;
 	border-top:1px solid #EEE;
+	cursor:pointer;
 }
 
 .conspan {
@@ -325,6 +331,7 @@ html, body {
 	padding-top:15px;
 	line-height:20px;
 	float:left;
+	overflow:hidden;
 }
 
 .condition-icon {
@@ -417,11 +424,19 @@ html, body {
 	width:450px;
 }
 
+.header-units {
+	width:120px;
+	float:right;
+	line-height:65px;
+	height:100%;
+	margin-right:20px
+}
+
 .header-search {
 	float:right;
 	height:100%;
 	padding-right:50px;
-	width:350px;
+	width:320px;
 }
 
 .footer-content-left {
@@ -444,13 +459,14 @@ html, body {
 @media (max-width: 1000px) {
 
 	.header {
-		height:125px;
+		height:183px;
 	}
 
 	.header-logo,
+	.header-units,
 	.header-search {
 		float:none;
-		height:50%;
+		height:33%;
 		padding:0px;
 		margin-left:auto;
 		margin-right:auto;
@@ -479,11 +495,15 @@ html, body {
 
 	.mainwrapper {
 		width:500px;
-		height:1450px;
+		height:1520px;
+/* 		come back to look at this for mobile browsing */
+ 		zoom: 1.3;
+		-moz-transform: scale(1.3);
+		-moz-transform-origin: 0 0;
 	}
 
 	.oldcitywrapper {
-		padding-top:126px;
+		padding-top:184px;
 		height:84px;
 		width:520px;
 	}

@@ -463,8 +463,9 @@ FUSION.lib = {
 		var mdid = "message_" + odid;
 		var bttn = "button_" + odid;
 
-		var wht = jQuery(window).height();
-		var top = (wht / 2) - (hgt / 2) - 100;
+		var wht = jQuery(window).scrollTop() + jQuery(window).height() / 2;
+		var top = wht - (hgt / 2) - 100;
+// 		var top = (wht / 2) - (hgt / 2) - 100;
 
 		var ao = FUSION.lib.createHtmlElement({"type":"div",
 											   "attributes":{"id":odid, "class":"fl_alert_overlay"},

@@ -3,80 +3,35 @@
 //for other function definitions and such.
 //also uses jQuery, because I'm inherently lazy and jQuery
 //makes life so much easier sometimes.
-var directions = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE",
-				  "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
-var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-			  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-var days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+var directions = ["N", "NNE", "NE", "ENE",
+				  "E", "ESE", "SE", "SSE",
+				  "S", "SSW", "SW", "WSW",
+				  "W", "WNW", "NW", "NNW"];
+
+var months = ["Jan", "Feb", "Mar",
+			  "Apr", "May", "Jun",
+			  "Jul", "Aug", "Sep",
+			  "Oct", "Nov", "Dec"];
+
+var days = ["Sun", "Mon", "Tue",
+			"Wed", "Thu", "Fri", "Sat"];
+
+var validunits = ["us", "ca"];
+
+var fulldays = ["Sunday", "Monday", "Tuesday",
+				"Wednesday", "Thursday", "Friday", "Saturday"];
 
 $( document ).ready(function() {
 
-	//var con = document.createElement('canvas').getContext;
-	//var bool = !!document.createElement('canvas').getContext;
-	//alert("BOOL IS: " + bool);
-
-	// by default, icons are black but you can color them
-	//var skycons = new Skycons({"color": "pink"});
-// 	var skycons = new Skycons();
-	// on Android, a nasty hack is needed: {"resizeClear": true}
-
-	// If you want to add more colors :
-	// var skycons = new Skycons({"monochrome": false});
-	// you can now customize the color of different parts
-	// main, moon, fog, cloud, snow, leaf, rain, sun
-	var skycons = new Skycons({
-		"monochrome": true,
-		"colors" : {
-			"main": "#444"
-		}
-	});
-
-
-	// you can add a canvas by it's ID...
-	skycons.add("condimg2", Skycons.PARTLY_CLOUDY_DAY);
-	skycons.add("condimg3", Skycons.RAIN);
-	skycons.add("condimg4", Skycons.PARTLY_CLOUDY_NIGHT);
-	skycons.add("condimg5", Skycons.PARTLY_CLOUDY_DAY);
-
-	// ...or by the canvas DOM element itself.
-//	skycons.add(document.getElementById("icon2"), Skycons.RAIN);
-
-	// if you're using the Forecast API, you can also supply
-	// strings: "partly-cloudy-day" or "rain".
-
-	// start animation!
-	skycons.play();
-
-	// you can also halt animation with skycons.pause()
-
-	// want to change the icon? no problem:
-	//skycons.set("icon1", Skycons.PARTLY_CLOUDY_NIGHT);
-
-	// want to remove one altogether? no problem:
-	//skycons.remove("icon2");
-
-
 	//IE doesn't like Google fonts...apparently it's Google's fault
 	//at the moment, but whatever...load Web Safe font for IE users
-	//and set the browser info in the footer
-
 	var gbr = FUSION.get.browser();
-// 	var nde = "footerbrowserok";
-// 	var dbr = "detectedbrowserok";
-// 	var fbt = gbr.browser + " " + gbr.version;
 	if(gbr.browser && gbr.browser == "IE")
 	{
 		document.body.style.fontFamily = "'Trebuchet MS', Helvetica, sans-serif";
-// 		fbt = "Internet Explorer " + gbr.version;
-// 		nde = "footerbrowserbad";
-// 		dbr = "detectedbrowserbad";
 	}
 
-// 	FUSION.get.node(dbr).style.display = "block";
-// 	FUSION.get.node(nde).innerHTML = "Detected Browser: " + fbt;
-
-
-	var val = FUSION.get.node("localzipcode").value;
+	var dzip = FUSION.get.node("defaultzipcode").value;
 	var info = {};
 
 	if(supportsHtml5Storage())
@@ -84,10 +39,14 @@ $( document ).ready(function() {
 		var lsa = [];
 		var lso = {};
 		var lss = "";
+
+		var u = getUnits();
+		FUSION.get.node("units" + u).checked = true;
+
 		for(var i = 0; i < localStorage.length; i++)
 		{
 			lss = localStorage.getItem(localStorage.key(i));
-			if(typeof lss !== undefined && localStorage.key(i).match(/^ocd\d+$/))
+			if(typeof lss !== undefined && localStorage.key(i).match(/^geocodeid/))
 			{
 				//throwing in a try/catch here, due to IE11 creating *weird* items
 				//that can not be parsed by JSON.  The match statement above
@@ -96,7 +55,7 @@ $( document ).ready(function() {
 				try
 				{
 					lso = JSON.parse(lss);
-					if(lso.woeid && lso.woeid.match(/^\d+$/))
+					if(lso.placeid)
 					{
 						lsa.push(lso);
 					}
@@ -114,63 +73,72 @@ $( document ).ready(function() {
 			lsa.sort(function(a,b) { return parseInt(a.order) - parseInt(b.order) } );
 
 			//load the oldest (original) item in the array into the main area
-			loadWeather(lsa[0].woeid);
+			locationClick(JSON.stringify(lsa[0]));
 
 			//create location divs for all localStorage items
 			for(var j = 0; j < lsa.length; j++)
 			{
-				addCityDiv(lsa[j], false);
+				addCityDiv(lsa[j]);
 			}
 		}
 		else
 		{
 			//no existing localStorage item matches, so load the info based on the
-			//users zip code
-			info = {
-				"type": "POST",
-				"path": "php/library.php",
-				"data": {
-					"method": "getWeatherInfo",
-					"libcheck": true,
-					"zipcode": val
-
-				},
-				"func": getWeatherResponse
-			};
-			FUSION.lib.ajaxCall(info);
+			//default zip code (10001)
+			runSearch(dzip);
 		}
 	}
 	else
 	{
 		//if an older browser that does not support localStorage,
-		//just load the info by the user's Zip code
-		info = {
-			"type": "POST",
-			"path": "php/library.php",
-			"data": {
-				"method": "getWeatherInfo",
-				"libcheck": true,
-				"zipcode": val,
-				"localstore": false
-			},
-			"func": getWeatherResponse
-		};
-		FUSION.lib.ajaxCall(info);
+		//just load the info by the default Zip code (10001)
+		runSearch(dzip);
 	}
 
 });
+
+
+function setUnits(u)
+{
+	try {
+		if(validunits.indexOf(u) > -1){
+			localStorage.setItem("defaultunits", u);
+		}
+		else {
+			FUSION.error.logError(err, "Invalid unit parameter supplied - defaulting to US: ");
+			localStorage.setItem("defaultunits", "us");
+		}
+	}
+	catch(err) {
+		FUSION.error.logError(err, "Unable to set unit parameter: ");
+	}
+}
+
+
+function getUnits()
+{
+	var uval = $("input[name=unitradio]:checked").val();
+	var ls = (localStorage.getItem("defaultunits") === null) ? false : true;
+	if(ls){
+		try {
+			uval = localStorage.getItem("defaultunits");
+		}
+		catch(err) {
+			FUSION.error.logError(err, "Unable to retrieve stored unit parameter - defaulting to selected value: ");
+		}
+	}
+	return uval;
+}
 
 
 function supportsHtml5Storage()
 {
 	//generic function to check if the browser can handle
 	//and use localStorage, or if they're living in the stone age
-	try
-	{
+	try {
 		return 'localStorage' in window && window['localStorage'] !== null;
 	}
-	catch(err)
-	{
+	catch(err) {
 		FUSION.error.logError(err);
 		return false;
 	}
@@ -188,9 +156,9 @@ function hideSearchDiv(t)
 }
 
 
-function runSearch()
+function runSearch(s)
 {
-	var val = FUSION.get.node("searchbox").value;
+	var val = s || FUSION.get.node("searchbox").value;
 	if(FUSION.lib.isBlank(val)){
 		var atxt  = "<p style='margin:15px 5px 5px;text-align:center;font-size:16px;font-weight:bold;color:#D00;'>";
 			atxt += "Please enter a search string!";
@@ -200,13 +168,15 @@ function runSearch()
 	}
 
 	val = val.replace(/\s/ig, "+");
+	var units = $("input[name=unitradio]:checked").val();
 	var info = {
 		"type": "POST",
 		"path": "php/weatherlib.php",
 		"data": {
 			"method": "getWeatherInfo",
 			"libcheck": true,
-			"searchstring": val
+			"searchstring": val,
+			"units": units
 		},
 		"func": runSearchResponse
 	};
@@ -217,6 +187,7 @@ function runSearch()
 function locationClick(h)
 {
 	var hash = JSON.parse(h);
+	var units = $("input[name=unitradio]:checked").val();
 	var info = {
 		"type": "POST",
 		"path": "php/weatherlib.php",
@@ -225,7 +196,8 @@ function locationClick(h)
 			"libcheck": true,
 			"latitude": hash.lat,
 			"longitude": hash.lng,
-			"geoinfo": hash
+			"geoinfo": hash,
+			"units": units
 		},
 		"func": runSearchResponse
 	};
@@ -245,12 +217,17 @@ function runSearchResponse(h)
 
 		var geoinfo = {};
 		var locs = 0;
+		var ad = false;
+		var ls = false;
 		for(var key in hash)
 		{
 			if(/^geocodeid/.test(key) && locs < 5)
 			{
 				locs++;
 				geoinfo = hash[key];
+				ad = (FUSION.get.node("geocodeid" + geoinfo.placeid) === null) ? true : false;
+				ls = (localStorage.getItem("geocodeid" + geoinfo.placeid) === null) ? true : false;
+
 				var div = FUSION.lib.createHtmlElement({"type":"div",
 														"attributes":{"class":"loclinkdiv"}});
 				var lnk = FUSION.lib.createHtmlElement({"type":"a","text":geoinfo.address,
@@ -280,11 +257,6 @@ function runSearchResponse(h)
 }
 
 
-
-
-
-
-
 function processForecast(h)
 {
 	//the catch-all function for most responses from the server
@@ -305,32 +277,30 @@ function processForecast(h)
 	//NEED TO REEXAMINE THE OBJSIZE FUNCTION...ITS ADDING A CHILD FOR THE NUMBER OF RESULTS
 	if(FUSION.get.objSize(geoinfo) > 1)
 	{
-		var regstr = "";
-		if(typeof geoinfo.country !== undefined && geoinfo.country == "US")
-		{
-			regstr = (typeof geoinfo.state !== undefined && !FUSION.lib.isBlank(geoinfo.state)) ?
-						geoinfo.city + ", " + geoinfo.state : geoinfo.city;
-		}
-		else
-		{
-			var statestr = (typeof geoinfo.state !== undefined && !FUSION.lib.isBlank(geoinfo.state) && geoinfo.state != "NO_DATA") ?
-								", " + geoinfo.state : "";
-			var cntrystr = (typeof geoinfo.country !== undefined && !FUSION.lib.isBlank(geoinfo.country) && geoinfo.country != "NO_DATA") ?
-								", " + geoinfo.country : "";
-			regstr = geoinfo.city + statestr + cntrystr;
-		}
+		var units = $("input[name=unitradio]:checked").val();
+		var tu = (units == "us") ? "F" : "C";
+		var su = (units == "us") ? "mph" : "kph";
+
+		var adv = (FUSION.get.node("geocodeid" + geoinfo.placeid) === null) ? true : false;
+		var lcs = (localStorage.getItem("geocodeid" + geoinfo.placeid) === null) ? true : false;
+
 		FUSION.get.node("footerlocation").innerHTML = geoinfo.address;
-		FUSION.get.node("location").innerHTML 		= regstr;
+		FUSION.get.node("location").innerHTML = geoinfo.address;
 		var sb = FUSION.get.node("searchbox");
 		sb.value = "";
 		hideSearchDiv(sb);
 
-
 		var hrly = hash['hourly'];
+
+// 		offset for location timezone and user timezone
+ 		var x = new Date();
+ 		var tzos = x.getTimezoneOffset() / 60;
+		var ofst = 3600 * (tzos + hash['timezone']['offset']);
+
 		var rain = 0;
 		var wind = 0;
 		var drct = "";
-		var wstr = "N/A 0 kph";
+		var wstr = "N/A 0 " + su;
 		var hobj = {};
 
 		var ipp = 0;
@@ -344,16 +314,16 @@ function processForecast(h)
 		for(var i = 0; i < hrly.length; i++)
 		{
 			ipp = i + 1;
-			FUSION.get.node("hrdisplay" + ipp).innerHTML = getTime(hrly[i]['time']);
+			FUSION.get.node("hrdisplay" + ipp).innerHTML = getTime(hrly[i]['time'] + ofst);
 			FUSION.get.node("hrcondtion" + ipp).innerHTML = hrly[i]['summary'];
-			FUSION.get.node("hrtemp" + ipp).innerHTML = Math.round(hrly[i]['temperature']) + "&deg; C";
+			FUSION.get.node("hrtemp" + ipp).innerHTML = Math.round(hrly[i]['temperature']) + "&deg; " + tu;
 			rain = Math.round(hrly[i]['precipProbability'] * 100);
 			rain += "%";
 			FUSION.get.node("hrrainchance" + ipp).innerHTML = rain;
 			wind = hrly[i]['windSpeed'];
 			drct = hrly[i]['windBearing'];
 			if(hrly[i]['windSpeed'] > 0){
-				wstr = getWindBearing(hrly[i]['windBearing']) + " " + Math.round(hrly[i]['windSpeed']) + " kph";
+				wstr = getWindBearing(hrly[i]['windBearing']) + " " + Math.round(hrly[i]['windSpeed']) + " " + su;
 			}
 			FUSION.get.node("hrwind" + ipp).innerHTML = wstr;
 			skycons.add("hricon" + ipp, hrly[i]['icon']);
@@ -362,19 +332,26 @@ function processForecast(h)
 		var crnt = hash['current'];
 		var daly = hash['daily'];
 
-		FUSION.get.node("condition").innerHTML  = crnt['summary'] + ", " + Math.round(crnt['temperature']) + "&deg;";
+		var ct = new Date((crnt['time'] + ofst) * 1000);
+		var dstr = fulldays[ct.getDay()] + " / " + months[ct.getMonth()] + " " + ct.getDate() + ", " + ct.getFullYear();
+		FUSION.get.node("date").innerHTML 		= dstr;
+		FUSION.get.node("condition").innerHTML  = crnt['summary'] + ", " + Math.round(crnt['temperature']) + "&deg; " + tu;
+
 		skycons.add("condimg", crnt['icon']);
 
-		var wind = "N/A 0 kph";
-		if(crnt['windSpeed'] > 0) {
-			wind = getWindBearing(crnt['windBearing']) + " " + Math.round(crnt['windSpeed']) + " kph";
+		var wind = "N/A 0 " + su;
+		var wspd = Math.round(crnt['windSpeed']);
+		if(wspd > 0) {
+			wind = getWindBearing(crnt['windBearing']) + " " + wspd + " " + su;
 		}
-		FUSION.get.node("wind").innerHTML		= wind;
-		FUSION.get.node("sunrise").innerHTML	= getTime(daly[0]['sunriseTime']);
-		FUSION.get.node("sunset").innerHTML		= getTime(daly[0]['sunsetTime']);
-		FUSION.get.node("high").innerHTML 		= Math.round(daly[0]['temperatureMax']) + "&deg;";
-		FUSION.get.node("low").innerHTML 		= Math.round(daly[0]['temperatureMin']) + "&deg;";
 		FUSION.get.node("dailyfrc").innerHTML 	= daly[0]['summary'];
+		FUSION.get.node("conditiontext").value 	= daly[0]['summary'];
+		FUSION.get.node("wind").innerHTML		= wind;
+		FUSION.get.node("sunrise").innerHTML	= getTime(daly[0]['sunriseTime'] + ofst);
+		FUSION.get.node("sunset").innerHTML		= getTime(daly[0]['sunsetTime'] + ofst);
+		FUSION.get.node("high").innerHTML 		= Math.round(daly[0]['temperatureMax']) + "&deg; " + tu;
+		FUSION.get.node("low").innerHTML 		= Math.round(daly[0]['temperatureMin']) + "&deg; " + tu;
+
 
 		var d = 0;
 		var dstr = "";
@@ -382,183 +359,84 @@ function processForecast(h)
 		for(var j = 1; j < 5; j++)
 		{
 			k = j + 1;
-			d = new Date(daly[j]['time'] * 1000);
+			d = new Date((daly[j]['time'] + ofst) * 1000);
 			dstr = days[d.getDay()] + ", " + months[d.getMonth()] + " " + d.getDate();
 			FUSION.get.node("dayofweek" + k).innerHTML  = dstr;
 			FUSION.get.node("condition" + k).innerHTML  = daly[j]['summary'];
-			FUSION.get.node("high" + k).innerHTML 		= Math.round(daly[j]['temperatureMax']) + "&deg;";
-			FUSION.get.node("low" + k).innerHTML 		= Math.round(daly[j]['temperatureMin']) + "&deg;";
+			FUSION.get.node("conditiontext" + k).value 	= daly[j]['summary'];
+			FUSION.get.node("high" + k).innerHTML 		= Math.round(daly[j]['temperatureMax']) + "&deg; " + tu;
+			FUSION.get.node("low" + k).innerHTML 		= Math.round(daly[j]['temperatureMin']) + "&deg; " + tu;
 			skycons.add("condimg" + k, daly[j]['icon']);
 		}
 
 		skycons.play();
 
-
-/*
-	//quick check to see if a new location div is required
-	//this should be false if the user clicks an existing location div
-	//to load info for that area
-	if(adv)
-	{
-		addCityDiv({
-			"woeid": hash['woeid'],
-			"city": loc.city,
-			"region": loc.region,
-			"order": Math.floor(Date.now() / 1000)
-		}, lcs);
-	}
-*/
-	}
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-function getWeather()
-{
-	//load the weather based on the entry from the search box
-	//still need to handle cases where the city is returned but
-	//not the region...doesn't really hurt anything, but doesn't
-	//look good (see Mexico City, zip code 11111)
-	var val = FUSION.get.node("searchbox").value;
-	if(!val.match(/^(\d){5}$/))
-	{
-		FUSION.lib.alert("Please enter a valid zip code!");
-		return false;
-	}
-
-	var info = {
-		"type": "POST",
-		"path": "php/library.php",
-		"data": {
-			"method": "getWeatherInfo",
-			"libcheck": true,
-			"zipcode": val
-		},
-		"func": getWeatherResponse
-	};
-
-	FUSION.lib.ajaxCall(info);
-}
-
-
-function loadWeather(id)
-{
-	//For when a user has items in localStorage and comes back to the page,
-	//or when a user clicks a location div to load weather for that city
-	var woeid = id || 0;
-	if(woeid == 0)
-	{
-		FUSION.lib.alert("Unable to determine WOEID - please refresh page and try again");
-		return false;
-	}
-
-	var info = {
-		"type": "POST",
-		"path": "php/library.php",
-		"data": {
-			"method": "getWeatherInfo",
-			"libcheck": true,
-			"woeid": woeid,
-			"load": true
-		},
-		"func": getWeatherResponse
-	};
-
-	FUSION.lib.ajaxCall(info);
-}
-
-
-function removeCityDiv(id)
-{
-	//remove the location div - need to add in a sexier confirm box
-	//in place of the standard confirm...so ugly
-	var woeid = id || 0;
-	if(woeid == 0)
-	{
-		FUSION.lib.alert("Unable to determine WOEID - please refresh page and try again");
-		return false;
-	}
-
-	var yn = confirm("Are you sure you'd like to remove this entry?");
-	if(yn)
-	{
-		FUSION.remove.node("ocd" + woeid);
-		try{
-			//attempt to remove the localStorage item...sometimes causes
-			//an issue in older versions of IE...because of course it does
-			localStorage.removeItem("ocd" + woeid);
-		}
-		catch(err){
-			FUSION.error.logError(err);
-		}
+		//quick check to see if a new location div is required
+		//this should be false if the user clicks an existing location div
+		//to load info for that area
+		addCityDiv(geoinfo);
 	}
 }
 
 
-function addCityDiv(h, ls)
+function addCityDiv(h)
 {
 	var hash = h  || {};
-	var lcst = ls || false;
 
-	var div = FUSION.get.node("oldcitydiv");
-	var els = div.getElementsByTagName("div");
-
+	var lcst = (localStorage.getItem("geocodeid" + hash['placeid']) === null) ? true : false;
 	if(lcst)
 	{
 		//if no localStorage item exists, create one if possible
-		localStorage.setItem("ocd" + hash['woeid'], JSON.stringify(hash));
+		try {
+			localStorage.setItem("geocodeid" + hash['placeid'], JSON.stringify(hash));
+		}
+		catch(err) {
+			FUSION.error.logError(err, "Unable to create localStorage item: ");
+		}
 	}
 
-	if(els.length == 4)
-	{
-		//if there are already 4 locations stored, remove the oldest one
-		//techincally it removes the last div, which *should* be the oldest,
-		//but I should really do a sort here to make sure...I'll come back to it
-		var eid = els[3].id;
-		FUSION.remove.node(eid);
-		localStorage.removeItem(eid);
-	}
+	$(".citydiv").each( function() {
+		$(this).css("background-color", "#FFF");
+	});
 
-	var chk = FUSION.get.node("ocd" + hash['woeid']);
-	if(!chk)
+	if(FUSION.get.node("geocodeid" + hash['placeid']) === null)
 	{
+		var div = FUSION.get.node("oldcitydiv");
+		var els = div.getElementsByTagName("div");
+		if(els.length == 4)
+		{
+			//if there are already 4 locations stored, remove the oldest one
+			//techincally it removes the last div, which *should* be the oldest,
+			//but I should really do a sort here to make sure...I'll come back to it
+			var eid = els[3].id;
+			FUSION.remove.node(eid);
+			try {
+				localStorage.removeItem(eid);
+			}
+			catch(err) {
+				FUSION.error.logError(err, "Unable to remove localStorage item: ");
+			}
+		}
+
 		//begin creating the location box - just a div that holds a link and a span,
 		//pretty straight-forward
 		var ndv = FUSION.lib.createHtmlElement({"type":"div",
+												"style":{ "background-color":"#EEE" },
 												"attributes":{
-													"id": "ocd" + hash['woeid'], "class":"citydiv" }});
-
-		var regstr = (typeof hash.region !== undefined && !FUSION.lib.isBlank(hash.region)) ?
-					hash.city + ", " + hash.region : hash.city;
+													"id": "geocodeid" + hash['placeid'], "class":"citydiv" }});
+		var regstr = hash.address;
 
 		var lnk = FUSION.lib.createHtmlElement({"type":"a",
-												"onclick":"loadWeather(" + hash['woeid'] + ")",
+												"onclick":"locationClick('" + JSON.stringify(hash) + "')",
 												"text": regstr,
 												"attributes":{
 													"href":"javascript:void(0);",
 													"title": regstr,
 													"class":"citylink"
 												}});
-		//check the browser - IE is so fickle with glyphicons, so rather than deal with
-		//every possible case, just use the "X" if it's IE, otherwise load the glyphicons
-		//yes, I know that this doesn't account for older versions of FF/Chrome/etc, BUT
-		//let's be honest...if someone is using those browsers, they're probably updating
-		//them too (or at least have something newer than FF v4)
-		//var gbr = FUSION.get.browser();
-		//var brs = gbr['browser'];
 
 		var img = FUSION.lib.createHtmlElement({"type":"img",
-												"onclick":"removeCityDiv(" + hash['woeid'] + ")",
+												"onclick":"removeCityDiv('geocodeid" + hash['placeid'] + "')",
 												"style":{"width":"12px","height":"12px"},
 												"attributes":{
 													"src":"../images/iconic/x-6x.png",
@@ -578,76 +456,56 @@ function addCityDiv(h, ls)
 			div.insertBefore(ndv, div.childNodes[0]);
 		}
 	}
+	else
+	{
+		FUSION.get.node("geocodeid" + hash['placeid']).style.backgroundColor = "#EEE";
+	}
 }
 
 
-function getWeatherResponse(h)
+function removeCityDiv(id)
 {
-	//the catch-all function for most responses from the server
-	//basically just fills in the information for a given location
-	//based on the array returned by the server to the AJAX request
-	//names should make it clear what each line is doing
-	var hash = h || {};
-	var wnd = hash['wind'];
-	var loc = hash['location'];
-	var frc = hash['forecast'];
-	var con = hash['conditions'];
-	var ast = hash['astronomy'];
-	var atm = hash['atmosphere'];
-	var adv = hash['adddiv'];
-	var lcs = hash['localstore'];
-
-	FUSION.get.node("searchbox").value = "";
-
-	//fill the main section with today's forecast info
-	var regstr = (typeof loc.region !== undefined && !FUSION.lib.isBlank(loc.region)) ?
-					loc.city + ", " + loc.region : loc.city;
-
-	FUSION.get.node("footerlocation").innerHTML = regstr;
-	FUSION.get.node("location").innerHTML 		= regstr;
-	FUSION.get.node("date").innerHTML 			= frc[0].day + " / " + frc[0].dstr;
-
-	FUSION.get.node("condition").innerHTML  = con.text + ", " + con.temp + "&deg;";
-	FUSION.get.node("condimg").src 			= con.img;
-
-	FUSION.get.node("high").innerHTML 		= frc[0].high;
-	FUSION.get.node("low").innerHTML 		= frc[0].low;
-	FUSION.get.node("dailyfrc").innerHTML 	= frc[0].text;
-
-	FUSION.get.node("sunrise").innerHTML = ast.sunrise;
-	FUSION.get.node("sunset").innerHTML  = ast.sunset;
-	FUSION.get.node("wind").innerHTML 	 = wnd.speed + " mph, " + wnd.direction + ", " + wnd.chill;
-
-	//fill the 4 location cards below the main section
-	var j = 0;
-	for(var i = 1; i < frc.length; i++)
+	//remove the location div - need to add in a sexier confirm box
+	//in place of the standard confirm...so ugly
+	var geoid = id || 0;
+	if(geoid == 0)
 	{
-		j = i + 1;
-		FUSION.get.node("dayofweek" + j).innerHTML  = frc[i].date;
-		FUSION.get.node("condition" + j).innerHTML  = frc[i].text;
-		FUSION.get.node("condimg" + j).src 			= frc[i].img;
-		FUSION.get.node("high" + j).innerHTML 		= frc[i].high;
-		FUSION.get.node("low" + j).innerHTML 		= frc[i].low;
+		FUSION.lib.alert("Unable to determine PlaceID - please refresh page and try again");
+		return false;
 	}
 
-	//quick check to see if a new location div is required
-	//this should be false if the user clicks an existing location div
-	//to load info for that area
-	if(adv)
+	var yn = confirm("Are you sure you'd like to remove this entry?");
+	if(yn)
 	{
-		addCityDiv({
-			"woeid": hash['woeid'],
-			"city": loc.city,
-			"region": loc.region,
-			"order": Math.floor(Date.now() / 1000)
-		}, lcs);
+		FUSION.remove.node(geoid);
+		try{
+			//attempt to remove the localStorage item...sometimes causes
+			//an issue in older versions of IE...because of course it does
+			localStorage.removeItem(geoid);
+		}
+		catch(err){
+			FUSION.error.logError(err);
+		}
 	}
 }
+
 
 //just a little shim pulled from the Net to handle Date.now() calls
 //older versions of IE don't like it, so this makes it forward AND
 //backwards compatible.  Thanks stranger from Stackoverflow!
 if (!Date.now) { Date.now = function() { return new Date().getTime(); }}
+
+
+function showCondition(c)
+{
+	var cnd = c || "";
+	if(cnd != "")
+	{
+		var txt = FUSION.get.node(cnd).value;
+		FUSION.lib.alert("<p style='margin-top:10px;text-align:center;'>" + txt + "</p>");
+	}
+}
+
 
 
 function getWindBearing(b)

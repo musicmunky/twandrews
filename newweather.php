@@ -5,7 +5,7 @@
 
 	date_default_timezone_set('America/New_York');
 
-	$title = "My Weather v2";
+	$title = "My Weather";
 
 	/**
 	*
@@ -29,26 +29,22 @@
 	}
 */
 
-//  	$lat = "39.3919764";
-//  	$lng = "-76.9873477";
-
-// 	$lat = "100000.000";
-// 	$lng = "9999999";
-// 	$apinfo = mysql_fetch_assoc(mysql_query("SELECT APIKEY, URL FROM weatherapikeys WHERE SERVICE='forecast';"));
-// 	$apikey = $apinfo['APIKEY'];
-// 	$apiurl = $apinfo['URL'];
-// 	$apikey = "foobar";
-// 	$requrl = $apiurl . $apikey . "/" . $lat . "," . $lng . "?exclude=minutely";
-// 	$content = file_get_contents($requrl);
+//   	$lat = "39.3919764";
+//   	$lng = "-76.9873477";
+//  	$apinfo = mysql_fetch_assoc(mysql_query("SELECT APIKEY, URL FROM weatherapikeys WHERE SERVICE='forecast';"));
+//  	$apikey = $apinfo['APIKEY'];
+//  	$apiurl = $apinfo['URL'];
+//  	$requrl = $apiurl . $apikey . "/" . $lat . "," . $lng . "?exclude=minutely";
+//  	$content = file_get_contents($requrl);
 
 // 	$reqstat = explode(" ", $http_response_header[0]);
 // 	$numreqs = explode(" ", $http_response_header[8]);
 
-// 	$apiinfo = mysql_fetch_assoc(mysql_query("SELECT APIKEY, URL FROM weatherapikeys WHERE SERVICE='google';"));
-// 	$key = $apiinfo['APIKEY'];
-// 	$url = $apiinfo['URL'];
-// 	$requrl = $url . "address=New+York,+NY" . "&key=" . $key;
-// 	$content = file_get_contents($requrl);
+//  	$apiinfo = mysql_fetch_assoc(mysql_query("SELECT APIKEY, URL FROM weatherapikeys WHERE SERVICE='google';"));
+//  	$key = $apiinfo['APIKEY'];
+//  	$url = $apiinfo['URL'];
+//  	$requrl = $url . "address=Statue+of+Liberty" . "&key=" . $key;
+//  	$content = file_get_contents($requrl);
 
 
 
@@ -63,9 +59,10 @@
 	{
 		$dayhtml .= "<div class='day' id='day{$i}'>
 						<div id='dayofweek{$i}' class='dayofweek'></div>
-						<div class='condition'>
+						<div class='condition' onclick='showCondition(\"conditiontext{$i}\")'>
 							<canvas id='condimg{$i}' height='50' width='50' style='float:left;padding-top:10px;'></canvas>
 							<span id='condition{$i}' class='conspan'></span>
+							<input type='hidden' id='conditiontext{$i}' value='' />
 						</div>
 						<div class='tempdiv' style='float:left;'>
 							<span id='high{$i}' class='wrmclr'></span>
@@ -102,12 +99,14 @@
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+		<meta name="viewport" content="initial-scale=1, maximum-scale=1">
 		<title><?php echo $title; ?></title>
 		<link rel="shortcut icon" href="images/faviconweather.ico" />
 		<link rel='stylesheet' type="text/css" href='css/newweather.css'  media="screen" charset="utf-8">
 		<link rel='stylesheet' type="text/css" href='css/fusionlib.css' media="screen" charset="utf-8">
 		<link rel='stylesheet' type="text/css" href='css/jquery-ui.min.css' media="screen" charset="utf-8">
 		<link rel='stylesheet' type="text/css" href='css/bootstrap.css' media="screen" charset="utf-8">
+		<link rel='stylesheet' type="text/css" href='css/radio.css' media="screen" charset="utf-8">
 		<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Lato">
 <!--	<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans">//-->
 <!--	<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Ubuntu">//-->
@@ -117,19 +116,15 @@
 		<script language="javascript" type="text/javascript" src="javascript/fusionlib.js"></script>
 		<script language="javascript" type="text/javascript" src="https://www.google.com/jsapi"></script>
 		<script language="javascript" type="text/javascript" src="javascript/newweather.js"></script>
-
-		<script>
-
-		</script>
 	</head>
 	<body>
 		<!-- default to NYC if there's no localStorage -->
-		<input type="hidden" id="localzipcode" value="10001" />
+		<input type="hidden" id="defaultzipcode" value="10001" />
 
 		<div id="header" class="header">
 			<div id="headercont" class="header-content">
 				<div class="header-logo">
-					<div style="float:left;width:250px;">
+					<div style="float:left;width:200px;">
 						<div class="title">
 							<img id="logo" src="images/weatherlogo.png" style="width:40px;margin-top:10px;margin-right:10px;float:left;" />
 							<div id="titlediv" style="float:left;cursor:default;">
@@ -156,15 +151,24 @@
 								<img src="images/iconic/magnifying-glass-2x.png" style="width:15px;height:15px;" />
 							</button>
 						</form>
+						<!--
 						<span style="height:100%;line-height:60px;float:left;display:inline-block;">
 							<img src="images/iconic/cog-6x.png" style="width:15px;height:15px;cursor:pointer;" />
 						</span>
+						-->
 					</div>
 					<div id="locselect" class="locdiv"></div>
 				</div>
+
+				<div class="header-units">
+					<span style="float:left;margin-right:10px;">Units: </span>
+					<input class="css-checkbox" type="radio" name="unitradio" id="unitsus" value="us" onclick="setUnits(this.value)" checked />
+					<label class="css-label" for="unitsus">US</label>
+					<input class="css-checkbox" type="radio" name="unitradio" id="unitsca" value="ca" onclick="setUnits(this.value)" />
+					<label class="css-label" for="unitsca">EU</label>
+				</div>
 			</div>
 		</div>
-
 <!--
 		<div id='displayinfodiv' style='width:100%;height:500px;margin-top:60px;overflow-y:scroll;'>
 			<?php //echo "<p>RESPONSE CODE: " . $reqstat[1] . "&emsp;&emsp;&emsp;&emsp;CALLS MADE TODAY: " . $numreqs[1] . "</p>"; ?>
@@ -174,7 +178,6 @@
 			</pre>
 		</div>
 -->
-
 		<div id="mainwrapper" class="mainwrapper">
 			<div class="oldcitywrapper">
 				<div id="oldcitydiv" style="width:100%;height:100%;"></div>
@@ -198,14 +201,16 @@
 							<div class="tfcheader" style="border-bottom:1px solid #EEE;margin-bottom:5px;">
 								Today's Forecast
 							</div>
-							<div class="tfcdivinner" style="position:relative;width:41%;">
-								<div id="dailyfrc" style="margin-left:15px;float:left;height:45px;overflow:hidden;width:85%;/*font-size:14px;*/"></div>
+							<div class="tfcdivinner" style="position:relative;width:39%;">
+								<div id="dailyfrc" onclick="showCondition('conditiontext')"
+									 style="cursor:pointer;margin-left:15px;float:left;height:45px;overflow:hidden;width:85%;/*font-size:14px;*/"></div>
+								<input type="hidden" id="conditiontext" value="" />
 							</div>
-							<div class="tfcdivinner" style="position:relative;width:25%;">
+							<div class="tfcdivinner" style="position:relative;width:30%;">
 								<div style="margin-left:5px;width:90%;float:left;">Wind:</div>
 								<div id="wind" style="margin-left:5px;width:95%;float:left;"></div>
 							</div>
-							<div class="tfcdivinner">
+							<div class="tfcdivinner" style="width:30%;">
 								<div class="w100fl">
 									<div class="innerw50fl">Sunrise:</div>
 									<div id="sunrise"></div>
