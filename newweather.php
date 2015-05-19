@@ -5,16 +5,8 @@
 
 	date_default_timezone_set('America/New_York');
 
-	$title = "My Weather";
+	$title = "MyWeather";
 
-	/**
-	*
-	*	TODO:
-	*		- Implement Google Geocode API location searching
-	*		- Implement Forecast.io API weather lookup
-	*		- Integrate F.io with the existing javascript
-	*		- Implement Skycons, as well as alternatives for non-html5 browsers
-	*/
 /*
 	$cmdstr = shell_exec("ps -aef | grep php | grep -v grep");
 	$matches = array();
@@ -37,21 +29,14 @@
 //  	$requrl = $apiurl . $apikey . "/" . $lat . "," . $lng . "?exclude=minutely";
 //  	$content = file_get_contents($requrl);
 
-// 	$reqstat = explode(" ", $http_response_header[0]);
-// 	$numreqs = explode(" ", $http_response_header[8]);
+// 		$reqstat = explode(" ", $http_response_header[0]);
+// 		$numreqs = explode(" ", $http_response_header[8]);
 
 //  	$apiinfo = mysql_fetch_assoc(mysql_query("SELECT APIKEY, URL FROM weatherapikeys WHERE SERVICE='google';"));
 //  	$key = $apiinfo['APIKEY'];
 //  	$url = $apiinfo['URL'];
 //  	$requrl = $url . "address=Statue+of+Liberty" . "&key=" . $key;
 //  	$content = file_get_contents($requrl);
-
-
-
-
-
-//Example string to work with...figure out length / display problems:
-//Partly cloudy starting in the afternoon, continuing until evening.
 
 	$dayhtml  = "";
 	$hourhtml = "";
@@ -60,14 +45,14 @@
 		$dayhtml .= "<div class='day' id='day{$i}'>
 						<div id='dayofweek{$i}' class='dayofweek'></div>
 						<div class='condition' onclick='showCondition(\"conditiontext{$i}\")'>
-							<canvas id='condimg{$i}' height='50' width='50' style='float:left;padding-top:10px;'></canvas>
+							<canvas id='condimg{$i}' class='condimg' height='50' width='50'></canvas>
 							<span id='condition{$i}' class='conspan'></span>
 							<input type='hidden' id='conditiontext{$i}' value='' />
 						</div>
-						<div class='tempdiv' style='float:left;'>
+						<div class='tempdiv fl'>
 							<span id='high{$i}' class='wrmclr'></span>
 						</div>
-						<div class='tempdiv' style='float:right;'>
+						<div class='tempdiv fr'>
 							<span id='low{$i}' class='cldclr'></span>
 						</div>
 					</div>";
@@ -78,7 +63,7 @@
 	{
 		$hourhtml .= "<div class='hour' id='hour{$j}'>
 						<div id='hourofday{$j}' class='hourofday'>
-							<div class='hrtimediv' id='hrdisplay{$j}' style='font-size:16px;'></div>
+							<div class='hrtimediv' id='hrdisplay{$j}'></div>
 							<div class='hrconddiv' id='hrcondtion{$j}'></div>
 							<div class='hricondiv' id='hricondiv{$j}'>
 								<canvas id='hricon{$j}' width='40' height='40'></canvas>
@@ -109,7 +94,6 @@
 		<link rel='stylesheet' type="text/css" href='css/radio.css' media="screen" charset="utf-8">
 		<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Lato">
 <!--	<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans">//-->
-<!--	<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Ubuntu">//-->
 		<script language="javascript" type="text/javascript" src="javascript/jquery-1.11.0.min.js"></script>
 		<script language="javascript" type="text/javascript" src="javascript/jquery-ui-1.10.4.custom.min.js"></script>
 		<script language="javascript" type="text/javascript" src="javascript/skycons.js"></script>
@@ -124,44 +108,36 @@
 		<div id="header" class="header">
 			<div id="headercont" class="header-content">
 				<div class="header-logo">
-					<div style="float:left;width:200px;">
+					<div class="logowrapper">
 						<div class="title">
-							<img id="logo" src="images/weatherlogo.png" style="width:40px;margin-top:10px;margin-right:10px;float:left;" />
-							<div id="titlediv" style="float:left;cursor:default;">
+							<img id="logo" src="images/weatherlogo.png" class="logoimage" />
+							<div id="titlediv" class="titletext">
 								<?php echo $title; ?>
 							</div>
 						</div>
 					</div>
-					<div style="float:left;height:100%;">
-						<div id="datewrapper" style="width:200px;float:left;height:100%;">
+					<div class="h100fl">
+						<div id="datewrapper" class="h100fl">
 							<span id="date" class="headspan"></span>
 						</div>
 					</div>
 				</div>
 
 				<div class="header-search">
-					<div class="w100fl" style="text-align:right;font-size:16px;height:100%;line-height:4em;">
-						<span style="float:left;">Search: </span>
-<!--						<form onsubmit="getWeather();return false;" style="width:260px;float:right;height:100%;"> -->
-<!--						<form onsubmit="getGeoInfo();return false;" style="width:260px;float:left;height:100%;"> -->
-						<form onsubmit="runSearch();return false;" style="width:260px;float:left;height:100%;">
+					<div class="w100fl h100fl" id="srchcont">
+						<span class="fl">Search: </span>
+						<form class="h100fl" id="searchform" onsubmit="runSearch();return false;">
 							<input type="text" id="searchbox" value="" class="searchbox"
 								   onkeyup="hideSearchDiv(this)" onchange="hideSearchDiv(this)" />
 							<button class="srchbtn">
-								<img src="images/iconic/magnifying-glass-2x.png" style="width:15px;height:15px;" />
+								<img src="images/iconic/magnifying-glass-2x.png" id="srchicn" />
 							</button>
 						</form>
-						<!--
-						<span style="height:100%;line-height:60px;float:left;display:inline-block;">
-							<img src="images/iconic/cog-6x.png" style="width:15px;height:15px;cursor:pointer;" />
-						</span>
-						-->
 					</div>
 					<div id="locselect" class="locdiv"></div>
 				</div>
-
 				<div class="header-units">
-					<span style="float:left;margin-right:10px;">Units: </span>
+					<span class="fl" class="unitspan">Units: </span>
 					<input class="css-checkbox" type="radio" name="unitradio" id="unitsus" value="us" onclick="setUnits(this.value)" checked />
 					<label class="css-label" for="unitsus">US</label>
 					<input class="css-checkbox" type="radio" name="unitradio" id="unitsca" value="ca" onclick="setUnits(this.value)" />
@@ -169,48 +145,40 @@
 				</div>
 			</div>
 		</div>
-<!--
-		<div id='displayinfodiv' style='width:100%;height:500px;margin-top:60px;overflow-y:scroll;'>
-			<?php //echo "<p>RESPONSE CODE: " . $reqstat[1] . "&emsp;&emsp;&emsp;&emsp;CALLS MADE TODAY: " . $numreqs[1] . "</p>"; ?>
-			<pre>
- 				<?php //var_dump(json_decode($content, true)); ?>
-
-			</pre>
-		</div>
--->
+<!--	<div id='displayinfodiv' style='width:100%;height:500px;margin-top:60px;overflow-y:scroll;'>
+			<pre><?php //var_dump(json_decode($content, true)); ?></pre>
+		</div> -->
 		<div id="mainwrapper" class="mainwrapper">
 			<div class="oldcitywrapper">
-				<div id="oldcitydiv" style="width:100%;height:100%;"></div>
+				<div id="oldcitydiv" class="w100fl h100fl"></div>
 			</div>
-			<div id="forecast">
+			<div class="forecast">
 				<div id="today" class="w100fl">
 					<div class="w50fl">
-						<div class="tfcdiv" style="font-size:25px;">
-							<span id="location" class="locationspan" style="text-align:center;"></span>
-							<div style="float:left;margin-left:15px;width:445px;text-align:center;">
-								<div style="height:60px;display:inline-block;">
-									<canvas width="50" height="50" id="condimg" style="float:left;padding-top:5px;padding-right:5px;"></canvas>
-									<span id="condition" style="height:60px;line-height:60px;float:left;"></span>
+						<div class="tfcdiv locdispwrapper">
+							<span id="location" class="locationspan tac"></span>
+							<div class="locwrapper">
+								<div class="loccanvaswrapper">
+									<canvas width="50" height="50" id="condimg"></canvas>
+									<span id="condition"></span>
 								</div>
 							</div>
 						</div>
 					</div>
-
 					<div class="w50fl tfcbtm">
 						<div class="tfcdiv">
-							<div class="tfcheader" style="border-bottom:1px solid #EEE;margin-bottom:5px;">
+							<div class="tfcheader" id="tfcheadertext">
 								Today's Forecast
 							</div>
-							<div class="tfcdivinner" style="position:relative;width:39%;">
-								<div id="dailyfrc" onclick="showCondition('conditiontext')"
-									 style="cursor:pointer;margin-left:15px;float:left;height:45px;overflow:hidden;width:85%;/*font-size:14px;*/"></div>
+							<div class="tfcdivinner" id="condinfo">
+								<div id="dailyfrc" onclick="showCondition('conditiontext')"></div>
 								<input type="hidden" id="conditiontext" value="" />
 							</div>
-							<div class="tfcdivinner" style="position:relative;width:30%;">
-								<div style="margin-left:5px;width:90%;float:left;">Wind:</div>
-								<div id="wind" style="margin-left:5px;width:95%;float:left;"></div>
+							<div class="tfcdivinner" id="windinfo">
+								<div id="windlabel">Wind:</div>
+								<div id="wind"></div>
 							</div>
-							<div class="tfcdivinner" style="width:30%;">
+							<div class="tfcdivinner" id="suntimes">
 								<div class="w100fl">
 									<div class="innerw50fl">Sunrise:</div>
 									<div id="sunrise"></div>
@@ -220,7 +188,7 @@
 									<div id="sunset"></div>
 								</div>
 							</div>
-							<div class="tfcheader" style="border-top:1px solid #EEE;font-size:25px;line-height:1.3em;">
+							<div class="tfcheader todayhilo">
 								<div class="innerw50fl">
 									<span class="wrmclr" id="high"></span>
 								</div>
@@ -234,20 +202,20 @@
 				<div id="hourwrapper" class="w100fl hourwrapper">
 					<?php echo $hourhtml; ?>
 				</div>
-				<div id="daywrapper" class="w100fl" style="margin-top:15px;">
+				<div id="daywrapper" class="w100fl daywrapper">
 					<?php echo $dayhtml; ?>
 				</div>
 			</div>
 		</div>
 		<div class="footer">
-			<div class="innerfooter" style="text-align:center;">
+			<div class="innerfooter tac">
 				<div class="footer-content-left">
 					<span>Daily weather for <span id="footerlocation"></span></span>
 				</div>
-<!--				<div class="footer-content-center"></div>//-->
 				<div class="footer-content-right">
 					<span>
-						Powered by <a href="http://forecast.io/" style="text-decoration:none;outline:none;" class="cldclr" target="_blank">Forecast</a>
+						Powered by <a href="http://forecast.io/" class="cldclr" target="_blank">Forecast</a>
+						<span id="numreqs" style="color:#CCC"></span>
 					</span>
 				</div>
 

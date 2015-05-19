@@ -14,6 +14,19 @@ html, body {
 /* 	font-family:"Palatino Linotype", "Book Antiqua", Palatino, serif; */
 }
 
+a {
+	text-decoration:none !important;
+	outline:none !important;
+}
+
+.fl {
+	float:left;
+}
+
+.fr {
+	float:right;
+}
+
 .mainwrapper {
 	width:1000px;
 	margin-left:auto;
@@ -157,7 +170,7 @@ html, body {
 }
 /* end sticky header css */
 
-#forecast {
+.forecast {
 	width: 100%;
 }
 
@@ -173,6 +186,11 @@ html, body {
 
 .w100fl {
 	width:100%;
+	float:left;
+}
+
+.h100fl {
+	height:100%;
 	float:left;
 }
 
@@ -205,6 +223,23 @@ html, body {
 	text-overflow:ellipsis;
 }
 
+.logowrapper {
+	float:left;
+	width:200px;
+}
+
+.logoimage {
+	width:40px;
+	margin-top:10px;
+	margin-right:10px;
+	float:left;
+}
+
+.titletext {
+	float:left;
+	cursor:default;
+}
+
 .removespan {
 	float:left;
 	display:block;
@@ -214,6 +249,26 @@ html, body {
 	cursor:pointer;
 	width:10%;
 	color:#666;
+}
+
+.locwrapper {
+	float:left;
+	margin-left:15px;
+	width:445px;
+	text-align:center;
+}
+
+.locdispwrapper {
+	font-size:25px;
+}
+
+.loccanvaswrapper {
+	height:60px;
+	display:inline-block;
+}
+
+.unitspan {
+	margin-right:10px;
 }
 
 .day {
@@ -269,10 +324,95 @@ html, body {
  	border-radius:4px;
 }
 
+#tfcheadertext {
+	border-bottom:1px solid #EEE;
+	margin-bottom:5px;
+}
+
+#condinfo {
+	width:39%;
+}
+
+#windinfo {
+	width:30%;
+}
+
+#wind {
+	margin-left:5px;
+	width:95%;
+	float:left;
+}
+
+#windlabel {
+	margin-left:5px;
+	width:90%;
+	float:left;
+}
+
+#suntimes {
+	width:30%;
+}
+
+#dailyfrc {
+	cursor:pointer;
+	margin-left:15px;
+	float:left;
+	height:40px;
+	overflow:hidden;
+	width:85%;
+}
+
+#condition {
+	height:60px;
+	line-height:60px;
+	float:left;
+}
+
+#condimg {
+	float:left;
+	padding-top:5px;
+	padding-right:5px;
+}
+
+.condimg {
+	float:left;
+	padding-top:10px;
+}
+
+.hrdisplay {
+	font-size:16px;
+}
+
+#srchcont {
+	text-align:right;
+	font-size:16px;
+	line-height:4em;
+}
+
+#searchform {
+	width:260px;
+}
+
+#srchicn {
+	width:15px;
+	height:15px;
+}
+
+.daywrapper {
+	margin-top:15px;
+}
+
+.todayhilo {
+	border-top:1px solid #EEE;
+	font-size:25px;
+	line-height:1.3em;
+}
+
 .tfcdivinner {
 	float:left;
 	width:33%;
 	height:45px;
+	position:relative;
 }
 
 .tfcheader {
@@ -281,6 +421,10 @@ html, body {
 	width:100%;
 	float:left;
 	height:30px;
+	text-align:center;
+}
+
+.tac {
 	text-align:center;
 }
 
@@ -325,7 +469,6 @@ html, body {
 
 .conspan {
 	display:block;
-/* 	width:100%; */
 	width:150px;
 	height:40px;
 	padding-top:15px;
@@ -400,7 +543,6 @@ html, body {
 .hrconddiv {
 	height: 40px;
     line-height: 20px;
-/* 	vertical-align:middle; */
     width: 100%;
 	font-size:11px;
 	padding-top:5px;

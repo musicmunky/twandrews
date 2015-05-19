@@ -70,9 +70,9 @@ $( document ).ready(function() {
 		if(lsa.length > 0)
 		{
 			//sort descending by age, oldest to youngest entries
-			lsa.sort(function(a,b) { return parseInt(a.order) - parseInt(b.order) } );
+			//lsa.sort(function(a,b) { return parseInt(a.order) - parseInt(b.order) } );
 
-			//load the oldest (original) item in the array into the main area
+			//load the first item in the array into the main area
 			locationClick(JSON.stringify(lsa[0]));
 
 			//create location divs for all localStorage items
@@ -173,10 +173,10 @@ function runSearch(s)
 		"type": "POST",
 		"path": "php/weatherlib.php",
 		"data": {
-			"method": "getWeatherInfo",
-			"libcheck": true,
+			"method": 		"getWeatherInfo",
+			"libcheck": 	true,
 			"searchstring": val,
-			"units": units
+			"units": 		units
 		},
 		"func": runSearchResponse
 	};
@@ -192,12 +192,12 @@ function locationClick(h)
 		"type": "POST",
 		"path": "php/weatherlib.php",
 		"data": {
-			"method": "getForecastInfo",
-			"libcheck": true,
-			"latitude": hash.lat,
-			"longitude": hash.lng,
-			"geoinfo": hash,
-			"units": units
+			"method": 		"getForecastInfo",
+			"libcheck": 	true,
+			"latitude": 	hash.lat,
+			"longitude": 	hash.lng,
+			"geoinfo": 		hash,
+			"units": 		units
 		},
 		"func": runSearchResponse
 	};
@@ -290,11 +290,12 @@ function processForecast(h)
 		sb.value = "";
 		hideSearchDiv(sb);
 
-		var hrly = hash['hourly'];
+		var nreq = 1000 - parseInt(hash['numberofreqs']);
+		FUSION.get.node("numreqs").innerHTML = "(" + nreq + ")";
 
 // 		offset for location timezone and user timezone
- 		var x = new Date();
- 		var tzos = x.getTimezoneOffset() / 60;
+ 		var rnow = new Date();
+ 		var tzos = rnow.getTimezoneOffset() / 60;
 		var ofst = 3600 * (tzos + hash['timezone']['offset']);
 
 		var rain = 0;
@@ -311,10 +312,12 @@ function processForecast(h)
 			}
 		});
 
+		var hrly = hash['hourly'];
+
 		for(var i = 0; i < hrly.length; i++)
 		{
 			ipp = i + 1;
-			FUSION.get.node("hrdisplay" + ipp).innerHTML = getTime(hrly[i]['time'] + ofst);
+			FUSION.get.node("hrdisplay" + ipp).innerHTML = getTimeFromTs(hrly[i]['time'] + ofst);
 			FUSION.get.node("hrcondtion" + ipp).innerHTML = hrly[i]['summary'];
 			FUSION.get.node("hrtemp" + ipp).innerHTML = Math.round(hrly[i]['temperature']) + "&deg; " + tu;
 			rain = Math.round(hrly[i]['precipProbability'] * 100);
@@ -347,8 +350,8 @@ function processForecast(h)
 		FUSION.get.node("dailyfrc").innerHTML 	= daly[0]['summary'];
 		FUSION.get.node("conditiontext").value 	= daly[0]['summary'];
 		FUSION.get.node("wind").innerHTML		= wind;
-		FUSION.get.node("sunrise").innerHTML	= getTime(daly[0]['sunriseTime'] + ofst);
-		FUSION.get.node("sunset").innerHTML		= getTime(daly[0]['sunsetTime'] + ofst);
+		FUSION.get.node("sunrise").innerHTML	= getTimeFromTs(daly[0]['sunriseTime'] + ofst);
+		FUSION.get.node("sunset").innerHTML		= getTimeFromTs(daly[0]['sunsetTime'] + ofst);
 		FUSION.get.node("high").innerHTML 		= Math.round(daly[0]['temperatureMax']) + "&deg; " + tu;
 		FUSION.get.node("low").innerHTML 		= Math.round(daly[0]['temperatureMin']) + "&deg; " + tu;
 
@@ -383,8 +386,7 @@ function addCityDiv(h)
 {
 	var hash = h  || {};
 
-	var lcst = (localStorage.getItem("geocodeid" + hash['placeid']) === null) ? true : false;
-	if(lcst)
+	if(localStorage.getItem("geocodeid" + hash['placeid']) === null)
 	{
 		//if no localStorage item exists, create one if possible
 		try {
@@ -522,7 +524,7 @@ function getWindBearing(b)
 }
 
 
-function getTime(ts)
+function getTimeFromTs(ts)
 {
 	if(typeof ts === "undefined" || typeof ts !== "number" || FUSION.lib.isBlank(ts))
 	{
@@ -534,7 +536,6 @@ function getTime(ts)
 		var date  	= new Date(ts * 1000);
 		var hours 	= date.getHours();
 		var minutes = "0" + date.getMinutes();
-		var hour  	= hours > 11 ? (hours % 12) : (parseInt(hours) == 0) ? 12 : hours;
 		var hour  	= 0;
 		var ampm  	= "AM";
 
@@ -548,6 +549,6 @@ function getTime(ts)
 		else {
 			hour = hours;
 		}
-		return hour + ':' + minutes.substr(minutes.length-2) + " " + ampm;
+		return hour + ':' + minutes.substr(minutes.length - 2) + " " + ampm;
 	}
 }

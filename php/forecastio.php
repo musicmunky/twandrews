@@ -8,6 +8,7 @@
 		private $status;
 		private $concnt;
 		private $units;
+		private $numreq;
 		private $language;
 		private $validunits = array('auto', 'us', 'si', 'ca', 'uk');
 		private $directions = array("N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE",
@@ -37,6 +38,7 @@
 			$this->apiurl = $apiurl;
 			$this->units = $units;
 			$this->language = $language;
+			$this->numreq = 0;
 		}
 
 		/**
@@ -71,6 +73,15 @@
 			$this->language = $language;
 		}
 
+		public function getNumReqs()
+		{
+			return $this->numreq;
+		}
+
+		public function setNumReqs($n = 0)
+		{
+			$this->numreq = $n;
+		}
 
 		public function loadForecastData($latitude, $longitude, $timestamp = false, $exclusions = "minutely")
 		{
@@ -112,7 +123,7 @@
 					throw new Exception("Bad result from geocode server - please check parameters and try again");
 				}
 
-				$this->concnt = $numreqs[1];
+				$this->setNumReqs($numreqs[1]);
 				$this->fordat = $rsltcon;
 				$this->status = $reqstat[1];
 			}

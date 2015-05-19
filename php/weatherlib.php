@@ -240,6 +240,7 @@
 			$content['hourly'] 		= $harr;
 			$content['current'] 	= $fc->getCurrentForecast();
 			$content['timezone']	= $fc->getTimezone();
+			$content['numberofreqs'] = $fc->getNumReqs();
 		}
 		else
 		{
