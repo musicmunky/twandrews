@@ -1,8 +1,9 @@
-//all javascript for the simple weather page setup
-//it uses the FUSION library extensively, so see fusionlib.js
-//for other function definitions and such.
-//also uses jQuery, because I'm inherently lazy and jQuery
-//makes life so much easier sometimes.
+// this file is all the javascript for the simple weather page setup
+// it uses the FUSION library extensively, so see fusionlib.js for all
+// functions that start with "FUSION."
+// it also uses jQuery, because I'm inherently lazy and jQuery makes life
+// so much easier sometimes.
+
 var directions = ["N", "NNE", "NE", "ENE",
 				  "E", "ESE", "SE", "SSE",
 				  "S", "SSW", "SW", "WSW",
@@ -20,6 +21,12 @@ var validunits = ["us", "ca"];
 
 var fulldays = ["Sunday", "Monday", "Tuesday",
 				"Wednesday", "Thursday", "Friday", "Saturday"];
+
+var cnvrtflds = ["condition", "wind", "hrwind1", "hrwind2", "hrwind3",
+				 "hrwind4", "hrwind5", "hrwind6", "hrwind7", "hrwind8",
+				 "hrtemp1", "hrtemp2", "hrtemp3", "hrtemp4", "hrtemp5",
+				 "hrtemp6", "hrtemp7", "hrtemp8", "high", "high2", "high3",
+				 "high4", "high5", "low", "low2", "low3", "low4", "low5"];
 
 $( document ).ready(function() {
 
@@ -101,12 +108,51 @@ $( document ).ready(function() {
 function setUnits(u)
 {
 	try {
-		if(validunits.indexOf(u) > -1){
+		if((validunits.indexOf(u) > -1)){
 			localStorage.setItem("defaultunits", u);
 		}
 		else {
 			FUSION.error.logError(err, "Invalid unit parameter supplied - defaulting to US: ");
 			localStorage.setItem("defaultunits", "us");
+			u = "us";
+		}
+
+		var c = "_cnvrt";
+		var n = "";
+		var f = null;
+		var h = null;
+		var v = {};
+		var x = 0;
+		var y = 0;
+		var s = "";
+		var wu = (u == "us") ? " mph" : " kph";
+		var tu = (u == "us") ? "&deg; F" : "&deg; C";
+
+		for(var i = 0; i < cnvrtflds.length; i++)
+		{
+			n = cnvrtflds[i] + c;
+			f = FUSION.get.node(n);
+			h = FUSION.get.node(cnvrtflds[i]);
+			if(typeof f !== null && typeof h !== null)
+			{
+				try {
+					v = JSON.parse(f.value);
+					if(v.units != u) //make sure you don't try to convert unless the units are different!
+					{
+						x = parseInt(v.value);
+						y = (v.type == "wind") ? convertWind(x, u) : convertTemp(x, u);
+						s = v.text.left + y + v.text.right;
+						h.innerHTML = (v.type == "wind") ? s + wu : s + tu;
+
+						v.value = y;
+						v.units = u;
+						f.value = JSON.stringify(v);
+					}
+				}
+				catch(err) {
+					FUSION.error.logError(err, "Error updating unit data for field " + n + ": ");
+				}
+			}
 		}
 	}
 	catch(err) {
@@ -128,6 +174,39 @@ function getUnits()
 		}
 	}
 	return uval;
+}
+
+
+function convertTemp(t, u)
+{
+	var ct = 0;
+	if(u == "us") //convert from CA to US (metric to imperial)
+	{
+		//°C to °F	Multiply by 9, then divide by 5, then add 32
+		ct = ((t * 9) / 5) + 32;
+	}
+	else if(u == "ca") //convert from US to CA (imperial to metric)
+	{
+		//°F to °C	Deduct 32, then multiply by 5, then divide by 9
+		ct = ((t - 32) * 5) / 9;
+	}
+	return Math.round(ct);
+}
+
+function convertWind(v, u)
+{
+	var cw = 0;
+	if(u == "us") //convert from CA to US (metric to imperial)
+	{
+		//1 Kilometer = 0.621371 Miles
+		cw = v * 0.621371;
+	}
+	else if(u == "ca") //convert from US to CA (imperial to metric)
+	{
+		//1 Mile = 1.60934 Kilometers
+		cw = v * 1.60934;
+	}
+	return Math.round(cw);
 }
 
 
@@ -293,7 +372,7 @@ function processForecast(h)
 		var nreq = 1000 - parseInt(hash['numberofreqs']);
 		FUSION.get.node("numreqs").innerHTML = "(" + nreq + ")";
 
-// 		offset for location timezone and user timezone
+		//offset for location timezone and user timezone
  		var rnow = new Date();
  		var tzos = rnow.getTimezoneOffset() / 60;
 		var ofst = 3600 * (tzos + hash['timezone']['offset']);
@@ -302,6 +381,7 @@ function processForecast(h)
 		var wind = 0;
 		var drct = "";
 		var wstr = "N/A 0 " + su;
+		var brng = "";
 		var hobj = {};
 
 		var ipp = 0;
@@ -313,21 +393,32 @@ function processForecast(h)
 		});
 
 		var hrly = hash['hourly'];
+		var hrtp = {};
+		var hrwd = {};
+		var hitp = {};
+		var lotp = {};
 
 		for(var i = 0; i < hrly.length; i++)
 		{
 			ipp = i + 1;
+
 			FUSION.get.node("hrdisplay" + ipp).innerHTML = getTimeFromTs(hrly[i]['time'] + ofst);
 			FUSION.get.node("hrcondtion" + ipp).innerHTML = hrly[i]['summary'];
 			FUSION.get.node("hrtemp" + ipp).innerHTML = Math.round(hrly[i]['temperature']) + "&deg; " + tu;
 			rain = Math.round(hrly[i]['precipProbability'] * 100);
 			rain += "%";
 			FUSION.get.node("hrrainchance" + ipp).innerHTML = rain;
-			wind = hrly[i]['windSpeed'];
+			wind = Math.round(hrly[i]['windSpeed']);
 			drct = hrly[i]['windBearing'];
-			if(hrly[i]['windSpeed'] > 0){
-				wstr = getWindBearing(hrly[i]['windBearing']) + " " + Math.round(hrly[i]['windSpeed']) + " " + su;
-			}
+			brng = wind > 0 ? getWindBearing(drct) : "N/A";
+			wstr = brng + " " + wind + " " + su;
+
+			hrtp = { "type":"temperature", "value":Math.round(hrly[i]['temperature']), "units":units, "text":{ "left":"", "right":"" }};
+			hrwd = { "type":"wind", "value":wind, "units":units, "text":{ "left":brng + " ", "right":"" }};
+
+			FUSION.get.node("hrtemp" + ipp + "_cnvrt").value = JSON.stringify(hrtp);
+			FUSION.get.node("hrwind" + ipp + "_cnvrt").value = JSON.stringify(hrwd);
+
 			FUSION.get.node("hrwind" + ipp).innerHTML = wstr;
 			skycons.add("hricon" + ipp, hrly[i]['icon']);
 		}
@@ -338,30 +429,53 @@ function processForecast(h)
 		var ct = new Date((crnt['time'] + ofst) * 1000);
 		var dstr = fulldays[ct.getDay()] + " / " + months[ct.getMonth()] + " " + ct.getDate() + ", " + ct.getFullYear();
 		FUSION.get.node("date").innerHTML 		= dstr;
+
+		var cntp = { "type":"temperature",
+					 "value":Math.round(crnt['temperature']), "units":units,
+					 "text":{ "left":crnt['summary'] + ", ", "right":"" }};
+
+		FUSION.get.node("condition_cnvrt").value = JSON.stringify(cntp);
 		FUSION.get.node("condition").innerHTML  = crnt['summary'] + ", " + Math.round(crnt['temperature']) + "&deg; " + tu;
 
 		skycons.add("condimg", crnt['icon']);
 
-		var wind = "N/A 0 " + su;
 		var wspd = Math.round(crnt['windSpeed']);
-		if(wspd > 0) {
-			wind = getWindBearing(crnt['windBearing']) + " " + wspd + " " + su;
-		}
+		var wbrg = wspd > 0 ? getWindBearing(crnt['windBearing']) : "N/A";
+		var wind = wbrg + " " + wspd + " " + su;
+
+		var wscv = { "type":"wind", "value":wspd, "units":units, "text":{ "left":wbrg + " ", "right":"" }};
+		FUSION.get.node("wind_cnvrt").value = JSON.stringify(wscv);
+
 		FUSION.get.node("dailyfrc").innerHTML 	= daly[0]['summary'];
 		FUSION.get.node("conditiontext").value 	= daly[0]['summary'];
 		FUSION.get.node("wind").innerHTML		= wind;
 		FUSION.get.node("sunrise").innerHTML	= getTimeFromTs(daly[0]['sunriseTime'] + ofst);
 		FUSION.get.node("sunset").innerHTML		= getTimeFromTs(daly[0]['sunsetTime'] + ofst);
-		FUSION.get.node("high").innerHTML 		= Math.round(daly[0]['temperatureMax']) + "&deg; " + tu;
-		FUSION.get.node("low").innerHTML 		= Math.round(daly[0]['temperatureMin']) + "&deg; " + tu;
+
+		hitp = { "type":"temperature", "value":Math.round(daly[0]['temperatureMax']), "units":units, "text":{ "left":"", "right":"" }};
+		lotp = { "type":"temperature", "value":Math.round(daly[0]['temperatureMin']), "units":units, "text":{ "left":"", "right":"" }};
+
+		FUSION.get.node("high_cnvrt").value = JSON.stringify(hitp);
+		FUSION.get.node("low_cnvrt").value 	= JSON.stringify(lotp);
+		FUSION.get.node("high").innerHTML 	= Math.round(daly[0]['temperatureMax']) + "&deg; " + tu;
+		FUSION.get.node("low").innerHTML 	= Math.round(daly[0]['temperatureMin']) + "&deg; " + tu;
 
 
 		var d = 0;
 		var dstr = "";
 		var k = 0;
+		var hitp = {};
+		var lotp = {};
 		for(var j = 1; j < 5; j++)
 		{
 			k = j + 1;
+
+			hitp = { "type":"temperature", "value":Math.round(daly[j]['temperatureMax']), "units":units, "text":{ "left":"", "right":"" }};
+			lotp = { "type":"temperature", "value":Math.round(daly[j]['temperatureMin']), "units":units, "text":{ "left":"", "right":"" }};
+
+			FUSION.get.node("high" + k + "_cnvrt").value = JSON.stringify(hitp);
+			FUSION.get.node("low" + k + "_cnvrt").value = JSON.stringify(lotp);
+
 			d = new Date((daly[j]['time'] + ofst) * 1000);
 			dstr = days[d.getDay()] + ", " + months[d.getMonth()] + " " + d.getDate();
 			FUSION.get.node("dayofweek" + k).innerHTML  = dstr;

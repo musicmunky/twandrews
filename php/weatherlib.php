@@ -8,7 +8,7 @@
 					Sorry, this isn\'t a real page, so I have nothing to show you :-(
 				</div>
 				<div style="width:100%;font-family:Georgia;font-size:2em;margin-top:30px;margin-bottom:30px;">Wait, here\'s a funny cat!</div>
-				<div style="background-repeat:no-repeat;margin-left:auto;margin-right:auto;width:500px;height:280px;background:url(../logos/cat.gif)"></div>
+				<div style="background-repeat:no-repeat;margin-left:auto;margin-right:auto;width:500px;height:280px;background:url(../images/cat.gif)"></div>
 			</div>');
 	}
 
@@ -95,10 +95,12 @@
 					$hrly = $fi['content']['hourly'];
 					$crnt = $fi['content']['current'];
 					$tmzn = $fi['content']['timezone'];
+					$nreq = $fi['content']['numberofreqs'];
 					$content['daily'] 		= $daly;
 					$content['hourly'] 		= $hrly;
 					$content['current'] 	= $crnt;
 					$content['timezone']	= $tmzn;
+					$content['numberofreqs'] = $nreq;
 				}
 				else
 				{

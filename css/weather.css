@@ -639,9 +639,9 @@ a {
 		width:500px;
 		height:1520px;
 /* 		come back to look at this for mobile browsing */
- 		zoom: 1.3;
-		-moz-transform: scale(1.3);
-		-moz-transform-origin: 0 0;
+/*  		zoom: 1.3; */
+/* 		-moz-transform: scale(1.3); */
+/* 		-moz-transform-origin: 0 0; */
 	}
 
 	.oldcitywrapper {

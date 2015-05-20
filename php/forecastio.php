@@ -6,7 +6,6 @@
 		private $apiurl;
 		private $fordat;
 		private $status;
-		private $concnt;
 		private $units;
 		private $numreq;
 		private $language;
@@ -113,14 +112,14 @@
 				$requrl .= $exclusions ? "&exclude=" . $exclusions : "";
 
 				$content = file_get_contents($requrl);
-				$rsltcon  = json_decode($content, true);
+				$rsltcon = json_decode($content, true);
 
 				$reqstat = explode(" ", $http_response_header[0]);
 				$numreqs = explode(" ", $http_response_header[8]);
 
 				if(!isset($reqstat[1]) || $reqstat[1] != "200")
 				{
-					throw new Exception("Bad result from geocode server - please check parameters and try again");
+					throw new Exception("Bad result from forecast server - please check parameters and try again");
 				}
 
 				$this->setNumReqs($numreqs[1]);
@@ -129,7 +128,7 @@
 			}
 			catch(Exception $e){
 				$this->status = "ERROR: " . $e->getMessage();
-				$this->concnt = -1;
+				$this->setNumReqs(-1);
 				$this->fordat = array("ERROR" => $e->getMessage());
 			}
 		}
