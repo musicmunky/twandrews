@@ -39,7 +39,6 @@ $( document ).ready(function() {
 	}
 
 	var dzip = FUSION.get.node("defaultzipcode").value;
-	var info = {};
 
 	if(supportsHtml5Storage())
 	{
@@ -108,17 +107,15 @@ $( document ).ready(function() {
 function setUnits(u)
 {
 	try {
-		if((validunits.indexOf(u) > -1)){
+		if(validunits.indexOf(u) > -1){
 			localStorage.setItem("defaultunits", u);
 		}
 		else {
-			FUSION.error.logError(err, "Invalid unit parameter supplied - defaulting to US: ");
-			localStorage.setItem("defaultunits", "us");
 			u = "us";
+			FUSION.error.logError(err, "Invalid unit parameter supplied - defaulting to US: ");
+			localStorage.setItem("defaultunits", u);
 		}
 
-		var c = "_cnvrt";
-		var n = "";
 		var f = null;
 		var h = null;
 		var v = {};
@@ -130,8 +127,7 @@ function setUnits(u)
 
 		for(var i = 0; i < cnvrtflds.length; i++)
 		{
-			n = cnvrtflds[i] + c;
-			f = FUSION.get.node(n);
+			f = FUSION.get.node(cnvrtflds[i] + "_cnvrt");
 			h = FUSION.get.node(cnvrtflds[i]);
 			if(typeof f !== null && typeof h !== null)
 			{
@@ -150,7 +146,7 @@ function setUnits(u)
 					}
 				}
 				catch(err) {
-					FUSION.error.logError(err, "Error updating unit data for field " + n + ": ");
+					FUSION.error.logError(err, "Error updating unit data for field " + cnvrtflds[i] + "_cnvrt: ");
 				}
 			}
 		}
@@ -311,13 +307,13 @@ function runSearchResponse(h)
 														"attributes":{"class":"loclinkdiv"}});
 				var lnk = FUSION.lib.createHtmlElement({"type":"a","text":geoinfo.address,
 														"style":{
-															"text-decoration":"none",
+															"textDecoration":"none",
 															"color":"#EEE",
 															"display":"block",
 															"width":"90%",
 															"height":"40px",
-															"margin-left":"5%",
-															"margin-right":"5%"
+															"marginLeft":"5%",
+															"marginRight":"5%"
 														},
 														"onclick":"locationClick('" + JSON.stringify(geoinfo) + "')",
 													    "attributes":{"href":"javascript:void(0)"}});
@@ -464,8 +460,8 @@ function processForecast(h)
 		var d = 0;
 		var dstr = "";
 		var k = 0;
-		var hitp = {};
-		var lotp = {};
+		hitp = {};
+		lotp = {};
 		for(var j = 1; j < 5; j++)
 		{
 			k = j + 1;
@@ -537,7 +533,7 @@ function addCityDiv(h)
 		//begin creating the location box - just a div that holds a link and a span,
 		//pretty straight-forward
 		var ndv = FUSION.lib.createHtmlElement({"type":"div",
-												"style":{ "background-color":"#EEE" },
+												"style":{ "backgroundColor":"#EEE" },
 												"attributes":{
 													"id": "geocodeid" + hash['placeid'], "class":"citydiv" }});
 		var regstr = hash.address;

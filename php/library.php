@@ -596,35 +596,14 @@
 		$firstload 	= (isset($P['firstload']) && !empty($P['firstload']) && $P['firstload'] == 1) ? 1 : 0;
 		$year 		= $P['year'];
 
-		$m_array = array();
+		$html = "<div id='caltable' style='width:100%;height:100%;'>";
 		for($i = 1; $i <= 12; $i++)
 		{
 			$datestr = $year . "-" . $i . "-" . "01";
 			$mname 	 = date("F", strtotime($datestr));
-			$m_array[$mname] = getStephMonthHtml($year, $i, $mname);
+			$html 	.= "<div id='div" . $mname . "' class='monthFloat'>" 	. getStephMonthHtml($year, $i, $mname) . "</div>";
 		}
-
-		//build the full calendar html
-		$html = "<table id='caltable'>
-					<tr>
-						<td><div id='divJanuary' class='monthFloat'>" 	. $m_array['January'] . "</div></td>
-						<td><div id='divFebruary' class='monthFloat'>" 	. $m_array['February'] . "</div></td>
-						<td><div id='divMarch' class='monthFloat'>" 	. $m_array['March'] . "</div></td>
-						<td><div id='divApril' class='monthFloat'>" 	. $m_array['April'] . "</div></td>
-					</tr>
-					<tr>
-						<td><div id='divMay' class='monthFloat'>" 		. $m_array['May'] . "</div></td>
-						<td><div id='divJune' class='monthFloat'>" 		. $m_array['June'] . "</div></td>
-						<td><div id='divJuly' class='monthFloat'>" 		. $m_array['July'] . "</div></td>
-						<td><div id='divAugust' class='monthFloat'>" 	. $m_array['August'] . "</div></td>
-					</tr>
-					<tr>
-						<td><div id='divSeptember' class='monthFloat'>" . $m_array['September'] . "</div></td>
-						<td><div id='divOctober' class='monthFloat'>" 	. $m_array['October'] . "</div></td>
-						<td><div id='divNovember' class='monthFloat'>" 	. $m_array['November'] . "</div></td>
-						<td><div id='divDecember' class='monthFloat'>" 	. $m_array['December'] . "</div></td>
-					</tr>
-				</table>";
+		$html .= "</div>";
 
 		$result = array(
 				"status"  => "success",

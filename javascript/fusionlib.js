@@ -479,10 +479,10 @@ FUSION.lib = {
 
 		var amd = FUSION.lib.createHtmlElement({"type":"div",
 											    "attributes":{"id":mdid, "class":"fl_alert_message_div"},
-											    "style":{"font-size":		fnt+"px",
-														 "background-color":bcl,
+											    "style":{"fontSize":		fnt+"px",
+														 "backgroundColor":bcl,
 														 "color":			col,
-														 "text-align":		txt}});
+														 "textAlign":		txt}});
 
 		var abd = FUSION.lib.createHtmlElement({"type":"div",
 											    "attributes":{"class":"fl_alert_button_div"}});
@@ -647,14 +647,14 @@ FUSION.lib = {
 			else
 			{
 				FUSION.error.logError("","You did not give a type when creating a new HTMLElement - Defaulting to div");
-				return document.createElement("div");
+				el = document.createElement("div");
 			}
 
 			if(attrs && FUSION.get.objSize(attrs) > 0)
 			{
 				var br = FUSION.get.browser();
 				var attrname = "";
-				for (key in attrs)
+				for (var key in attrs)
 				{
 					attrname = key;
 					if(key.match(/^class/i)){
@@ -666,8 +666,16 @@ FUSION.lib = {
 
 			if(styls && FUSION.get.objSize(styls) > 0)
 			{
-				//use jquery to set the style...easier this way
-				jQuery( el ).css(styls);
+				//jQuery( el ).css(styls);
+				var stylename = "";
+				for (var key in styls)
+				{
+					stylename = key;
+					if(key.match(/^float/)){
+						stylename = "cssFloat";
+					}
+					el.style[stylename] = styls[key];
+				}
 			}
 
 			if(text && !FUSION.lib.isBlank(text))

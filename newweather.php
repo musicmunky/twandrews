@@ -6,7 +6,6 @@
 	date_default_timezone_set('America/New_York');
 
 	$title = "MyWeather";
-
 /*
 	$cmdstr = shell_exec("ps -aef | grep php | grep -v grep");
 	$matches = array();
@@ -51,9 +50,11 @@
 						</div>
 						<div class='tempdiv fl'>
 							<span id='high{$i}' class='wrmclr'></span>
+							<input type='hidden' id='high{$i}_cnvrt' value='' />
 						</div>
 						<div class='tempdiv fr'>
 							<span id='low{$i}' class='cldclr'></span>
+							<input type='hidden' id='low{$i}_cnvrt' value='' />
 						</div>
 					</div>";
 	}
@@ -69,11 +70,13 @@
 								<canvas id='hricon{$j}' width='40' height='40'></canvas>
 							</div>
 							<div class='hrtimediv' id='hrtemp{$j}'></div>
+							<input type='hidden' id='hrtemp{$j}_cnvrt' value='' />
 							<div class='hrtimediv' id='hrrain{$j}'>
 								<img src='images/iconic/rain-2x.png' class='hrrainchanceicon' />
 								<span id='hrrainchance{$j}'></span>
 							</div>
 							<div class='hrtimediv' id='hrwind{$j}'></div>
+							<input type='hidden' id='hrwind{$j}_cnvrt' value='' />
 						</div>
 					</div>";
 	}
@@ -87,7 +90,7 @@
 		<meta name="viewport" content="initial-scale=1, maximum-scale=1">
 		<title><?php echo $title; ?></title>
 		<link rel="shortcut icon" href="images/faviconweather.ico" />
-		<link rel='stylesheet' type="text/css" href='css/newweather.css'  media="screen" charset="utf-8">
+		<link rel='stylesheet' type="text/css" href='css/weather.css'  media="screen" charset="utf-8">
 		<link rel='stylesheet' type="text/css" href='css/fusionlib.css' media="screen" charset="utf-8">
 		<link rel='stylesheet' type="text/css" href='css/jquery-ui.min.css' media="screen" charset="utf-8">
 		<link rel='stylesheet' type="text/css" href='css/bootstrap.css' media="screen" charset="utf-8">
@@ -137,11 +140,11 @@
 					<div id="locselect" class="locdiv"></div>
 				</div>
 				<div class="header-units">
-					<span class="fl" class="unitspan">Units: </span>
+					<span class="fl unitspan">Units: </span>
 					<input class="css-checkbox" type="radio" name="unitradio" id="unitsus" value="us" onclick="setUnits(this.value)" checked />
-					<label class="css-label" for="unitsus">US</label>
+					<label class="css-label" for="unitsus">F</label>
 					<input class="css-checkbox" type="radio" name="unitradio" id="unitsca" value="ca" onclick="setUnits(this.value)" />
-					<label class="css-label" for="unitsca">EU</label>
+					<label class="css-label" for="unitsca">C</label>
 				</div>
 			</div>
 		</div>
@@ -161,6 +164,7 @@
 								<div class="loccanvaswrapper">
 									<canvas width="50" height="50" id="condimg"></canvas>
 									<span id="condition"></span>
+									<input type="hidden" id="condition_cnvrt" value="" />
 								</div>
 							</div>
 						</div>
@@ -177,6 +181,7 @@
 							<div class="tfcdivinner" id="windinfo">
 								<div id="windlabel">Wind:</div>
 								<div id="wind"></div>
+								<input type="hidden" id="wind_cnvrt" value="" />
 							</div>
 							<div class="tfcdivinner" id="suntimes">
 								<div class="w100fl">
@@ -191,9 +196,11 @@
 							<div class="tfcheader todayhilo">
 								<div class="innerw50fl">
 									<span class="wrmclr" id="high"></span>
+									<input type="hidden" id="high_cnvrt" value="" />
 								</div>
 								<div class="innerw50fl">
 									<span class="cldclr" id="low"></span>
+									<input type="hidden" id="low_cnvrt" value="" />
 								</div>
 							</div>
 						</div>
@@ -218,7 +225,6 @@
 						<span id="numreqs" style="color:#CCC"></span>
 					</span>
 				</div>
-
 			</div>
 		</div>
 	</body>

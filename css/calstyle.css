@@ -65,11 +65,13 @@ a {
 	float:right;
 	cursor:pointer;
 }
+
 .main-content {
 	width:1065px;
 	margin-left:auto;
 	margin-right:auto;
 	margin-top:85px;
+	height:850px;
 }
 .title {
 	width:100%;
@@ -309,17 +311,17 @@ a {
 	cursor:pointer;
 }
 
-div.monthFloat {
+.monthFloat {
 	border: 1px solid;
     float: left;
-    margin: 5px;
+    margin: 7px;
     width: 250px;
 }
-div.month {
+.month {
 	width: 250px;
 }
 
-td.calendar-header-day {
+.calendar-header-day {
 	border: 1px solid #000;
 	font-family: 'Open Sans', serif;
     font-size: 11px;
@@ -328,28 +330,119 @@ td.calendar-header-day {
     width: 30px;
 	background-color: #CCFFCC;
 }
-td.calendar-day-off {
+.calendar-day-off {
 	font-size:14px;
 	text-align: center;
 	border:1px solid #000;
 }
-td.calendar-day-work {
+.calendar-day-work {
 	font-size:14px;
 	font-weight: bold;
 	color: red;
 	text-align: center;
 	border: 1px solid #000;
 }
-td.calendar-day-kelly {
+.calendar-day-kelly {
 	font-size:14px;
 	font-weight: bold;
 	color: blue;
 	text-align: center;
 	border: 1px solid #000;
 }
-table.calendar-table {
+.calendar-table {
 	border: 1px solid;
     border-collapse: collapse;
     height: 250px;
     width: 100%;
+}
+
+@media (max-width: 1065px) {
+/*
+	.header {
+		height:183px;
+	}
+
+	.header-logo,
+	.header-units,
+	.header-search {
+		float:none;
+		height:33%;
+		padding:0px;
+		margin-left:auto;
+		margin-right:auto;
+	}
+
+	.locdiv {
+		top:108px;
+		right:calc(50% - 131px);
+		border-radius: 4px;
+	}
+
+	.day {
+		margin-bottom:20px;
+	}
+
+	.tfcbtm {
+		margin-top:30px;
+	}
+	.hour {
+		margin-top:20px;
+	}
+
+	.hourwrapper {
+		margin-top:0px;
+	}
+*/
+/*
+	.main-content {
+		position:absolute;
+		width:260px;
+		height:3230px;
+ 		zoom: 2;
+		-moz-transform: scale(2);
+		-moz-transform-origin: 0 0;
+		left:calc(50% - 150px);
+	}
+	.monthFloat {
+		float:none;
+		margin:15px auto;
+	}
+	.calendar-day-off,
+	.calendar-day-work,
+	.calendar-day-kelly {
+		font-size:1em;
+	}
+*/
+/*
+	.oldcitywrapper {
+		padding-top:184px;
+		height:84px;
+		width:520px;
+	}
+
+	.citydiv {
+		width:50%;
+		height:50%;
+	}
+
+	.w50fl {
+		float:none;
+		width:100%;
+	}
+
+	.footer {
+		height:62px;
+	}
+
+	.innerfooter{
+		width:520px;
+	}
+
+	.footer-content-right,
+	.footer-content-center,
+	.footer-content-left {
+		width:100%;
+		text-align:center;
+	}
+*/
 }

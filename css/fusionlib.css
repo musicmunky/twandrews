@@ -6,6 +6,12 @@ body.wait, body.wait *{
     cursor: wait !important;
 }
 
+button, input, optgroup, select, textarea {
+	color: inherit;
+	font: inherit;
+/* 	margin: 0; */
+}
+
 .fl_alert_wrapper {
 	background-color:#FFF;
 	box-shadow: 0 0 20px 5px;

@@ -112,11 +112,7 @@
 			</div>
 		</div>
 		<div id="maincontent" class="main-content">
-			<div style="width:100%;">
-				<div id="tablediv" style="float:left;">
-					<?php echo $h['content']['table']; ?>
-				</div>
-			</div>
+			<?php echo $h['content']['table']; ?>
 		</div>
 		<div style="width:100%;"></div>
 		<div class="footer">

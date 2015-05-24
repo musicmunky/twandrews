@@ -404,7 +404,7 @@ a {
 
 .todayhilo {
 	border-top:1px solid #EEE;
-	font-size:25px;
+	font-size:25px !important;
 	line-height:1.3em;
 }
 

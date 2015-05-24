@@ -345,7 +345,8 @@ function refreshCalendarResponse(h)
 				});
 				FUSION.get.node("footeryear").innerHTML = d['t'];
 			});
-			FUSION.get.node("tablediv").innerHTML = hash['table'];
+			//FUSION.get.node("tablediv").innerHTML = hash['table'];
+			FUSION.get.node("maincontent").innerHTML = hash['table'];
 		}
 		catch(err) {
 			FUSION.error.logError(err);
