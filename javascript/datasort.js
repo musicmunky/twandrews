@@ -1,4 +1,5 @@
 (function ($) {
+
 	$.fn.datasort = function(options) {
 		var defaults = {
 			//set the default parameter values

@@ -1,3 +1,4 @@
+
 function validateForm()
 {
 	var user = document.getElementById("txtusername").value;
