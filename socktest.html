@@ -1,10 +1,9 @@
 <html>
 	<head>
 		<title>WebSocket</title>
-
 		<style type="text/css">
 			#log {
-				width:600px;
+				width:778px;
 				height:300px;
 				border:1px solid #7F9DB9;
 				overflow:auto;
@@ -14,128 +13,30 @@
 				width:300px;
 			}
 		</style>
-
-		<script type="text/javascript">
-			var socket;
-
-			function init() {
-				var host = "ws://45.55.189.112:9000"; // SET THIS TO YOUR SERVER
-
-				try
-				{
-					socket = new WebSocket(host);
-					log('WebSocket - status ' + socket.readyState);
-
-					socket.onopen = function(msg)
-					{
-						if(this.readyState == 1)
-						{
-							log("We are now connected to websocket server. readyState = " + this.readyState);
-						}
-					};
-
-					//Message received from websocket server
-					socket.onmessage = function(msg)
-					{
-						log(" [ + ] Received: " + msg.data);
-					};
-
-					//Connection closed
-					socket.onclose = function(msg)
-					{
-						log("Disconnected - status " + this.readyState);
-					};
-
-					socket.onerror = function()
-					{
-						log("Some error");
-					}
-				}
-
-				catch(ex)
-				{
-					log('Some exception : '  + ex);
-				}
-
-				$("msg").focus();
-			}
-
-			function send()
-			{
-				var txt, msg;
-				txt = $("msg");
-				msg = txt.value;
-
-				if(!msg)
-				{
-					alert("Message can not be empty");
-					return;
-				}
-
-				txt.value="";
-				txt.focus();
-
-				try
-				{
-					socket.send(msg);
-					log('Sent : ' + msg);
-				}
-				catch(ex)
-				{
-					log(ex);
-				}
-			}
-
-			function quit()
-			{
-				if (socket != null)
-				{
-					log("Goodbye!");
-					socket.close();
-					socket=null;
-				}
-			}
-
-			function reconnect()
-			{
-				quit();
-				init();
-			}
-
-			// Utilities
-			function $(id)
-			{
-				return document.getElementById(id);
-			}
-
-			function log(msg)
-			{
-				$('log').innerHTML += '<br />' + msg;
-				$('log').scrollTop = $('log').scrollHeight;
-			}
-
-			function onkey(event)
-			{
-				if(event.keyCode==13)
-				{
-					send();
-				}
-			}
-		</script>
-
+		<link rel='stylesheet' type="text/css" href='css/fusionlib.css' media="screen" charset="utf-8">
+		<script language="javascript" type="text/javascript" src="javascript/jquery-1.11.0.min.js"></script>
+		<script language="javascript" type="text/javascript" src="javascript/fusionlib.js"></script>
+		<script language="javascript" type="text/javascript" src="javascript/wsjs.js"></script>
 	</head>
 
-	<body onload="init()">
+	<body onload="initWs()">
+		<div style="width:800px;margin-left:auto;margin-right:auto;">
 
-		<h3>WebSocket</h3>
+			<h3 style="width:100%;">WebSocket</h3>
 
-		<div id="log"></div>
+			<div id="log"></div>
 
-		Enter Message <input id="msg" type="textbox" onkeypress="onkey(event)"/>
+			<div style="width:100%;margin-top:10px;margin-bottom:10px;">
+				<label>Enter Message:</label>
+				<textarea id="msg" style="width:100%;height:100px;resize:none;" onkeypress="onkey(event)"></textarea>
+			</div>
 
-		<button onclick="send()">Send</button>
-		<button onclick="quit()">Quit</button>
-		<button onclick="reconnect()">Reconnect</button>
-
+			<div style="width:100%;">
+				<button onclick="sendWs()">Send</button>
+				<button onclick="quitWs()">Quit</button>
+				<button onclick="reconnectWs()">Reconnect</button>
+				<button onclick="clearWs()">Clear Log</button>
+			</div>
+		</div>
 	</body>
 </html>

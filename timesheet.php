@@ -69,7 +69,7 @@
 		$maintablehtml = $tsinfo['content']['mainhtml'];
 		$sidetablehtml = $tsinfo['content']['sidehtml'];
 		$finalsidetablehtml = $tsinfo['content']['finalhtml'];
-		$height = $tsinfo['content']['height'];
+// 		$height = $tsinfo['content']['height'];
 		$headstring = $tsinfo['content']['headstr'];
 
 		$nameinfo = mysql_fetch_assoc(mysql_query("SELECT FIRST, LAST FROM eventadmin WHERE ID=" . $_SESSION['userid'] . ";"));

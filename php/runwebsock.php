@@ -23,8 +23,12 @@ class echo_server extends WebSocketServer
 		}
 		else
 		{
-			$reply = "Thank you for the message : $message";
+			$reply = "Thank you for the message: '$message'";
 		}
+
+		//$u = var_export($user, true);
+		//$u = preg_replace('/\\n/', "<br>", $u);
+		//$reply = $reply . "<br><br><br>User Info:<br>" . $u;
 
 		$this->send($user, $reply);
 
