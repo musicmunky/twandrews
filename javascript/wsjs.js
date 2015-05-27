@@ -104,7 +104,6 @@ function restartApacheResponse(h)
 function initWs() {
 	//var host = "ws://45.55.189.112:9000"; // SET THIS TO YOUR SERVER
 	var host = "ws://twandrews.com:80/wschat"; // SET THIS TO YOUR SERVER
-// 	var host = "ws://localhost/wschat"; // SET THIS TO YOUR SERVER
 
 	try
 	{
@@ -115,7 +114,12 @@ function initWs() {
 		{
 			if(this.readyState == 1)
 			{
-				logWs("We are now connected to websocket server. readyState = " + this.readyState + "<br>MESSAGE: " + msg.data);
+				var data = "";
+				try {
+					data = JSON.stringify(msg);
+				}
+				catch(err) {}
+				logWs("We are now connected to websocket server. readyState = " + this.readyState + "<br>Data: " + data);
 			}
 		};
 
