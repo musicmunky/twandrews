@@ -40,7 +40,8 @@
 			//$this->stdout($message);
 			$message = $this->frame($message, $user);
 			$result = socket_write($user->socket, $message, strlen($message));
-			//$this->stdout("MESSAGE IS: " . $message);
+			$this->stdout("\n\n\nRESULT IS: " . $result . "\n\n\n");
+			$this->stdout("\n\n\nMESSAGE IS: " . $message . "\n\n\n");
 		}
 
 		/**

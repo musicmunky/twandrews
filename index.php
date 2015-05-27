@@ -91,13 +91,13 @@
 			</div>
 			<div class="lidiv">
 				<ul class="nav nav-pills nav-stacked" style="margin-top:10px;margin-bottom:10px;">
-					<li <?php echo $prdtext; ?>><a href="timesheet" target="_blank">
+					<li <?php echo $prdtext; ?>><a href="timesheet.php" target="_blank">
 							<span class="glyphicon glyphicon-ok-sign navspan nsokay" aria-hidden="true"></span>
 							Tim's Timesheet</a></li>
 					<li <?php echo $prdtext; ?>><a href="steph.php" target="_blank">
 							<span class="glyphicon glyphicon-ok-sign navspan nsokay" aria-hidden="true"></span>
 							Steph's Work Schedule</a></li>
-					<li <?php echo $prdtext; ?>><a href="weather" target="_blank">
+					<li <?php echo $prdtext; ?>><a href="weather.php" target="_blank">
 							<span class="glyphicon glyphicon-ok-sign navspan nsokay" aria-hidden="true"></span>
 							Weather App</a></li>
 					<li <?php echo $prdtext; ?>><a href="adminer/andrewsdb.php" target="_blank">
@@ -109,10 +109,10 @@
 					<li <?php echo $prdtext; ?>><a href="https://github.com/musicmunky/twandrews" target="_blank">
 							<span class="glyphicon glyphicon-ok-sign navspan nsokay" aria-hidden="true"></span>
 							Github</a></li>
-					<li <?php echo $devtext; ?>><a href="resume" target="_blank">
+					<li <?php echo $devtext; ?>><a href="resume.php" target="_blank">
 							<span class="glyphicon glyphicon-exclamation-sign navspan nswarning" aria-hidden="true"></span>
 							Tim's Resume</a></li>
-					<li <?php echo $devtext; ?>><a href="schedule" target="_blank">
+					<li <?php echo $devtext; ?>><a href="schedule.php" target="_blank">
 							<span class="glyphicon glyphicon-exclamation-sign navspan nswarning" aria-hidden="true"></span>
 							Andrews Family Schedule</a></li>
 					<li <?php echo $devtext; ?>><a href="training.php" target="_blank">
@@ -121,7 +121,7 @@
 					<li <?php echo $devtext; ?>><a href="steph/stephtest.php" target="_blank">
 							<span class="glyphicon glyphicon-exclamation-sign navspan nswarning" aria-hidden="true"></span>
 							Recipe Project</a></li>
-					<li <?php echo $devtext; ?>><a href="socktest.html" target="_blank">
+					<li <?php echo $devtext; ?>><a href="socktest.php" target="_blank">
 							<span class="glyphicon glyphicon-exclamation-sign navspan nswarning" aria-hidden="true"></span>
 							WebSockets Testing</a></li>
 

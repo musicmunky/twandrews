@@ -87,7 +87,7 @@
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-		<meta name="viewport" content="initial-scale=1, maximum-scale=1">
+		<meta name="viewport" content="initial-scale=1, maximum-scale=1" />
 		<title><?php echo $title; ?></title>
 		<link rel="shortcut icon" href="images/faviconweather.ico" />
 		<link rel='stylesheet' type="text/css" href='css/weather.css'  media="screen" charset="utf-8">
@@ -107,7 +107,6 @@
 	<body>
 		<!-- default to NYC if there's no localStorage -->
 		<input type="hidden" id="defaultzipcode" value="10001" />
-
 		<div id="header" class="header">
 			<div id="headercont" class="header-content">
 				<div class="header-logo">
