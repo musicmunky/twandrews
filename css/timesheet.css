@@ -17,7 +17,7 @@ body,html {
 	border: 0px;
 	padding: 0px;
 	margin: 0px;
-	height:100%;
+	height: calc(100% - 30px) !important;
 	width:100%;
 	background-color: #FFFFFF;
 	font-family: 'Open Sans', serif;
@@ -51,6 +51,15 @@ th {
 table {
 	border-collapse:collapse;
 	font-size:12px;
+}
+
+.mainwrapper {
+	width:1100px;
+	margin-left:auto;
+	margin-right:auto;
+	background-color:#EFEFEF;
+	height:100%;
+	margin-top:60px;
 }
 
 .navbuttons {
@@ -203,7 +212,8 @@ input[type=button], input[type=submit] {
 }
 
 input[type=button]:hover, input[type=submit]:hover {
-	opacity: .8;
+/* 	opacity: .8; */
+	background-color:#EFEFEF !important;
 }
 
 .mainloginclass {
@@ -327,16 +337,96 @@ input:focus {
 	line-height:1.5;
 }
 .header-nav {
-	padding:25px;
+	padding:18px;
 	float:right;
 	cursor:pointer;
 }
 
 .header-search {
-	float:right;
-	height:100%;
-	padding-right:50px;
-	width:320px;
+    float: left;
+    height: 100%;
+    padding-right: 10px;
+    width: 200px;
+}
+
+.nav-buttons {
+	background-color: #fff !important;
+	border: 1px solid #d6d6d6 !important;
+	clear: both;
+	color: #333 !important;
+	cursor: pointer;
+	line-height: 34px;
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+.container {
+    background-color: #FFF;
+    display: none;
+    margin-left: -150px;
+    margin-top: 18px;
+    position: fixed;
+    text-align: left;
+    width: 225px;
+    z-index: 999;
+	height:100px;
+	box-shadow: 0 3px 4px 0 #666;
+	border-top:2px solid #ccc;
+}
+
+.container-open {
+	display: block;
+}
+
+.noselect {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.menuopen {
+	background-image:url(../images/iconic/chevron-bottom-2x.png);
+	background-repeat:no-repeat;
+	background-size: 12px 12px;
+}
+
+.menuclose {
+	background-image:url(../images/iconic/chevron-top-2x.png);
+	background-repeat:no-repeat;
+	background-size: 12px 12px;
+}
+
+.legcont {
+	float: left;
+	height: 50%;
+/* 	margin-top: 10px; */
+	width: 100%;
+/* 	margin-left:10px; */
+}
+
+.legcont:hover {
+	background-color:#EEE;
+}
+
+#legworktext:hover, #legkellytext:hover, #legholidaytext:hover, #legpaydaytext:hover {
+	font-weight:bold;
+}
+
+.legexmpl {
+	background-color: #fff;
+	border: 1px solid #000;
+	border-radius:4px;
+	float: left;
+	height: 22px;
+	font-size:14px;
+	margin-right: 10px;
+	margin-top: -3px;
+	padding-top: 4px;
+	text-align: center;
+	width: 30px;
 }
 
 .main-content {

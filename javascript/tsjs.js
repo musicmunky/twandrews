@@ -9,6 +9,11 @@ $( document ).ready(function() {
 		close: function( event, ui ) { clearNewTimeForm(); }
 	});
 
+	jQuery('#legendmenu').click(function() {
+		jQuery(".container").toggleClass("container-open");
+		jQuery("#legud").toggleClass("menuopen menuclose");
+	});
+
 });
 
 
@@ -99,7 +104,8 @@ function refreshTimesheet()
 				year:  yr,
 				month: mn,
 			    userid: ui,
-				firstload: 0},
+				firstload: 0
+		},
 		success: function(result){
 			var response = JSON.parse(result);
 			if(response['status'] == "success")
@@ -110,7 +116,7 @@ function refreshTimesheet()
 				FUSION.lib.modifyIETable("maintabletbody", mainhtml);
 				FUSION.lib.modifyIETable("sidetabletbody", sidehtml);
 
-				var wh = FUSION.get.pageHeight();
+				var wh = FUSION.get.pageHeight() - 60;
 				FUSION.get.node("mainwrapper").style.height = wh + "px";
 			}
 			FUSION.set.overlayMouseNormal();

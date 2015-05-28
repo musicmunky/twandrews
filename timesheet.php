@@ -69,11 +69,11 @@
 		$maintablehtml = $tsinfo['content']['mainhtml'];
 		$sidetablehtml = $tsinfo['content']['sidehtml'];
 		$finalsidetablehtml = $tsinfo['content']['finalhtml'];
-// 		$height = $tsinfo['content']['height'];
 		$headstring = $tsinfo['content']['headstr'];
 
 		$nameinfo = mysql_fetch_assoc(mysql_query("SELECT FIRST, LAST FROM eventadmin WHERE ID=" . $_SESSION['userid'] . ";"));
 		$name = $nameinfo['FIRST'] . " " . $nameinfo['LAST'];
+		$fname = $nameinfo['FIRST'];
 	}
 ?>
 
@@ -82,58 +82,83 @@
 	<head>
 		<title>Tim's Work Schedule</title>
 		<link rel="icon" type="image/png" href="images/calicon.png">
-		<link rel='stylesheet' href='css/style.css' type="text/css" media="screen" charset="utf-8">
+		<link rel='stylesheet' href='css/timesheet.css' type="text/css" media="screen" charset="utf-8">
 		<link rel='stylesheet' href='css/fusionlib.css' type="text/css" media="screen" charset="utf-8">
 		<link rel='stylesheet' href='css/jquery-ui.min.css' type="text/css" media="screen" charset="utf-8">
 		<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans">
-		<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Lato">
-		<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Ubuntu">
 		<script language="javascript" type="text/javascript" src="javascript/jquery-1.11.0.min.js"></script>
 		<script language="javascript" type="text/javascript" src="javascript/jquery-ui-1.10.4.custom.min.js"></script>
 		<script language="javascript" type="text/javascript" src="javascript/fusionlib.js"></script>
 		<script language="javascript" type="text/javascript" src="javascript/tsjs.js"></script>
 	</head>
 	<body>
-		<!--<div id="mainwrapper" style="width:1100px;margin-left:auto;margin-right:auto;background-color:#EFEFEF;height:<?php //echo $height; ?>;">-->
-		<div id="mainwrapper" style="width:1100px;margin-left:auto;margin-right:auto;background-color:#EFEFEF;height:100%;">
-			<div id="headwrapper" class="wrapper" style="height:120px;border-bottom:1px solid;margin:10px;padding:0px;">
-				<div style="float: right; position: relative; margin-bottom: -55px;">
-					<label style="display:block;margin-right:5px;font-size:12px;">Welcome, <?php echo $name; ?>!</label>
-					<a href="timesheet.php?logout" 
-					   style="display:block;float:right;" title="logout">
-						 <img src="images/logout.png" style="height: 15px; width: 15px;" />
-					</a><br />
-					<a style="display:block;font-size:12px;text-decoration:none;float:right;margin-right:20px;margin-top:10px;" href="scheduleadmin.php">
-						Update Name/Password
-					</a>
-				</div>
-				<div id="headrowtop" style="display:block;float:left;width:100%;height:60px;text-align:center;">
-					<span style="display:block;margin-top:10px;font-size:30px;">Work Schedule</span>
-				</div>
 
-				<div style="float:left;width:300px;">
-					<div style="width:100%;margin-bottom:10px;">
-						<label style="width:175px;">Please select a Month: </label>
-						<select id="month" style="width:90px;" onchange="refreshTimesheet()">
-							<?php echo $monthhtml; ?>
-						</select>
-					</div>
-					<div style="width:100%;">
-						<label style="width:175px;">Please select a Year: </label>
-						<select id="year" style="width:90px;" onchange="refreshTimesheet()">
-							<?php echo $yearhtml; ?>
-						</select>
+		<div id="header" class="header">
+			<div id="headercont" class="header-content">
+				<div class="header-logo">
+					<div class="logowrapper">
+						<div class="title">
+							<div id="titlediv" class="titletext">
+								MySchedule
+							</div>
+						</div>
 					</div>
 				</div>
-
-				<div style="margin-bottom:10px;float:left;height:50px;width:400px;margin-left:50px;">
-					<input id="previousbutton" class="navbuttons" type="button"
-						   value="<< Prev Month" onclick="getPreviousMonth();" style="margin-left:20px;" />
-					<input id="nextbutton" class="navbuttons" type="button"
-						   value="Next Month >>" onclick="getNextMonth();" style="margin-left:200px;" />
+				<div class="h100fl" style="float:left;width:400px;height:100%;">
+					<div style="width:100%;height:100%;">
+						<div class="h100fl" style="width:100px;line-height:56px;text-align:center;">
+							<input id="previousbutton" class="nav-buttons" type="button" value="<< Prev" onclick="getPreviousMonth();" />
+						</div>
+						<div class="h100fl" style="width:100px;line-height:60px;">
+							<select id="month" style="width:90px;" onchange="refreshTimesheet()">
+								<?php echo $monthhtml; ?>
+							</select>
+							<span style="">,</span>
+						</div>
+						<div class="h100fl" style="width:100px;line-height:60px;">
+							<select id="year" style="width:90px;margin-left:10px;" onchange="refreshTimesheet()">
+								<?php echo $yearhtml; ?>
+							</select>
+						</div>
+						<div class="h100fl" style="width:100px;line-height:56px;text-align:center;">
+							<input id="nextbutton" class="nav-buttons" type="button" value="Next >>" onclick="getNextMonth();" />
+						</div>
+					</div>
 				</div>
-
+				<div style="float:right;">
+					<div class="header-search" style="width:110px;">
+						<div id="legendmenu" class="header-nav">
+							<span>Menu</span>
+							<span id="legud" class="menuopen"
+								  style="display:block;float:right;font-size:12px;margin-top:8px;margin-left:5px;width:20px;height:20px;"></span>
+							<div class="container">
+								<div class="legcont">
+									<div id="legholidaytext" class="noselect" style="line-height: 3em; margin-left: 15px;">
+										<a style="text-decoration: none; display: block; width: 100%; height: 100%;" href="scheduleadmin.php">
+											Update Name/Password
+										</a>
+									</div>
+								</div>
+								<div class="legcont">
+									<div id="legholidaytext" class="noselect" style="line-height: 3em; margin-left: 15px;">
+										<a href="timesheet.php?logout" style="text-decoration: none; display: block; width: 100%; height: 100%;">
+											Logout
+										</a>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="header-search">
+						<div class="w100fl h100fl" id="srchcont" style="line-height:60px;">
+							<label style="display:block;margin-right:5px;">Welcome, <?php echo $fname; ?>!</label>
+							<img src='images/iconic/person-2x.png' style="width:12px;" />
+						</div>
+					</div>
+				</div>
 			</div>
+		</div>
+		<div id="mainwrapper" class="mainwrapper">
 			<div id="contentwrapper" class="wrapper">
 				<div id="maintablewrapper" style="width:680px;float:left;">
 					<table id="maintable" style="margin-top:20px;">
