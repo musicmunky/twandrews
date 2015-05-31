@@ -61,8 +61,8 @@ for ($i=0; $i<count($allFiles); $i++) {
 	if(
 		// A local folder that isn't the doc root or starts with the doc root
 		($_GET['action']!="getRemoteFile" &&
-			rtrim($allFiles[$i],"/") !== rtrim($docRoot,"/") &&
-			strpos(realpath(rtrim(dirname($allFiles[$i]),"/")),realpath(rtrim($docRoot,"/"))) !== 0
+			rtrim($allFiles[$i],"/") !== rtrim($docRoot,"/") && 0
+			//strpos(realpath(rtrim(dirname($allFiles[$i]),"/")),realpath(rtrim($docRoot,"/"))) !== 0
 		) ||
 		// Or a remote URL that doesn't start http
 		($_GET['action']=="getRemoteFile" && strpos($allFiles[$i],"http") !== 0)
