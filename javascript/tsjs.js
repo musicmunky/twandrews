@@ -19,8 +19,6 @@ $( document ).ready(function() {
 
 function getNextMonth()
 {
-
-	//for(var i = 0; i < 100; i++){ console.log(100 - i); }
 	var dorefresh = true;
 	var yrlen = FUSION.get.node("year").length;
 	var mnlen = FUSION.get.node("month").length;

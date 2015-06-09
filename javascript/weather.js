@@ -245,7 +245,7 @@ function runSearch(s)
 	val = val.replace(/\s/ig, "+");
 	var units = $("input[name=unitradio]:checked").val();
 	var info = {
-		"type": "POST",
+		"type": "GET",
 		"path": "php/weatherlib.php",
 		"data": {
 			"method": 		"getWeatherInfo",
@@ -264,7 +264,7 @@ function locationClick(h)
 	var hash = JSON.parse(h);
 	var units = $("input[name=unitradio]:checked").val();
 	var info = {
-		"type": "POST",
+		"type": "GET",
 		"path": "php/weatherlib.php",
 		"data": {
 			"method": 		"getForecastInfo",
