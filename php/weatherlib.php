@@ -1,5 +1,8 @@
 <?php
-	if(isset($_POST['libcheck']) && !empty($_POST['libcheck'])){
+
+	$REQ = $_REQUEST;
+
+	if(isset($REQ['libcheck']) && !empty($REQ['libcheck'])){
 		define('LIBRARY_CHECK', true);
 	}
 	if(!defined('LIBRARY_CHECK')){
@@ -22,30 +25,35 @@
 
 	$webaddress = "http://twandrews.com/";
 
-	if(isset($_POST['method']) && !empty($_POST['method']))
+	if(isset($REQ['method']) && !empty($REQ['method']))
 	{
-		$method = $_POST['method'];
+		$method = $REQ['method'];
 		$method = urldecode($method);
 		$method = mysql_real_escape_string($method);
 
 		switch($method)
 		{
-			case 'getGoogleInfo': getGoogleInfo($_POST);
+			case 'getGoogleInfo': getGoogleInfo($REQ);
 				break;
-			case 'getForecastInfo': getForecastInfo($_POST);
+			case 'getForecastInfo': getForecastInfo($REQ);
 				break;
-			case 'getWeatherInfo': getWeatherInfo($_POST);
+			case 'getWeatherInfo': getWeatherInfo($REQ);
 				break;
-			default: noFunction($_POST);
+			default: noFunction($REQ['method']);
 				break;
 		}
-		mysql_close($link);
+	}
+	else
+	{
+		noFunction("NO METHOD SPECIFIED");
 	}
 
+	mysql_close($link);
 
-	function noFunction()
+
+	function noFunction($m)
 	{
-		$func = $_POST['method'];
+		$func = $m;
 		$result = array(
 				"status"	=> "failure",
 				"message"	=> "User attempted to call function: " . $func . " which does not exist",

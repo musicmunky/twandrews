@@ -1,5 +1,8 @@
 <?php
-	if(isset($_POST['libcheck']) && !empty($_POST['libcheck'])){
+
+	$REQ = $_REQUEST;
+
+	if(isset($REQ['libcheck']) && !empty($REQ['libcheck'])){
 		define('LIBRARY_CHECK', true);
 	}
 	if(!defined('LIBRARY_CHECK')){
@@ -19,52 +22,56 @@
 
 	$webaddress = "http://twandrews.com/";
 
-	if(isset($_POST['method']) && !empty($_POST['method']))
+	if(isset($REQ['method']) && !empty($REQ['method']))
 	{
-		$method = $_POST['method'];
+		$method = $REQ['method'];
 		$method = urldecode($method);
 		$method = mysql_real_escape_string($method);
 
 		switch($method)
 		{
-			case 'getActivityInfo': getActivityInfo($_POST);
+			case 'getActivityInfo': getActivityInfo($REQ);
 				break;
-			case 'getMonthInfo': getMonthInfo($_POST);
+			case 'getMonthInfo': getMonthInfo($REQ);
 				break;
-			case 'getDateInfo': getDateInfo($_POST);
+			case 'getDateInfo': getDateInfo($REQ);
 				break;
-			case 'addUpdateTimeEntry': addUpdateTimeEntry($_POST);
+			case 'addUpdateTimeEntry': addUpdateTimeEntry($REQ);
 				break;
-			case 'updateUser': updateUser($_POST);
+			case 'updateUser': updateUser($REQ);
 				break;
-			case 'createUser': createUser($_POST);
+			case 'createUser': createUser($REQ);
 				break;
-			case 'updatePassword': updatePassword($_POST);
+			case 'updatePassword': updatePassword($REQ);
 				break;
-			case 'getWorkingDays': getWorkingDays($_POST);
+			case 'getWorkingDays': getWorkingDays($REQ);
 				break;
-			case 'getStephScheduleHtml': getStephScheduleHtml($_POST);
+			case 'getStephScheduleHtml': getStephScheduleHtml($REQ);
 				break;
-			case 'getStephDateInfo': getStephDateInfo($_POST);
+			case 'getStephDateInfo': getStephDateInfo($REQ);
 				break;
-			case 'changeStephDateInfo': changeStephDateInfo($_POST);
+			case 'changeStephDateInfo': changeStephDateInfo($REQ);
 				break;
-			case 'getFwInfo': getFwInfo($_POST);
+			case 'getFwInfo': getFwInfo($REQ);
 				break;
-			case 'setFwInfo': setFwInfo($_POST);
+			case 'setFwInfo': setFwInfo($REQ);
 				break;
-			case 'getWeatherInfo': getWeatherInfo($_POST);
+			case 'getWeatherInfo': getWeatherInfo($REQ);
 				break;
-			default: noFunction($_POST);
+			default: noFunction($REQ['method']);
 				break;
 		}
-		mysql_close($link);
+	}
+	else
+	{
+		noFunction("NO METHOD SPECIFIED");
 	}
 
+	mysql_close($link);
 
-	function noFunction()
+	function noFunction($m)
 	{
-		$func = $_POST['method'];
+		$func = $m;
 		$result = array(
 				"status"	=> "failure",
 				"message"	=> "User attempted to call function: " . $func . " which does not exist",
