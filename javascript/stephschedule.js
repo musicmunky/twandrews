@@ -132,7 +132,7 @@ function getDateInfo(i)
 	var mn = ar[1];
 	var dy = ar[2];
 	var info = {
-		"type":	"POST",
+		"type":	"GET",
 		"path":	"php/library.php",
 		"data": {
 			"method":	"getStephDateInfo",
@@ -153,7 +153,7 @@ function getFwInfo(i,n)
 	var name = n || "";
 	var yr 	 = FUSION.get.node("curyear").value;
 	var info = {
-		"type":	"POST",
+		"type":	"GET",
 		"path":	"php/library.php",
 		"data": {
 			"method":	"getFwInfo",
@@ -313,7 +313,7 @@ function refreshCalendar()
 {
 	var yr = FUSION.get.node("curyear").value;
 	var info = {
-		"type":	"POST",
+		"type":	"GET",
 		"path":	"php/library.php",
 		"data": {
 			"method":	"getStephScheduleHtml",

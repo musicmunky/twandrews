@@ -97,7 +97,7 @@ function refreshTimesheet()
 
 	FUSION.set.overlayMouseWait();
 	$.ajax({
-		type: "POST",
+		type: "GET",
 		url: "php/library.php",
 		data: { method:  'getMonthInfo',
 				libcheck: true,
@@ -153,7 +153,7 @@ function showNewTimeForm(i)
 
 	FUSION.set.overlayMouseWait();
 	$.ajax({
-		type: "POST",
+		type: "GET",
 		url: "php/library.php",
 		data: { method:  'getDateInfo',
 				libcheck: true,
