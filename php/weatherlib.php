@@ -42,13 +42,8 @@
 			default: noFunction($REQ['method']);
 				break;
 		}
+		mysql_close($link);
 	}
-	else
-	{
-		noFunction("NO METHOD SPECIFIED");
-	}
-
-	mysql_close($link);
 
 
 	function noFunction($m)
