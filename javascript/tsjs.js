@@ -442,7 +442,7 @@ function addUpdateTimeEntry()
 	}
 
 	var info = {
-		"type": "POST",
+		"type": "GET",
 		"path": "php/library.php",
 		"data": {
 			"method": "addUpdateTimeEntry",

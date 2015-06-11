@@ -84,7 +84,7 @@ function changeDateTypes()
 	}
 
 	var info = {
-		"type":	"POST",
+		"type":	"GET",
 		"path":	"php/library.php",
 		"data": {
 			"method":	"changeStephDateInfo",
@@ -212,7 +212,7 @@ function changeFwDate()
 	}
 
 	var info = {
-		"type":	"POST",
+		"type":	"GET",
 		"path":	"php/library.php",
 		"data": {
 			"method":	"setFwInfo",
