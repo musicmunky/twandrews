@@ -94,17 +94,8 @@
 
 				if($fi['statuscode'] == "200")
 				{
-					$status = "success";
-					$daly = $fi['content']['daily'];
-					$hrly = $fi['content']['hourly'];
-					$crnt = $fi['content']['current'];
-					$tmzn = $fi['content']['timezone'];
-					$nreq = $fi['content']['numberofreqs'];
-					$content['daily'] 		= $daly;
-					$content['hourly'] 		= $hrly;
-					$content['current'] 	= $crnt;
-					$content['timezone']	= $tmzn;
-					$content['numberofreqs'] = $nreq;
+					$status  = "success";
+					$content = $fi['content'];
 				}
 				else
 				{
