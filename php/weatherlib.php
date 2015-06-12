@@ -95,7 +95,11 @@
 				if($fi['statuscode'] == "200")
 				{
 					$status  = "success";
-					$content = $fi['content'];
+					$content['daily'] 	= $fi['content']['daily'];
+					$content['hourly'] 	= $fi['content']['hourly'];
+					$content['current'] 	= $fi['content']['current'];
+					$content['timezone'] 	= $fi['content']['timezone'];
+					$content['numberofreqs'] = $fi['content']['numberofreqs'];
 				}
 				else
 				{

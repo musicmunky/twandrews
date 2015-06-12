@@ -284,7 +284,6 @@ function runSearchResponse(h)
 {
 	var hash = h || {};
 	var rc = hash['result_count'];
-
 	if(parseInt(rc) > 1)
 	{
 		var locsel = FUSION.get.node("locselect");
