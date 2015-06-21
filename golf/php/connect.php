@@ -19,7 +19,7 @@
         $db_database    = 'golfdb';
         /* End config */
 
-        $mysqli = mysqli_connect($db_host, $db_user, $db_pass);
+        $mysqli = mysqli_connect($db_host, $db_user, $db_pass, $db_database);
 	if (mysqli_connect_errno($mysqli)) {
 		die("Failed to connect to MySQL: " . mysqli_connect_error());
 	}

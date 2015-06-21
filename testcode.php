@@ -1,8 +1,8 @@
 <?php
-/*
-	define('LIBRARY_CHECK',true);
-	require 'php/library.php';
 
+	define('LIBRARY_CHECK',true);
+	require 'golf/php/golflib.php';
+/*
 	date_default_timezone_set('America/New_York');
 	$p1  = array(
 			"status"  => "success",
@@ -15,6 +15,10 @@
 */
 	//$p2 = escapeArray($p1);
 	//print_r($p2);
+	//$pswd = md5("foobar");
+	//$sql = mysqli_query($mysqli, "INSERT INTO golfusers (GOLFNAME, FIRSTNAME, LASTNAME, GOLFPASSWORD, EMAILADDRESS)
+	//			VALUES ('musicmunky', 'Timothy', 'Andrews', '" . $pswd . "', 'musicmunky@gmail.com');");
+
 /*
 			$yrs = mysql_query("SELECT DISTINCT YEAR FROM scheddates ORDER BY YEAR");
 			while($row = mysql_fetch_row($yrs))

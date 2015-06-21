@@ -36,7 +36,7 @@
 	<body>
 		<?php include("includes/header.html"); ?>
 		<div class="container centercontent">
-			FOOBAR<br />
+			Statistics Page
 		</div>
 	</body>
 </html>

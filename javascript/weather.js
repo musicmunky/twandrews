@@ -514,7 +514,7 @@ function addCityDiv(h)
 	{
 		var div = FUSION.get.node("oldcitydiv");
 		var els = div.getElementsByTagName("div");
-		if(els.length == 4)
+		if(els.length >= 4)
 		{
 			//if there are already 4 locations stored, remove the oldest one
 			//techincally it removes the last div, which *should* be the oldest,

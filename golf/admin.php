@@ -20,6 +20,10 @@
 	{
 		header('Location: login.php');
 	}
+	elseif(!isset($_SESSION['usertype']) || empty($_SESSION['usertype']) || $_SESSION['usertype'] != "ADMIN")
+	{
+		header('Location: index.php');
+	}
 
 	$adminlink = "";
 	if($_SESSION['usertype'] == "ADMIN")
@@ -36,7 +40,7 @@
 	<body>
 		<?php include("includes/header.html"); ?>
 		<div class="container centercontent">
-			FOOBAR<br />
+			ADMIN PAGE
 		</div>
 	</body>
 </html>
