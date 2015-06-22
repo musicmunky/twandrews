@@ -29,11 +29,11 @@
 	{
 		$method = $REQ['method'];
 		$method = urldecode($method);
-		$method = mysql_real_escape_string($method);
+		$method = $mysqli->real_escape_string($method);
 
 		switch($method)
 		{
-			case 'getGoogleInfo': getGoogleInfo($REQ);
+			case 'getUserInfo': getUserInfo($REQ, $mysqli);
 				break;
 			case 'getForecastInfo': getForecastInfo($REQ);
 				break;
@@ -42,7 +42,7 @@
 			default: noFunction($REQ['method']);
 				break;
 		}
-		mysql_close($mysqli);
+		mysqli_close($mysqli);
 	}
 
 
@@ -74,27 +74,32 @@
 		echo json_encode($result);
 	}
 
-	function getGoogleInfo($s, $ajax = true)
+	function getUserInfo($P, $m)
 	{
-		//$search  = urlencode($s);
-		$tmp = escapeArray(array($s)); //trying this to see if Google can handle apostrophe's better this way...
-		$search = $tmp[0];
+		$P = escapeArray($P, $m);
+
 		$status  = "";
 		$message = "";
-		$rsp	 = array();
+		$content = array();
 
+		$user = $m->query("SELECT FIRSTNAME, LASTNAME, ID, GOLFNAME, EMAILADDRESS FROM golfusers WHERE ID=" . $P['golfid'] . ";");
+		if($user)
+		{
+			$rslt = $user->fetch_assoc();
+			$content['FIRSTNAME'] = $rslt['FIRSTNAME'];
+			$content['LASTNAME']  = $rslt['LASTNAME'];
+			$content['USERNAME']  = $rslt['GOLFNAME'];
+			$content['EMAILADD']  = $rslt['EMAILADDRESS'];
+			$content['GOLFID']	  = $rslt['ID'];
+			$status = "success";
+		}
 		$result = array(
 				"status"  => $status,
 				"message" => $message,
-				"content" => $rsp
+				"content" => $content
 		);
 
-		if($ajax){
-			echo json_encode($result);
-		}
-		else {
-			return $result;
-		}
+		echo json_encode($result);
 	}
 
 
@@ -103,7 +108,7 @@
 		if($ajax){
 			$P = escapeArray($P);
 		}
-		
+
 		$status = "success";
 		$fcstatus = "";
 		$content = array();
@@ -123,7 +128,7 @@
 	}
 
 
-	function escapeArray($post)
+	function escapeArray($post, $m)
 	{
 		//recursive function called on the POST object sent back by an AJAX call
 		//it accounts for nested arrays/hashes (these were being nulled out previously)
@@ -134,7 +139,7 @@
 			}
 			else {
 				$val = urldecode($val);
-				$val = mysql_real_escape_string($val);
+				$val = $m->real_escape_string($val);
 				$post[$key] = $val;
 			}
 		}

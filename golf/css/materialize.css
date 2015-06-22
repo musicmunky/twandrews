@@ -5517,7 +5517,8 @@ small {
     letter-spacing: .8px;
     width: 15%; }
     .tabs .tab a {
-      color: #ee6e73;
+     /* color: #ee6e73;*/
+		color: #00796B;
       display: block;
       width: 100%;
       height: 100%;
@@ -5527,12 +5528,14 @@ small {
       -ms-transition: color .28s ease;
       transition: color .28s ease; }
       .tabs .tab a:hover {
-        color: #f9c9cb; }
+        /*color: #f9c9cb;*/
+	    color: #B2DFDB;  }
   .tabs .indicator {
     position: absolute;
     bottom: 0;
     height: 2px;
-    background-color: #f6b2b5;
+    /*background-color: #f6b2b5;*/
+	background-color: #B2DFDB;
     will-change: left, right; }
 
 .tabs .tab {
