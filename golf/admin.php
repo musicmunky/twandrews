@@ -59,7 +59,8 @@
 				</div>
 				<div id="courses" class="col s12">
 					<div id="courses-content">
-						<div id="course-list-wrapper" style="height:200px;overflow-y:auto;width:100%;margin-top:30px;padding:0 5px;border:1px solid #CCC;background-color:#EEE;">
+						<div id="course-list-wrapper"
+							 style="height:200px;overflow-y:auto;width:100%;margin-top:30px;padding:0 5px;border:1px solid #CCC;background-color:#EEE;">
 							<div id="course-list" class="collection">
 								<?php echo $userhtml; ?>
 							</div>

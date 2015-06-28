@@ -13,7 +13,11 @@
 		$pass = mysqli_real_escape_string($mysqli, $pass);
 		$hashedpassword = md5($pass);
 
-		$myquery = "SELECT gu.ID, gu.GOLFNAME, ut.TYPENAME FROM golfusers gu, usertypes ut WHERE gu.GOLFNAME='" . $user . "' AND gu.GOLFPASSWORD='" . $hashedpassword . "' AND gu.USERTYPEID=ut.TYPEID;";
+		$myquery = "SELECT gu.ID, gu.GOLFNAME, ut.TYPENAME
+					FROM golfusers gu, usertypes ut
+					WHERE gu.GOLFNAME='" . $user . "'
+						AND gu.GOLFPASSWORD='" . $hashedpassword . "'
+							AND gu.USERTYPEID=ut.TYPEID;";
 
 		$checkpass = array();
 		if($result = $mysqli->query($myquery))
@@ -42,6 +46,14 @@
 			$_SESSION['username']	= $checkpass['GOLFNAME'];
 			$_SESSION['usertype']	= $checkpass['USERTYPE'];
 		}
+/*		else
+		{
+			echo "<link rel='stylesheet' href='../css/fusionlib.css' type='text/css' media='screen' charset='utf-8'>
+				<script language='javascript' type='text/javascript' src='../javascript/jquery-1.11.0.min.js'></script>
+				<script language='javascript' type='text/javascript' src='../javascript/fusionlib.js'></script>
+				<script>alert('Incorrect Username/Password');</script>";
+		}
+*/
 	}
 
 	if(isset($_SESSION['username']) && !empty($_SESSION['username']) && isset($_SESSION['userid']) && !empty($_SESSION['userid']))

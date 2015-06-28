@@ -456,7 +456,7 @@ function processForecast(h)
 		FUSION.get.node("low").innerHTML 	= Math.round(daly[0]['temperatureMin']) + "&deg; " + tu;
 
 
-		var d = 0;
+		var dte = 0;
 		var dstr = "";
 		var k = 0;
 		hitp = {};
@@ -469,10 +469,10 @@ function processForecast(h)
 			lotp = { "type":"temperature", "value":Math.round(daly[j]['temperatureMin']), "units":units, "text":{ "left":"", "right":"" }};
 
 			FUSION.get.node("high" + k + "_cnvrt").value = JSON.stringify(hitp);
-			FUSION.get.node("low" + k + "_cnvrt").value = JSON.stringify(lotp);
+			FUSION.get.node("low" + k + "_cnvrt").value  = JSON.stringify(lotp);
 
-			d = new Date((daly[j]['time'] + ofst) * 1000);
-			dstr = days[d.getDay()] + ", " + months[d.getMonth()] + " " + d.getDate();
+			dte  = new Date((daly[j]['time'] + ofst) * 1000);
+			dstr = days[dte.getDay()] + ", " + months[dte.getMonth()] + " " + dte.getDate();
 			FUSION.get.node("dayofweek" + k).innerHTML  = dstr;
 			FUSION.get.node("condition" + k).innerHTML  = daly[j]['summary'];
 			FUSION.get.node("conditiontext" + k).value 	= daly[j]['summary'];

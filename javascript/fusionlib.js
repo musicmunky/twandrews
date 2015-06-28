@@ -453,6 +453,7 @@ FUSION.lib = {
 		var hgt = obj['height'] 		|| 120;
 		var wdt = obj['width'] 			|| 350;
 		var fnt = obj['font-size'] 		|| 14;
+		var bld = obj['font-weight']	|| "normal";
 		var bcl = obj['background'] 	|| "#FFFFFF";
 		var col = obj['color'] 			|| "#333";
 		var txt = obj['text-align'] 	|| "left";
@@ -480,6 +481,7 @@ FUSION.lib = {
 		var amd = FUSION.lib.createHtmlElement({"type":"div",
 											    "attributes":{"id":mdid, "class":"fl_alert_message_div"},
 											    "style":{"fontSize":		fnt+"px",
+														 "fontWeight":		bld,
 														 "backgroundColor":bcl,
 														 "color":			col,
 														 "textAlign":		txt}});
