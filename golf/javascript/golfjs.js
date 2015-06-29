@@ -1,21 +1,200 @@
+
+var states = [	"Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado",
+				"Connecticut", "Delaware", "District of Columbia", "Florida", "Georgia",
+				"Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky",
+				"Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota",
+				"Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire",
+				"New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota",
+				"Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina",
+				"South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington",
+				"West Virginia", "Wisconsin", "Wyoming" ];
+
 jQuery(document).ready(function() {
 	jQuery('select').material_select();
+	/*
+	var states = [
+		"Alabama",
+		"Alaska",
+		"Arizona",
+		"Arkansas",
+		"California",
+		"Colorado",
+		"Connecticut",
+		"Delaware",
+		"District of Columbia",
+		"Florida",
+		"Georgia",
+		"Hawaii",
+		"Idaho",
+		"Illinois",
+		"Indiana",
+		"Iowa",
+		"Kansas",
+		"Kentucky",
+		"Louisiana",
+		"Maine",
+		"Maryland",
+		"Massachusetts",
+		"Michigan",
+		"Minnesota",
+		"Mississippi",
+		"Missouri",
+		"Montana",
+		"Nebraska",
+		"Nevada",
+		"New Hampshire",
+		"New Jersey",
+		"New Mexico",
+		"New York",
+		"North Carolina",
+		"North Dakota",
+		"Ohio",
+		"Oklahoma",
+		"Oregon",
+		"Pennsylvania",
+		"Rhode Island",
+		"South Carolina",
+		"South Dakota",
+		"Tennessee",
+		"Texas",
+		"Utah",
+		"Vermont",
+		"Virginia",
+		"Washington",
+		"West Virginia",
+		"Wisconsin",
+		"Wyoming"
+	];*/
+	jQuery( "#state" ).autocomplete({
+		source: states,
+		messages: {
+			noResults: '',
+			results: function() {}
+		}
+	});
+
 });
 
 
-function updateUser()
+function checkState(s)
 {
-	alert("updateUser called");
+	if(!FUSION.lib.isBlank(s) && states.indexOf(s) < 0) {
+
+		FUSION.lib.alert("<p>Please enter a valid State name</p>");
+		FUSION.lib.focus("state");
+		/*
+		setTimeout(function() {
+			FUSION.get.node("state").focus()
+		}, 10);
+		*/
+	}
 }
 
 
-function updateCourse()
+function adminUpdateUser()
 {
-	alert("updateCourse called");
+	try {
+		var userid = FUSION.get.node("golfid").value;
+		var frstnm = FUSION.get.node("firstname").value;
+		var lastnm = FUSION.get.node("lastname").value;
+		var usernm = FUSION.get.node("username").value;
+		var emladd = FUSION.get.node("email").value;
+		var errstr = "";
+		var errcnt = 80;
+
+		if(FUSION.lib.isBlank(userid)) {
+			FUSION.lib.alert("<p>Please make sure the User ID is not blank - refresh the page and try again</p>");
+			return false;
+		}
+		if(FUSION.lib.isBlank(frstnm)) {
+			errstr += "<br>First Name";
+			errcnt += 20;
+		}
+		if(FUSION.lib.isBlank(lastnm)) {
+			errstr += "<br>Last Name";
+			errcnt += 20;
+		}
+		if(FUSION.lib.isBlank(usernm)) {
+			errstr += "<br>User Name";
+			errcnt += 20;
+		}
+		if(FUSION.lib.isBlank(emladd)) {
+			errstr += "<br>Email Address";
+			errcnt += 20;
+		}
+		if(!FUSION.lib.isBlank(errstr)) {
+			FUSION.lib.alert({"message":"Please make sure the following fields are not blank:" + errstr,
+							  "color":"#F00",
+							  "height": errcnt,
+							  "text-align":"center"});
+			return false;
+		}
+	}
+	catch(err)
+	{}
 }
 
 
-function loadCourseForm(i)
+function adminUpdateCourse()
+{
+	try {
+		var crsid = FUSION.get.node("courseid").value;
+		var crsnm = FUSION.get.node("coursename").value;
+		var crsln = FUSION.get.node("courselength").value;
+		var style = FUSION.get.node("coursestyle").value;
+		var adrs1 = FUSION.get.node("address1").value;
+		var adrs2 = FUSION.get.node("address2").value;
+		var adrs3 = FUSION.get.node("address3").value;
+		var ccity = FUSION.get.node("city").value;
+		var state = FUSION.get.node("state").value;
+		var zipcd = FUSION.get.node("zipcode").value;
+		var errstr = "";
+		var errcnt = 80;
+
+		if(FUSION.lib.isBlank(crsid)) {
+			FUSION.lib.alert("<p>Please make sure the Course ID is not blank - refresh the page and try again</p>");
+			return false;
+		}
+		if(FUSION.lib.isBlank(crsnm)) {
+			errstr += "<br>Course Name";
+			errcnt += 20;
+		}
+		if(FUSION.lib.isBlank(crsln)) {
+			errstr += "<br>Course Length";
+			errcnt += 20;
+		}
+		if(FUSION.lib.isBlank(style)) {
+			errstr += "<br>Course Style";
+			errcnt += 20;
+		}
+		if(FUSION.lib.isBlank(adrs1)) {
+			errstr += "<br>Course Address";
+			errcnt += 20;
+		}
+		if(FUSION.lib.isBlank(ccity)) {
+			errstr += "<br>City";
+			errcnt += 20;
+		}
+		if(FUSION.lib.isBlank(state)) {
+			errstr += "<br>State";
+			errcnt += 20;
+		}
+		if(!FUSION.lib.isBlank(errstr)) {
+			FUSION.lib.alert({"message":"Please make sure the following fields are not blank:" + errstr,
+							  "color":"#F00",
+							  "height": errcnt,
+							  "text-align":"center"});
+			return false;
+		}
+
+
+	}
+	catch(err)
+	{}
+}
+
+
+function adminLoadCourseForm(i)
 {
 	var id = i || "";
 	if(FUSION.lib.isBlank(id)){
@@ -34,13 +213,13 @@ function loadCourseForm(i)
 			"libcheck":	true,
 			"courseid": id,
 		},
-		"func": loadCourseResponse
+		"func": adminLoadCourseResponse
 	};
 	FUSION.lib.ajaxCall(info);
 }
 
 
-function loadUserForm(i)
+function adminLoadUserForm(i)
 {
 	var id = i || "";
 	if(FUSION.lib.isBlank(id)){
@@ -59,13 +238,19 @@ function loadUserForm(i)
 			"libcheck": true,
 			"golfid":	id,
 		},
-		"func": loadUserResponse
+		"func": adminLoadUserResponse
 	};
 	FUSION.lib.ajaxCall(info);
 }
 
 
-function loadUserResponse(h)
+function adminLoadCourseResponse(h)
+{
+	var hash = h || {};
+}
+
+
+function adminLoadUserResponse(h)
 {
 	var hash = h || {};
 	FUSION.get.node("firstname").value	= hash['FIRSTNAME'];
@@ -86,7 +271,7 @@ function loadUserResponse(h)
 }
 
 
-function clearUserForm()
+function adminClearUserForm()
 {
 	FUSION.get.node("firstname").value	= "";
 	FUSION.get.node("lastname").value	= "";
@@ -105,3 +290,6 @@ function clearUserForm()
 	FUSION.get.node("lblemail").className		= "";
 }
 
+
+function adminClearCourseForm()
+{}

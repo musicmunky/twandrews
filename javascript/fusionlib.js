@@ -373,6 +373,19 @@ FUSION.error = {
 //BEGIN LIBRARY GENERIC METHODS
 FUSION.lib = {
 
+	focus: function(el) {
+		try {
+			//need to declare f here to avoid null reference errors
+			var f = FUSION;
+			setTimeout(function() {
+				f.get.node(el).focus()
+			}, 10);
+		}
+		catch(err) {
+			FUSION.error.logError(err);
+		}
+	},
+
 	titleCase: function(str) {
 		try {
 			return str.replace(/\w\S*/g, function(txt){ return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase(); });
@@ -446,8 +459,8 @@ FUSION.lib = {
 	alert: function(o) {
 
 		/*
-		Extend for "levels", ie, Message, Info, Warning, Error, etc
-		*/
+		 * TODO: Extend for "levels", ie, Message, Info, Warning, Error, etc
+		 */
 		var obj = o || {};
 		var msg = (typeof obj === "string") ? obj : obj['message'];
 		var hgt = obj['height'] 		|| 120;
