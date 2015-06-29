@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 include("headers.php");
 include("settings.php");
 $t = $text['file-control'];
@@ -55,8 +55,9 @@ for ($i=0; $i<count($allFiles); $i++) {
 	if(
 		// A local folder that isn't the doc root or starts with the doc root
 		($_GET['action']!="getRemoteFile" &&
-			rtrim($allFiles[$i],"/") !== rtrim($docRoot,"/") && 0
+			rtrim($allFiles[$i],"/") !== rtrim($docRoot,"/") &&
 			//strpos(realpath(rtrim(dirname($allFiles[$i]),"/")),realpath(rtrim($docRoot,"/"))) !== 0
+			0
 		) ||
 		// Or a remote URL that doesn't start http
 		($_GET['action']=="getRemoteFile" && strpos($allFiles[$i],"http") !== 0)
@@ -68,7 +69,7 @@ for ($i=0; $i<count($allFiles); $i++) {
 // If we're due to open a file...
 if ($_GET['action']=="load") {
 	echo 'action="load";';
-
+	$lineNumber = max(isset($_REQUEST['lineNumber'])?intval($_REQUEST['lineNumber']):1, 1);
 	if (file_exists($file)) {
 		$finfo = "text";
 		// Determine what to do based on mime type
@@ -82,11 +83,11 @@ if ($_GET['action']=="load") {
 			if (array_search($fileExt,array("gif","jpg","jpeg","png"))!==false) {$finfo = "image";};
 			if (array_search($fileExt,array("doc","docx","ppt","rtf","pdf","zip","tar","gz","swf","asx","asf","midi","mp3","wav","aiff","mov","qt","wmv","mp4","odt","odg","odp"))!==false) {$finfo = "other";};
 		}
-		if (strpos($finfo,"text")===0 || strpos($finfo,"empty")!==false) {
+		if (strpos($finfo,"text")===0 || strpos($finfo, "application/xml")===0 || strpos($finfo,"empty")!==false) {
 			echo 'fileType="text";';
 			echo 'top.ICEcoder.shortURL = top.ICEcoder.thisFileFolderLink = "'.$fileLoc."/".$fileName.'";';
 			$loadedFile = toUTF8noBOM(file_get_contents($file,false,$context),true);
-			echo '</script><textarea name="loadedFile" id="loadedFile">'.str_replace("</textarea>","<ICEcoder:/:textarea>",str_replace("&","&amp;",$loadedFile)).'</textarea><script>';
+			echo '</script><textarea name="loadedFile" id="loadedFile">'.htmlentities($loadedFile).'</textarea><script>';
 			// Run our custom processes
 			include_once("../processes/on-file-load.php");
 		} else if (strpos($finfo,"image")===0) {
@@ -161,7 +162,7 @@ if (action=="load") {
 				top.ICEcoder.savedPoints[top.ICEcoder.selectedTab-1] = cM.changeGeneration();
 				top.document.getElementById('content').style.visibility='visible';
 				top.ICEcoder.switchTab(top.ICEcoder.selectedTab,'noFocus');
-				setTimeout(function(){top.filesFrame.contentWindow.focus();},0);
+				setTimeout(function(){top.ICEcoder.filesFrame.contentWindow.focus();},0);
 
 				// Then clean it up, set the text cursor, update the display and get the character data
 				top.ICEcoder.contentCleanUp();
@@ -172,6 +173,7 @@ if (action=="load") {
 				for (var i=0; i<cM.lineCount(); i++) {
 					top.ICEcoder.content.contentWindow.CodeMirror.doFold(cM.getLine(i).indexOf("{")>-1?"brace":"xml",null,"+","-",true)(cM, i);
 				}
+				top.ICEcoder.goToLine(<?php echo $lineNumber; ?>);
 				top.ICEcoder.loadingFile = false;
 			<?php
 			;};
@@ -184,7 +186,7 @@ if (action=="load") {
 		top.document.getElementById('blackMask').style.visibility = "visible";
 		top.document.getElementById('mediaContainer').innerHTML = 
 			"<canvas id=\"canvasPicker\" width=\"1\" height=\"1\" style=\"position: absolute; margin: 10px 0 0 10px; cursor: crosshair\" onmouseover=\"top.ICEcoder.overPopup=true\" onmouseout=\"top.ICEcoder.overPopup=false\"></canvas>" + 
-			"<img src=\"<?php echo $fileLoc."/".$fileName;?>\" class=\"whiteGlow\" style=\"border: solid 10px #fff; max-width: 700px; max-height: 500px; background-color: #000; background-image: url('images/checkerboard.png')\" onLoad=\"reducedImgMsg = (this.naturalWidth > 700 || this.naturalHeight > 500) ? ', <?php echo $t['displayed at']; ?> ' + this.width + ' x ' + this.height : ''; document.getElementById('imgInfo').innerHTML += ' (' + this.naturalWidth + ' x ' + this.naturalHeight + reducedImgMsg + ')'; top.ICEcoder.drawCanvasImage(this)\"><br>" +
+			"<img src=\"<?php echo $fileLoc."/".$fileName;?>\" class=\"whiteGlow\" style=\"border: solid 10px #fff; max-width: 700px; max-height: 500px; background-color: #000; background-image: url('images/checkerboard.png')\" onLoad=\"reducedImgMsg = (this.naturalWidth > 700 || this.naturalHeight > 500) ? ', <?php echo $t['displayed at']; ?> ' + this.width + ' x ' + this.height : ''; document.getElementById('imgInfo').innerHTML += ' (' + this.naturalWidth + ' x ' + this.naturalHeight + reducedImgMsg + ')'; top.ICEcoder.initCanvasImage(this); top.ICEcoder.interactCanvasImage(this)\"><br>" +
 			"<div class=\"whiteGlow\" style=\"display: inline-block; margin-top: -10px; border: solid 10px #fff; color: #000; background-color: #fff\" id=\"imgInfo\"  onmouseover=\"top.ICEcoder.overPopup=true\" onmouseout=\"top.ICEcoder.overPopup=false\">" + 
 				"<b><?php echo $fileLoc."/".$fileName;?></b>" + 
 			"</div><br>" + 
@@ -192,6 +194,7 @@ if (action=="load") {
 			"<input type=\"text\" id=\"rgbMouseXY\" style=\"border: 1px solid #888; margin-right: 10px; width: 70px\" onmouseover=\"top.ICEcoder.overPopup=true\" onmouseout=\"top.ICEcoder.overPopup=false\"></input>" + 
 			"<input type=\"text\" id=\"hex\" style=\"border: 1px solid #888; border-right: 0; width: 70px\" onmouseover=\"top.ICEcoder.overPopup=true\" onmouseout=\"top.ICEcoder.overPopup=false\"></input>" + 
 			"<input type=\"text\" id=\"rgb\" style=\"border: 1px solid #888; width: 70px\" onmouseover=\"top.ICEcoder.overPopup=true\" onmouseout=\"top.ICEcoder.overPopup=false\"></input>";
+		top.document.getElementById('floatingContainer').style.background = "#fff url('<?php echo $fileLoc."/".$fileName;?>') no-repeat 0 0";
 	}
 
 	top.ICEcoder.serverMessage();top.ICEcoder.serverQueue("del",0);

@@ -3,6 +3,19 @@
 $configSettings = 'config___settings.php';
 $configUsersTemplate = 'config___users-template.php';
 
+// Create a new config file if it doesn't exist yet.
+// The reason we create it, is so it has PHP write permissions, meaning we can update it later
+if (!file_exists(dirname(__FILE__)."/".$configSettings)) {
+	// Include our params to make use of (as $newConfigSettingsFile)
+	include(dirname(__FILE__)."/settings-system-params.php");
+	if ($fConfigSettings = fopen(dirname(__FILE__)."/".$configSettings, 'w')) {
+		fwrite($fConfigSettings, $newConfigSettingsFile);
+		fclose($fConfigSettings);
+	} else {
+		die("Cannot update config file lib/".$configSettings.". Please check write permissions on lib/ and try again");
+	}
+}
+
 // Load config settings
 include(dirname(__FILE__)."/".$configSettings);
 
@@ -45,6 +58,12 @@ if (basename($_SERVER['SCRIPT_NAME']) == "index.php" && $ICEcoderUserSettings['c
 	$settingsContents = file_get_contents(dirname(__FILE__)."/".$settingsFile,false,$context);
 	clearstatcache();
 	$configfilemtime = filemtime(dirname(__FILE__)."/"."config___settings.php");
+	// Make it a number (avoids null, undefined etc)
+	$configfilemtime = intval($configfilemtime);
+	// Set it to the epoch time now if we don't have a real value
+	if ($configfilemtime == 0) {
+		$configfilemtime = time();
+	}
 	$settingsContents = str_replace('"configCreateDate"	=> 0,','"configCreateDate"	=> '.$configfilemtime.',',$settingsContents);
 	// Now update the config file
 	$fh = fopen(dirname(__FILE__)."/".$settingsFile, 'w') or die("Can't update config file. Please set public write permissions on ".$settingsFile." and press refresh");
@@ -80,15 +99,17 @@ $demoMode = $ICEcoder['demoMode'];
 
 // Check if trial period has ended
 $tPeriod = 1296000-1;
-if (generateHash(strClean($ICEcoder['licenseEmail']),$ICEcoder['licenseCode'])!=$ICEcoder['licenseCode'] && $ICEcoder['configCreateDate'] > 0 && $ICEcoder['configCreateDate']+$tPeriod < time() && !isset($_GET['get']) && !isset($_POST['code'])) {
+
+if (isset($_SESSION['loggedIn']) && $_SESSION['loggedIn'] && generateHash(strClean($ICEcoder['licenseEmail']),$ICEcoder['licenseCode'])!=$ICEcoder['licenseCode'] && $ICEcoder['configCreateDate'] > 0 && $ICEcoder['configCreateDate']+$tPeriod < time() && !isset($_GET['get']) && !isset($_POST['code'])) {
 	if (file_exists('lib/login.php')) {
-		header('Location: lib/login.php?get=code&csrf='.$_SESSION["csrf"]);
+		// Go to get code screen in top level window
 		echo "<script>window.location='lib/login.php?get=code&csrf=".$_SESSION["csrf"]."';</script>";
 	} else {
-		header('Location: login.php?get=code&csrf='.$_SESSION["csrf"]);
+		// Go to get code screen in top level window
 		echo "<script>window.location='login.php?get=code&csrf=".$_SESSION["csrf"]."';</script>";
 	}
 	die('Redirecting to donate screen...');
+	exit;
 }
 $tRemaining = ($ICEcoder['configCreateDate']+$tPeriod)-time();
 if ($tRemaining > $tPeriod || $ICEcoder['configCreateDate'] == 0) {$tRemaining = $tPeriod;};
@@ -106,6 +127,7 @@ if (!isset($_SESSION['username'])) {$_SESSION['username'] = false;};
 if(isset($_POST['submit']) && $setPWorLogin=="login") {
 	// On success, set username if multiUser, loggedIn to true and redirect
 	if (generateHash(strClean($_POST['password']),$ICEcoder["password"])==$ICEcoder["password"]) {
+		session_regenerate_id();
 		if ($ICEcoder["multiUser"]) {
 			$_SESSION['username'] = $_POST['username'];
 		}

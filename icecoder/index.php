@@ -40,6 +40,9 @@ $isMac = strpos($_SERVER['HTTP_USER_AGENT'], "Macintosh")>-1 ? true : false;
 <html onMouseDown="top.ICEcoder.mouseDown=true" onMouseUp="top.ICEcoder.mouseDown=false; if (!top.ICEcoder.overCloseLink) {top.ICEcoder.tabDragEnd()}" onMouseMove="if(top.ICEcoder) {top.ICEcoder.getMouseXY(event,'top');top.ICEcoder.canResizeFilesW()}" onMouseWheel="if (!top.ICEcoder.getcMInstance().hasFocus() && !top.ICEcoder.getcMdiffInstance().hasFocus()) {event.wheelDelta > 0 ? top.ICEcoder.nextTab() : top.ICEcoder.previousTab();}">
 <head>
 <title>ICEcoder v <?php echo $ICEcoder["versionNo"];?></title>
+<style>
+	#tabsBar.tabsBar .tab { font-size: <?php echo $ICEcoder["fontSize"];?>; }
+</style>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta name="robots" content="noindex, nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=0.5, user-scalable=no">
@@ -54,6 +57,7 @@ window.onbeforeunload = function() {
 			return "<?php echo $t['You have some...'];?>.";
 		}
 	}
+	return "<?php echo $t['Are you sure...'];?>";
 }
 
 t = {
@@ -92,8 +96,10 @@ $t = $text['index'];
 		"top.ICEcoder.updateDiffOnSave = ".($ICEcoder["updateDiffOnSave"] ? 'true' : 'false').";".
 		"top.ICEcoder.languageUser = '".$ICEcoder["languageUser"]."';".
 		"top.ICEcoder.codeAssist = ".($ICEcoder["codeAssist"] ? 'true' : 'false').";".
+		"top.ICEcoder.lockedNav = ".($ICEcoder["lockedNav"] ? 'true' : 'false').";".
 		"top.ICEcoder.lineWrapping = ".($ICEcoder["lineWrapping"] ? 'true' : 'false').";".
 		"top.ICEcoder.indentWithTabs = ".($ICEcoder["indentWithTabs"] ? 'true' : 'false').";".
+		"top.ICEcoder.indentAuto = ".($ICEcoder["indentAuto"] ? 'true' : 'false').";".
 		"top.ICEcoder.indentSize = ".$ICEcoder["indentSize"].";".
 		"top.ICEcoder.demoMode = ".($ICEcoder["demoMode"] ? 'true' : 'false').";".
 		"top.ICEcoder.tagWrapperCommand = '".$ICEcoder["tagWrapperCommand"]."';".
@@ -101,6 +107,7 @@ $t = $text['index'];
 		"top.ICEcoder.bugFilePaths = ['".implode("','",$ICEcoder["bugFilePaths"])."'];".
 		"top.ICEcoder.bugFileCheckTimer = ".$ICEcoder["bugFileCheckTimer"].";".
 		"top.ICEcoder.bugFileMaxLines = ".$ICEcoder["bugFileMaxLines"].";".
+		"top.ICEcoder.fileDirResOutput = '".$ICEcoder["fileDirResOutput"]."';".
 		"top.ICEcoder.newDirPerms = ".$ICEcoder["newDirPerms"].";".
 		"top.ICEcoder.newFilePerms = ".$ICEcoder["newFilePerms"].";";
 		if($ICEcoder["githubAuthToken"] != "") {
@@ -114,6 +121,7 @@ $t = $text['index'];
 	<div class="popupVCenter">
 		<div class="popup" id="mediaContainer"></div>
 	</div>
+	<div class="floatingContainer" id="floatingContainer"></div>
 </div>
 
 <div id="loadingMask" class="blackMask" style="visibility: visible" onContextMenu="return false">
@@ -130,7 +138,7 @@ $t = $text['index'];
 		<a nohref onClick="top.ICEcoder.showColorPicker(top.document.getElementById('color') ? top.document.getElementById('color').value : '#123456')" title="Farbtastic
 <?php echo $t['Color picker'];?>"><img src="images/color-picker.png" style="cursor: pointer" alt="Color Picker"></a><br><br>
 		<div id="pluginsOptional"><?php echo $pluginsDisplay; ?></div>
-		<a nohref onclick="top.ICEcoder.pluginsManager()" title="Plugins Manager" style="color: #fff; cursor: pointer">+ / -</a>
+		<a nohref onclick="top.ICEcoder.pluginsManager()" title="<?php echo $t['Plugins Manager'];?>" style="color: #fff; cursor: pointer">+ / -</a>
 	</div>
 </div>
 
@@ -261,7 +269,7 @@ $t = $text['index'];
 		<form name="findAndReplace" onSubmit="ICEcoder.findReplace(top.document.getElementById('find').value,false,true);return false">
 			<div class="findReplace">
 				<div class="findText"><?php echo $t['Find'];?></div>
-				<input type="text" name="find" value="" id="find" class="textbox find" onKeyUp="ICEcoder.findReplace(top.document.getElementById('find').value,true,false)">
+				<input type="text" name="find" value="" id="find" class="textbox find" onKeyUp="ICEcoder.findReplace(top.document.getElementById('find').value,true,false,event.keyCode == 27)">
 				
 				<div class="selectWrapper" style="width: 41px">
 					<select name="connector" onChange="ICEcoder.findReplaceOptions()" style="width: 40px; margin-top: 4px">
@@ -288,7 +296,7 @@ $t = $text['index'];
 							<option><?php echo $t['all filenames'];?></option>
 						</select>
 					</div>
-				<input type="submit" name="submit" value="&gt;&gt;" class="submit">
+				<input type="submit" name="submit" id="findReplaceSubmit" value="&gt;&gt;" class="submit">
 				<div class="results" id="results"></div>
 			</div>
 			<input type="hidden" name="csrf" value="<?php echo $_SESSION["csrf"]; ?>">
@@ -309,7 +317,7 @@ $t = $text['index'];
 
 <div class="footer" id="footer" onContextMenu="return false">
 	<div class="nesting" id="nestValid"></div>
-	<div class="splitPaneControls" id="splitPaneControls"><div class="off" id="splitPaneControlsOff" onclick="top.ICEcoder.setSplitPane('off')"></div><div class="on" id="splitPaneControlsOn" onclick="top.ICEcoder.setSplitPane('on')" style="opacity: 0.5"></div></div>
+	<div class="splitPaneControls" id="splitPaneControls"><div class="off" id="splitPaneControlsOff" title="<?php echo $t['Single pane'];?>" onclick="top.ICEcoder.setSplitPane('off')"></div><div class="on" id="splitPaneControlsOn" title="<?php echo $t['Diff pane also'];?>" onclick="top.ICEcoder.setSplitPane('on')" style="opacity: 0.5"></div></div>
 	<div class="byteDisplay" id="byteDisplay" style="display: none" onClick="top.ICEcoder.showDisplay('char')"></div>
 	<div class="charDisplay" id="charDisplay" style="display: inline-block" onClick="top.ICEcoder.showDisplay('byte')"></div>
 </div>

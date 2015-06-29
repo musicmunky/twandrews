@@ -31,13 +31,33 @@
 		$adminlink = "<li><a href='admin.php'>Admin</a></li>";
 	}
 
-	$users = $mysqli->query("SELECT FIRSTNAME, LASTNAME, ID FROM golfusers ORDER BY LASTNAME;");
-	$userhtml = "";
+	$userhtml	= "";
+	$users		= $mysqli->query("SELECT FIRSTNAME, LASTNAME, ID FROM golfusers ORDER BY LASTNAME;");
 	if($users)
 	{
 		while($row = $users->fetch_assoc())
 		{
 			$userhtml .= "<a href='javascript:void(0)' onclick='loadUserForm(\"" . $row['ID'] . "\")' class='collection-item'>" . $row['FIRSTNAME'] . " " . $row['LASTNAME'] . "</a>";
+		}
+	}
+
+	$coursehtml	= "";
+	$courses	= $mysqli->query("SELECT ID, COURSENAME FROM course ORDER BY ID ASC;");
+	if($courses)
+	{
+		while($row = $courses->fetch_assoc())
+		{
+			$coursehtml .= "<a href='javascript:void(0)' onclick='loadCourseForm(\"" . $row['ID'] . "\")' class='collection-item'>" . $row['COURSENAME'] . "</a>";
+		}
+	}
+
+	$ctypehtml 	= "<option value='' disabled selected>Select Course Style...</option>";
+	$ctypes 	= $mysqli->query("SELECT * FROM course_type ORDER BY ID ASC;");
+	if($ctypes)
+	{
+		while($row = $ctypes->fetch_assoc())
+		{
+			$ctypehtml .= "<option value='" . $row['ID'] . "'>" . ucfirst($row['TYPENAME']) . "</option>";
 		}
 	}
 ?>
@@ -62,23 +82,28 @@
 						<div id="course-list-wrapper"
 							 style="height:200px;overflow-y:auto;width:100%;margin-top:30px;padding:0 5px;border:1px solid #CCC;background-color:#EEE;">
 							<div id="course-list" class="collection">
-								<?php echo $userhtml; ?>
+								<?php echo $coursehtml; ?>
 							</div>
 						</div>
 						<div class="row">
 							<form class="col s12">
 								<div class="row">
-									<div class="input-field col s6">
-										<input id="courseid" type="hidden" value="" />
+									<div class="input-field col s4">
+										<input id="courseid" type="hidden" value="0" />
 										<input id="coursename" type="text" class="validate">
 										<label id="lblcoursename" for="coursename">Course Name</label>
 									</div>
-									<div class="input-field col s6">
-										<select>
+									<div class="input-field col s4">
+										<select id="courselength">
 											<option value="" disabled selected>Select Course Length...</option>
 											<option value="9">9 Holes</option>
 											<option value="18">18 Holes</option>
 											<option value="36">36 Holes</option>
+										</select>
+									</div>
+									<div class="input-field col s4">
+										<select id="coursestyle">
+											<?php echo $ctypehtml; ?>
 										</select>
 									</div>
 								</div>
@@ -106,8 +131,60 @@
 										<label id="lblcity" for="city">City</label>
 									</div>
 									<div class="input-field col s4">
-										<input id="state" type="text" class="validate">
-										<label id="lblstate" for="state">State</label>
+										<select id="state">
+											<option value="" disabled selected>Select a State...</option>
+											<option value="AL">Alabama</option>
+											<option value="AK">Alaska</option>
+											<option value="AZ">Arizona</option>
+											<option value="AR">Arkansas</option>
+											<option value="CA">California</option>
+											<option value="CO">Colorado</option>
+											<option value="CT">Connecticut</option>
+											<option value="DE">Delaware</option>
+											<option value="DC">District Of Columbia</option>
+											<option value="FL">Florida</option>
+											<option value="GA">Georgia</option>
+											<option value="HI">Hawaii</option>
+											<option value="ID">Idaho</option>
+											<option value="IL">Illinois</option>
+											<option value="IN">Indiana</option>
+											<option value="IA">Iowa</option>
+											<option value="KS">Kansas</option>
+											<option value="KY">Kentucky</option>
+											<option value="LA">Louisiana</option>
+											<option value="ME">Maine</option>
+											<option value="MD">Maryland</option>
+											<option value="MA">Massachusetts</option>
+											<option value="MI">Michigan</option>
+											<option value="MN">Minnesota</option>
+											<option value="MS">Mississippi</option>
+											<option value="MO">Missouri</option>
+											<option value="MT">Montana</option>
+											<option value="NE">Nebraska</option>
+											<option value="NV">Nevada</option>
+											<option value="NH">New Hampshire</option>
+											<option value="NJ">New Jersey</option>
+											<option value="NM">New Mexico</option>
+											<option value="NY">New York</option>
+											<option value="NC">North Carolina</option>
+											<option value="ND">North Dakota</option>
+											<option value="OH">Ohio</option>
+											<option value="OK">Oklahoma</option>
+											<option value="OR">Oregon</option>
+											<option value="PA">Pennsylvania</option>
+											<option value="RI">Rhode Island</option>
+											<option value="SC">South Carolina</option>
+											<option value="SD">South Dakota</option>
+											<option value="TN">Tennessee</option>
+											<option value="TX">Texas</option>
+											<option value="UT">Utah</option>
+											<option value="VT">Vermont</option>
+											<option value="VA">Virginia</option>
+											<option value="WA">Washington</option>
+											<option value="WV">West Virginia</option>
+											<option value="WI">Wisconsin</option>
+											<option value="WY">Wyoming</option>
+										</select>
 									</div>
 									<div class="input-field col s4">
 										<input id="zipcode" type="text" class="validate">
@@ -116,7 +193,7 @@
 								</div>
 								<div class="row">
 									<div class="col s6">
-										<input type="button" style="float:left;" onClick="updateUser()" class="btn" value="Update User" />
+										<input type="button" style="float:left;" onClick="updateCourse()" class="btn" value="Update Course" />
 									</div>
 									<div class="col s6">
 										<input type="button" style="float:right;" onClick="clearUserForm()" class="btn" value="Clear Form" />
@@ -134,7 +211,7 @@
 							</div>
 						</div>
 						<div class="row">
-							<form class="col s12">
+							<form id="golfuserform" class="col s12">
 								<div class="row">
 									<div class="input-field col s6">
 										<input id="golfid" type="hidden" value="" />

@@ -33,6 +33,7 @@ if (!$demoMode && isset($_SESSION['loggedIn']) && $_SESSION['loggedIn'] && isset
 	$ICEcoder["fontSize"]			= strClean($_POST['fontSize']);
 	$ICEcoder["lineWrapping"]		= strClean($_POST['lineWrapping']);
 	$ICEcoder["indentWithTabs"]		= strClean($_POST['indentWithTabs']);
+	$ICEcoder["indentAuto"]			= strClean($_POST['indentAuto']);
 	$ICEcoder["indentSize"]			= intval($_POST['indentSize']);
 	$ICEcoder["pluginPanelAligned"]		= strClean($_POST['pluginPanelAligned']);
 	$ICEcoder["bugFilePaths"]		= 'array("'.str_replace(',','","',str_replace(" ","",strClean($_POST['bugFilePaths']))).'")';
@@ -40,7 +41,7 @@ if (!$demoMode && isset($_SESSION['loggedIn']) && $_SESSION['loggedIn'] && isset
 	$ICEcoder["bugFileMaxLines"]		= intval($_POST['bugFileMaxLines']);
 	$ICEcoder["githubAuthToken"]		= strClean($_POST['githubAuthToken']);
 
-	$settingsArray = array("root","checkUpdates","openLastFiles","updateDiffOnSave","languageUser","findFilesExclude","codeAssist","visibleTabs","lockedNav","tagWrapperCommand","autoComplete","password","bannedFiles","bannedPaths","allowedIPs","theme","fontSize","lineWrapping","indentWithTabs","indentSize","pluginPanelAligned","bugFilePaths","bugFileCheckTimer","bugFileMaxLines","githubAuthToken");
+	$settingsArray = array("root","checkUpdates","openLastFiles","updateDiffOnSave","languageUser","findFilesExclude","codeAssist","visibleTabs","lockedNav","tagWrapperCommand","autoComplete","password","bannedFiles","bannedPaths","allowedIPs","theme","fontSize","lineWrapping","indentWithTabs","indentAuto","indentSize","pluginPanelAligned","bugFilePaths","bugFileCheckTimer","bugFileMaxLines","githubAuthToken");
 	$settingsNew = "";
 	for ($i=0;$i<count($settingsArray);$i++) {
 		$settingsNew .= '"'.$settingsArray[$i].'"	=> ';
@@ -76,17 +77,21 @@ if (!$demoMode && isset($_SESSION['loggedIn']) && $_SESSION['loggedIn'] && isset
 
 	// Change multiUser and enableRegistration in config___settings.php
 	$generalSettingsContents = file_get_contents($configSettings,false,$context);
-	$isMultiUser = $_POST['multiUser'] ? "true" : "false";
+	$isMultiUser = isset($_POST['multiUser']) && $_POST['multiUser'] ? "true" : "false";
 	$generalSettingsContents = str_replace('"multiUser"		=> true,','"multiUser"		=> '.$isMultiUser.',',$generalSettingsContents);
 	$generalSettingsContents = str_replace('"multiUser"		=> false,','"multiUser"		=> '.$isMultiUser.',',$generalSettingsContents);
 
-	$isEnableRegistration = $_POST['enableRegistration'] ? "true" : "false";
+	$isEnableRegistration = isset($_POST['enableRegistration']) && $_POST['enableRegistration'] ? "true" : "false";
 	$generalSettingsContents = str_replace('"enableRegistration"	=> true','"enableRegistration"	=> '.$isEnableRegistration,$generalSettingsContents);
 	$generalSettingsContents = str_replace('"enableRegistration"	=> false','"enableRegistration"	=> '.$isEnableRegistration,$generalSettingsContents);
 
-	$fConfigSettings = fopen($configSettings, 'w') or die($t['Cannot update config']." ".$configSettings." ".$t['and press refresh']);
-	fwrite($fConfigSettings, $generalSettingsContents);
-	fclose($fConfigSettings);
+	if (is_writeable($configSettings)) {
+		$fConfigSettings = fopen($configSettings, 'w');
+		fwrite($fConfigSettings, $generalSettingsContents);
+		fclose($fConfigSettings);
+	} else {
+		echo "<script>top.ICEcoder.message('".$t['Cannot update config']." lib/".$configSettings." ".$t['and try again']."');</script>";
+	}
 
 	$githubAuthTokenSet = $ICEcoder["githubAuthToken"] != "" ? "true" : "false";
 
@@ -98,6 +103,6 @@ if (!$demoMode && isset($_SESSION['loggedIn']) && $_SESSION['loggedIn'] && isset
 
 	// With all that worked out, we can now hide the settings screen and apply the new settings
 	$jsBugFilePaths = "['".str_replace(",","','",str_replace(" ","",strClean($_POST['bugFilePaths'])))."']";
-	echo "<script>top.ICEcoder.settingsScreen('hide');top.ICEcoder.useNewSettings('".$themeURL."',".$ICEcoder["codeAssist"].",".$ICEcoder["lockedNav"].",'".$ICEcoder["tagWrapperCommand"]."','".$ICEcoder["autoComplete"]."',".$ICEcoder["visibleTabs"].",'".$ICEcoder["fontSize"]."',".$ICEcoder["lineWrapping"].",".$ICEcoder["indentWithTabs"].",".$ICEcoder["indentSize"].",'".$ICEcoder["pluginPanelAligned"]."',".$jsBugFilePaths.",".$ICEcoder["bugFileCheckTimer"].",".$ICEcoder["bugFileMaxLines"].",'".$githubAuthTokenSet."',".$ICEcoder["updateDiffOnSave"].",".$refreshFM.");top.iceRoot = '".$ICEcoder["root"]."';</script>";
+	echo "<script>top.ICEcoder.settingsScreen('hide');top.ICEcoder.useNewSettings('".$themeURL."',".$ICEcoder["codeAssist"].",".$ICEcoder["lockedNav"].",'".$ICEcoder["tagWrapperCommand"]."','".$ICEcoder["autoComplete"]."',".$ICEcoder["visibleTabs"].",'".$ICEcoder["fontSize"]."',".$ICEcoder["lineWrapping"].",".$ICEcoder["indentWithTabs"].",".$ICEcoder["indentAuto"].",".$ICEcoder["indentSize"].",'".$ICEcoder["pluginPanelAligned"]."',".$jsBugFilePaths.",".$ICEcoder["bugFileCheckTimer"].",".$ICEcoder["bugFileMaxLines"].",'".$githubAuthTokenSet."',".$ICEcoder["updateDiffOnSave"].",".$refreshFM.");top.iceRoot = '".$ICEcoder["root"]."';</script>";
 }
 ?>

@@ -24,7 +24,6 @@ var ICEcoder = {
 	selectedFiles:		[],		// Array of selected files
 	findMode:		false,		// States if we're in find/replace mode
 	scrollbarVisible:	false,		// Indicates if the main pane has a scrollbar
-	lockedNav:		true, 		// Nav is locked or not
 	mouseDown:		false,		// If the mouse is down
 	draggingFilesW:		false,		// If we're dragging the file manager width
 	draggingTab:		false,		// If we're dragging a tab
@@ -73,12 +72,17 @@ var ICEcoder = {
 	init: function() {
 		var screenIcon, sISrc;
 
+		// Contract the file manager if the user has set to have it hidden
+		if (!top.ICEcoder.lockedNav) {
+			top.ICEcoder.filesW = ICEcoder.minFilesW;
+		}
+
 		// Set layout
 		ICEcoder.setLayout();
 
 		top.ICEcoder.overFileFolder('folder', '|');
 		top.ICEcoder.selectFileFolder('init');
-		top.filesFrame.contentWindow.focus();
+		top.ICEcoder.filesFrame.contentWindow.focus();
 
 		// Hide the loading screen & auto open last files?
 		top.ICEcoder.showHide('hide',top.get('loadingMask'));
@@ -150,10 +154,31 @@ var ICEcoder = {
 
 	// Set the layout as split pane or not
 	setSplitPane: function(onOff) {
+		var cM, cMdiff;
+
 		top.ICEcoder.splitPane = onOff == "on" ? true : false;
 		top.get('splitPaneControlsOff').style.opacity = top.ICEcoder.splitPane ? 0.5 : 1;
 		top.get('splitPaneControlsOn').style.opacity = top.ICEcoder.splitPane ? 1 : 0.5;
 		top.ICEcoder.setLayout();
+
+		// Also clear marks (if going to a single pane) or redo the marks (if split pane)
+		if (top.ICEcoder.splitPane) {
+			top.ICEcoder.updateDiffs();
+		} else {
+			cM = top.ICEcoder.getcMInstance();
+			cMdiff = top.ICEcoder.getcMdiffInstance();
+
+			// Clear all main pane marks
+			cMmarks = cM.getAllMarks();
+			for (var i=0; i<cMmarks.length; i++) {
+				cMmarks[i].clear();
+			}
+			// Clear all diff pane marks
+			cMdiffMarks = cMdiff.getAllMarks();
+			for (var i=0; i<cMdiffMarks.length; i++) {
+				cMdiffMarks[i].clear();
+			}
+		}
 	},
 
 	// Set the width of the file manager on demand
@@ -200,7 +225,7 @@ var ICEcoder = {
 	lockUnlockNav: function() {
 		var lockIcon;
 
-		lockIcon = top.filesFrame.contentWindow.document.getElementById('fmLock');
+		lockIcon = top.ICEcoder.filesFrame.contentWindow.document.getElementById('fmLock');
 		ICEcoder.lockedNav = !ICEcoder.lockedNav;
 		lockIcon.style.backgroundPosition = ICEcoder.lockedNav ? "0 0" : "-16px 0";
 	},
@@ -336,7 +361,8 @@ var ICEcoder = {
 		}
 		// Update diffs if we have a split pane
 		if (top.ICEcoder.splitPane) {
-			top.ICEcoder.updateDiffs();
+			// Need 0ms tickover so we handle char change first
+			setTimeout(function(){top.ICEcoder.updateDiffs();},0);
 		}
 		// Update HTML edited files live
 		if (filepath && top.ICEcoder.previewWindow.location) {
@@ -365,11 +391,12 @@ var ICEcoder = {
 	// On input read
 	cMonInputRead: function(thisCM,cMinstance) {
 		if (top.ICEcoder.autoComplete == "keypress" && top.ICEcoder.codeAssist) {
-			clearTimeout(top.ICEcoder.debounce);
+			// Debounce timeout wrapper left here for now, but can be removed in future if no negative effects seen
+			// clearTimeout(top.ICEcoder.debounce);
 			if (!thisCM.state.completionActive) {
-				top.ICEcoder.debounce = setTimeout(function() {
-					CodeMirror.commands.autocomplete(thisCM);
-				},200);
+				// top.ICEcoder.debounce = setTimeout(function() {
+					top.ICEcoder.autocomplete();
+				// },0);
 			}
 		}
 	},
@@ -411,8 +438,8 @@ var ICEcoder = {
 		cMdiff = top.ICEcoder.getcMdiffInstance();
 
 		// Get the baseText and newText values from the two textboxes, and split them into lines
-		mainText = difflib.stringAsLines(cM.getValue());
-		diffText = difflib.stringAsLines(cMdiff.getValue());
+		mainText = cM ? difflib.stringAsLines(cM.getValue()) : "";
+		diffText = cMdiff ? difflib.stringAsLines(cMdiff.getValue()) : "";
 
 		// Create a SequenceMatcher instance that diffs the two sets of lines
 		sm = new difflib.SequenceMatcher(mainText, diffText);
@@ -421,88 +448,104 @@ var ICEcoder = {
 		// Opcodes is a list of 3-tuples describing what changes should be made to the base text in order to yield the new text
 		opcodes = sm.get_opcodes();
 
-		// Clear all main pane marks
-		cMmarks = cM.getAllMarks();
-		for (var i=0; i<cMmarks.length; i++) {
-			cMmarks[i].clear();
-		}
-		// Clear all diff pane marks
-		cMdiffMarks = cMdiff.getAllMarks();
-		for (var i=0; i<cMdiffMarks.length; i++) {
-			cMdiffMarks[i].clear();
-		}
-
-		// For each opcode returned by jsdifflib
-		for (var i=0; i<opcodes.length; i++) {
-			// If not 'equal' status for the section, we have a 'replace', 'delete' or 'insert' status, so do something
-			if (opcodes[i][0] !== "equal") {
-
-				// =========
-				// MAIN PANE
-				// =========
-
-				// Replacing? Pad out main pane line to match equivalent last line in diff pane
-				if (opcodes[i][0] == "replace") {
-					// Line amount is diff between end of both panes at this point in our loop, plus 1 line and our overall document shift, multiplied by font size
-					amt = ((opcodes[i][4] - opcodes[i][2] + 1 + top.ICEcoder.renderPaneShiftAmount) * cM.defaultTextHeight());
-					// If we have an height greater than the default text height, add a new style
-					if (amt > cM.defaultTextHeight()) {
-						top.ICEcoder.renderLineStyle.push(["main", opcodes[i][2], "height", amt + "px"]);
-					}
-					// Mark text in 2 colours, for each line
-					for (var j=0; j<(opcodes[i][2]) - (opcodes[i][1]); j++)  {
-						sDiffs = (top.ICEcoder.findStringDiffs(cM.getLine(opcodes[i][1]+j),cMdiff.getLine(opcodes[i][3]+j)));
-						cM.markText({line: opcodes[i][1]+j, ch: 0}, {line: opcodes[i][3]+j + top.ICEcoder.renderPaneShiftAmount, ch: sDiffs[0]}, {className: "diffGreyLighter"});
-						cM.markText({line: opcodes[i][1]+j, ch: sDiffs[0]}, {line: opcodes[i][3]+j + top.ICEcoder.renderPaneShiftAmount, ch: sDiffs[0]+sDiffs[1]}, {className: "diffGrey"});
-						cM.markText({line: opcodes[i][1]+j, ch: sDiffs[0]+sDiffs[1]}, {line: opcodes[i][3]+j + top.ICEcoder.renderPaneShiftAmount, ch: 1000000}, {className: "diffGreyLighter"});
-					}	
-				// Inserting
-				} else {
-					cM.markText({line: opcodes[i][1], ch: 0}, {line: opcodes[i][2]-1, ch: 1000000}, {className: "diffGreen"});
-				}
-
-				// If inserting or deleting and the main pane hasn't changed, we need to pad out the line in that pane
-				if (opcodes[i][0] != "replace" && opcodes[i][1] == opcodes[i][2]) {
-					top.ICEcoder.renderLineStyle.push(["main", opcodes[i][2], "height", ((opcodes[i][4] - opcodes[i][3] + 1) * cM.defaultTextHeight()) + "px"]);
-					// Mark the range with empty class
-					cM.markText({line: opcodes[i][2]-1, ch: 0}, {line: opcodes[i][2]-1, ch: 1000000}, {className: "diffNone"});
-				}
-
-				// =========
-				// DIFF PANE
-				// =========
-
-				// Replacing? Pad out diff pane line to match equivalent last line in main pane
-				if (opcodes[i][0] == "replace") {
-					// Line amount is diff between end of both panes at this point in our loop, plus 1 line and our overall document shift, multiplied by font size
-					amt = ((opcodes[i][2] - opcodes[i][4] + 1 - top.ICEcoder.renderPaneShiftAmount) * cM.defaultTextHeight());
-					// If we have an height greater than the default text height, add a new style
-					if (amt > cM.defaultTextHeight()) {
-						top.ICEcoder.renderLineStyle.push(["diff", opcodes[i][4], "height", amt + "px"]);
-					}
-					// Mark text in 2 colours, for each line
-					for (var j=0; j<(opcodes[i][4]) - (opcodes[i][3]); j++)  {
-						sDiffs = (top.ICEcoder.findStringDiffs(cM.getLine(opcodes[i][1]+j),cMdiff.getLine(opcodes[i][3]+j)));
-						cMdiff.markText({line: opcodes[i][1]+j - top.ICEcoder.renderPaneShiftAmount, ch: 0}, {line: opcodes[i][3]+j, ch: sDiffs[0]}, {className: "diffGreyLighter"});
-						cMdiff.markText({line: opcodes[i][1]+j - top.ICEcoder.renderPaneShiftAmount, ch: sDiffs[0]}, {line: opcodes[i][3]+j, ch: sDiffs[0]+sDiffs[2]}, {className: "diffGrey"});
-						cMdiff.markText({line: opcodes[i][1]+j - top.ICEcoder.renderPaneShiftAmount, ch: sDiffs[0]+sDiffs[2]}, {line: opcodes[i][3]+j, ch: 1000000}, {className: "diffGreyLighter"});
-					}
-				// Deleting
-				} else {
-					cMdiff.markText({line: opcodes[i][3], ch: 0}, {line: opcodes[i][4]-1, ch: 1000000}, {className: "diffRed"});
-				}
-
-				// If inserting or deleting and the diff pane hasn't changed, we need to pad out the line in that pane
-				if (opcodes[i][0] != "replace" && opcodes[i][3] == opcodes[i][4]) {
-					top.ICEcoder.renderLineStyle.push(["diff", opcodes[i][4], "height", ((opcodes[i][2] - opcodes[i][1] + 1) * cM.defaultTextHeight()) + "px"]);
-					// Mark the range with empty class
-					cMdiff.markText({line: opcodes[i][4]-1, ch: 0}, {line: opcodes[i][4]-1, ch: 1000000}, {className: "diffNone"});
-				}
-
-				// Finally, set the last amount shifted for this change
-				top.ICEcoder.renderPaneShiftAmount = (opcodes[i][2] - opcodes[i][4]);
+		if (cM) {
+			// Clear all main pane marks
+			cMmarks = cM.getAllMarks();
+			for (var i=0; i<cMmarks.length; i++) {
+				cMmarks[i].clear();
 			}
-		}	
+			// Clear all diff pane marks
+			cMdiffMarks = cMdiff.getAllMarks();
+			for (var i=0; i<cMdiffMarks.length; i++) {
+				cMdiffMarks[i].clear();
+			}
+		}
+
+		if (cM && cMdiff.getValue() != "") {
+			// For each opcode returned by jsdifflib
+			for (var i=0; i<opcodes.length; i++) {
+				// If not 'equal' status for the section, we have a 'replace', 'delete' or 'insert' status, so do something
+				if (opcodes[i][0] !== "equal") {
+
+					// =========
+					// MAIN PANE
+					// =========
+
+					// Replacing? Pad out main pane line to match equivalent last line in diff pane
+					if (opcodes[i][0] == "replace") {
+						// Line amount is diff between end of both panes at this point in our loop, plus 1 line and our overall document shift, multiplied by font size
+						amt = ((opcodes[i][4] - opcodes[i][2] + 1 + top.ICEcoder.renderPaneShiftAmount) * cM.defaultTextHeight());
+						// Add on the extra heights for any wrapped lines
+						for (var j=opcodes[i][4]-1; j<=opcodes[i][2]-1; j++) {
+							if (cMdiff.getLineHandle(j).height > cM.defaultTextHeight()) {
+								amt += cMdiff.getLineHandle(j).height - cM.defaultTextHeight();
+							}
+						}
+						// If we have an height greater than the default text height, add a new style
+						if (amt > cM.defaultTextHeight()) {
+							top.ICEcoder.renderLineStyle.push(["main", opcodes[i][2], "height", amt + "px"]);
+						}
+						// Mark text in 2 colours, for each line
+						for (var j=0; j<(opcodes[i][2]) - (opcodes[i][1]); j++)  {
+							sDiffs = (top.ICEcoder.findStringDiffs(cM.getLine(opcodes[i][1]+j),cMdiff.getLine(opcodes[i][3]+j)));
+							cM.markText({line: opcodes[i][1]+j, ch: 0}, {line: opcodes[i][3]+j + top.ICEcoder.renderPaneShiftAmount, ch: sDiffs[0]}, {className: "diffGreyLighter"});
+							cM.markText({line: opcodes[i][1]+j, ch: sDiffs[0]}, {line: opcodes[i][3]+j + top.ICEcoder.renderPaneShiftAmount, ch: sDiffs[0]+sDiffs[1]}, {className: "diffGrey"});
+							cM.markText({line: opcodes[i][1]+j, ch: sDiffs[0]+sDiffs[1]}, {line: opcodes[i][3]+j + top.ICEcoder.renderPaneShiftAmount, ch: 1000000}, {className: "diffGreyLighter"});
+						}	
+					// Inserting
+					} else {
+						cM.markText({line: opcodes[i][1], ch: 0}, {line: opcodes[i][2]-1, ch: 1000000}, {className: "diffGreen"});
+					}
+
+					// If inserting or deleting and the main pane hasn't changed, we need to pad out the line in that pane
+					if (opcodes[i][0] != "replace" && opcodes[i][1] == opcodes[i][2]) {
+						top.ICEcoder.renderLineStyle.push(["main", opcodes[i][2], "height", ((opcodes[i][4] - opcodes[i][3] + 1) * cM.defaultTextHeight()) + "px"]);
+						// Mark the range with empty class
+						cM.markText({line: opcodes[i][2]-1, ch: 0}, {line: opcodes[i][2]-1, ch: 1000000}, {className: "diffNone"});
+					}
+
+					// =========
+					// DIFF PANE
+					// =========
+
+					// Replacing? Pad out diff pane line to match equivalent last line in main pane
+					if (opcodes[i][0] == "replace") {
+						// Line amount is diff between end of both panes at this point in our loop, plus 1 line and our overall document shift, multiplied by font size
+						amt = ((opcodes[i][2] - opcodes[i][4] + 1 - top.ICEcoder.renderPaneShiftAmount) * cM.defaultTextHeight());
+						// Add on the extra heights for any wrapped lines
+						for (var j=opcodes[i][4]-1; j<=opcodes[i][2]-1; j++) {
+							if (cM.getLineHandle(j).height > cM.defaultTextHeight()) {
+								amt += cM.getLineHandle(j).height - cM.defaultTextHeight();
+							}
+						}
+						// If we have an height greater than the default text height, add a new style
+						if (amt > cM.defaultTextHeight()) {
+							top.ICEcoder.renderLineStyle.push(["diff", opcodes[i][4], "height", amt + "px"]);
+						}
+						// Mark text in 2 colours, for each line
+						for (var j=0; j<(opcodes[i][4]) - (opcodes[i][3]); j++)  {
+							sDiffs = (top.ICEcoder.findStringDiffs(cM.getLine(opcodes[i][1]+j),cMdiff.getLine(opcodes[i][3]+j)));
+							cMdiff.markText({line: opcodes[i][1]+j - top.ICEcoder.renderPaneShiftAmount, ch: 0}, {line: opcodes[i][3]+j, ch: sDiffs[0]}, {className: "diffGreyLighter"});
+							cMdiff.markText({line: opcodes[i][1]+j - top.ICEcoder.renderPaneShiftAmount, ch: sDiffs[0]}, {line: opcodes[i][3]+j, ch: sDiffs[0]+sDiffs[2]}, {className: "diffGrey"});
+							cMdiff.markText({line: opcodes[i][1]+j - top.ICEcoder.renderPaneShiftAmount, ch: sDiffs[0]+sDiffs[2]}, {line: opcodes[i][3]+j, ch: 1000000}, {className: "diffGreyLighter"});
+						}
+					// Deleting
+					} else {
+						cMdiff.markText({line: opcodes[i][3], ch: 0}, {line: opcodes[i][4]-1, ch: 1000000}, {className: "diffRed"});
+					}
+
+					// If inserting or deleting and the diff pane hasn't changed, we need to pad out the line in that pane
+					if (opcodes[i][0] != "replace" && opcodes[i][3] == opcodes[i][4]) {
+						top.ICEcoder.renderLineStyle.push(["diff", opcodes[i][4], "height", ((opcodes[i][2] - opcodes[i][1] + 1) * cM.defaultTextHeight()) + "px"]);
+						// Mark the range with empty class
+						cMdiff.markText({line: opcodes[i][4]-1, ch: 0}, {line: opcodes[i][4]-1, ch: 1000000}, {className: "diffNone"});
+					}
+
+					// Finally, set the last amount shifted for this change
+					top.ICEcoder.renderPaneShiftAmount = (opcodes[i][2] - opcodes[i][4]);
+				}
+			}
+		}
 	},
 
 	// Find diffs between 2 strings
@@ -678,6 +721,8 @@ var ICEcoder = {
 
 		thisCM.setCursor(lineNo ? lineNo-1 : top.get('goToLineNo').value-1);
 		top.ICEcoder.focus();
+		// Also do this after a 0ms tickover incase DOM wasn't ready
+		setTimeout(function(){top.ICEcoder.focus();},0);
 		return false;
 	},
 
@@ -718,7 +763,7 @@ var ICEcoder = {
 				thisCM.indentLine(endLine+2,'subtract');
 			});
 		} else {
-			if (	['p','a','b','i','strong','em','h1','h2','h3','li'].indexOf(tag)>-1 && 
+			if (	['p','a','h1','h2','h3'].indexOf(tag)>-1 && 
 				thisCM.getSelection().substr(0,tag.length+1) == "<"+tagStart && 
 				thisCM.getSelection().substr(-(tag.length+3)) == "</"+tagEnd+">") {
 					// Undo wrapper
@@ -977,7 +1022,7 @@ var ICEcoder = {
 		} else if (top.ICEcoder.thisFileFolderLink) {
 			// Get file URL, with pipes instead of slashes & target DOM elem
 			shortURL = top.ICEcoder.thisFileFolderLink.replace(/\//g,"|");
-			tgtFile = ICEcoder.filesFrame.contentWindow.document.getElementById(shortURL);
+			tgtFile = top.ICEcoder.filesFrame.contentWindow.document.getElementById(shortURL);
 
 			// If we have the CTRL/Cmd key down
 			if (ctrlSim || evt.ctrlKey || top.ICEcoder.cmdKey) {
@@ -1085,7 +1130,7 @@ var ICEcoder = {
 	boxSelect: function(evt, mouseAction) {
 		var fmDragBox, positive;
 
-		fmDragBox = top.filesFrame.contentWindow.document.getElementById('fmDragBox');
+		fmDragBox = top.ICEcoder.filesFrame.contentWindow.document.getElementById('fmDragBox');
 
 		// On mouse down, set start X & Y and reset first and last items in box area select
 		if (mouseAction == "down") {
@@ -1148,9 +1193,40 @@ var ICEcoder = {
 		}
 	},
 
+	// Provide a path and line ref and we return the seperate pieces
+	returnFileAndLine: function(fileLink) {
+		var line = 1;
+		var re = /^([^ ]*)\s+(on\s+)?(line\s+)?(\d+)/;
+		var reMatch = re.exec(fileLink);
+
+		if (null !== reMatch) {
+			line = reMatch[4];
+			fileLink = reMatch[1];
+		} else if (fileLink.indexOf('://') > 0){
+			if (fileLink.lastIndexOf(':') !== fileLink.indexOf('://')) {
+				line = fileLink.split(':')[2];
+				fileLink = fileLink.substr(0,fileLink.lastIndexOf(":"));
+			}
+		} else if (fileLink.indexOf(':') > 0){
+			line = fileLink.split(':')[1];
+			fileLink = fileLink.split(':')[0];
+		}
+		if ((fileLink.indexOf('(') > 0) && (fileLink.indexOf(')') > 0)){
+			line = fileLink.split('(')[1].split(')')[0];
+			fileLink = fileLink.split('(')[0];
+		}
+		return [fileLink,line];
+	},
+
 	// Open a file
 	openFile: function(fileLink) {
-		var shortURL, canOpenFile;
+		var flSplit, line, shortURL, canOpenFile;
+
+		if ("undefined" != typeof fileLink) {
+			flSplit = top.ICEcoder.returnFileAndLine(fileLink);
+			fileLink = flSplit[0];
+			line     = flSplit[1];
+		}
 
 		if (fileLink) {
 			top.ICEcoder.thisFileFolderLink=fileLink;
@@ -1158,6 +1234,9 @@ var ICEcoder = {
 		}
 		if (top.ICEcoder.thisFileFolderLink != "/[NEW]" && top.ICEcoder.isOpen(top.ICEcoder.thisFileFolderLink)!==false) {
 			top.ICEcoder.switchTab(top.ICEcoder.isOpen(top.ICEcoder.thisFileFolderLink)+1);
+			if (line > 1){
+				top.ICEcoder.goToLine(line);
+			}
 		} else if (top.ICEcoder.thisFileFolderLink!="" && top.ICEcoder.thisFileFolderType=="file") {
 
 			// work out a shortened URL for the file
@@ -1176,7 +1255,7 @@ var ICEcoder = {
 
 				if (shortURL!="/[NEW]") {
 					top.ICEcoder.thisFileFolderLink = top.ICEcoder.thisFileFolderLink.replace(/\//g,"|");
-					top.ICEcoder.serverQueue("add","lib/file-control.php?action=load&file="+top.ICEcoder.thisFileFolderLink+"&csrf="+top.ICEcoder.csrf);
+					top.ICEcoder.serverQueue("add","lib/file-control.php?action=load&file="+top.ICEcoder.thisFileFolderLink+"&csrf="+top.ICEcoder.csrf+"&lineNumber="+line);
 					top.ICEcoder.serverMessage('<b>'+top.t['Opening File']+'</b><br>'+top.ICEcoder.shortURL);
 				} else {
 					top.ICEcoder.createNewTab('new');
@@ -1208,7 +1287,15 @@ var ICEcoder = {
 
 	// Get remote file contents
 	getRemoteFile: function(remoteFile) {
-		top.ICEcoder.serverQueue("add","lib/file-control-xhr.php?action=getRemoteFile&csrf="+top.ICEcoder.csrf,remoteFile);
+		var flSplit, line;
+
+		if ("undefined" != typeof remoteFile) {
+			flSplit = top.ICEcoder.returnFileAndLine(remoteFile);
+			remoteFile = flSplit[0];
+			line       = flSplit[1];
+		}
+
+		top.ICEcoder.serverQueue("add","lib/file-control-xhr.php?action=getRemoteFile&csrf="+top.ICEcoder.csrf+"&lineNumber="+line,remoteFile);
 		top.ICEcoder.serverMessage('<b>'+top.t['Getting']+'</b><br>'+remoteFile);
 	},
 
@@ -1273,8 +1360,10 @@ var ICEcoder = {
 				top.get('tab'+(i+1)).innerHTML = closeTabLink + " " + fileName.slice(fileName.lastIndexOf("/")).replace(/\//,"");
 				top.get('tab'+(i+1)).title = newName;
 			}
-			top.ICEcoder.serverQueue("add","lib/file-control-xhr.php?action=move&oldFileName="+oldName.replace(/\//g,"|")+"&csrf="+top.ICEcoder.csrf,newName.replace(/\//g,"|"));
-			top.ICEcoder.serverMessage('<b>'+top.t['Moving to']+'</b><br>'+newName);
+			if (top.ICEcoder.ask("Are you sure you want to move file " + oldName + " to " + newName + " ?")){
+				top.ICEcoder.serverQueue("add","lib/file-control-xhr.php?action=move&oldFileName="+oldName.replace(/\//g,"|")+"&csrf="+top.ICEcoder.csrf,newName.replace(/\//g,"|"));
+				top.ICEcoder.serverMessage('<b>'+top.t['Moving to']+'</b><br>'+newName);
+			}
 
 			top.ICEcoder.setPreviousFiles();
 		}
@@ -1381,6 +1470,31 @@ var ICEcoder = {
 		}
 	},
 
+	// Is a specified path a folder? (Note: path is string encoded path with / replaced with |)
+	isPathFolder: function(path){
+		// let's enumerate all folders to find whether clicked file is a folder or not
+		var dir = top.ICEcoder.filesFrame.contentDocument.getElementsByClassName("pft-directory");
+		var thisFileId = top.ICEcoder.selectedFiles[0];
+		var liNode, aNode, spanNode; 
+		for (var i = 0 ; i < dir.length; i++){
+			liNode = dir[i];
+			if ("underfined" != typeof liNode){
+				aNode = liNode.childNodes[0];
+				if ("undefined" != typeof aNode){
+					spanNode = aNode.childNodes[1];
+					if ("undefined" != typeof spanNode){
+						if (thisFileId === spanNode.getAttribute('id')){
+							// It's a folder
+							return true;
+						}
+					}
+				}
+			}
+		}
+		// It's a file
+		return false;
+	},
+
 	// Show menu on right clicking in file manager
 	showMenu: function(evt) {
 		var menuType, menuHeight, winH, fmYPos;
@@ -1393,7 +1507,7 @@ var ICEcoder = {
 		menuHeight = 124+5; // general options height in px plus 5px space
 		winH = window.innerHeight;
 		if ("undefined" != typeof top.ICEcoder.thisFileFolderLink && top.ICEcoder.thisFileFolderLink!="") {
-			menuType = top.ICEcoder.selectedFiles[0].indexOf(".")>-1 ? "file" : "folder";
+			menuType = this.isPathFolder(top.ICEcoder.selectedFiles[0]) ? "folder" : "file";
 			top.get('folderMenuItems').style.display = menuType == "folder" && top.ICEcoder.selectedFiles.length == 1 ? "block" : "none";
 			if (menuType == "folder" && top.ICEcoder.selectedFiles.length == 1) {
 				menuHeight += 20+20+1+23+1+2; // new file, new folder, hr, upload files(s), hr, padding
@@ -1448,7 +1562,16 @@ var ICEcoder = {
 			locNest = targetElem.parentNode.parentNode.nextSibling;
 			newText = document.createTextNode("\n");
 			permColors = perms == 777 ? 'background: #800; color: #eee' : 'color: #888';
-			innerLI = '<a nohref title="'+location.replace(/\/$/, "")+"/"+file+'" onMouseOver="parentNode.draggable=true;top.ICEcoder.overFileFolder(\''+actionElemType+'\',this.childNodes[1].id)" onMouseOut="parentNode.draggable=false;top.ICEcoder.overFileFolder(\''+actionElemType+'\',\'\')" ondragover="if(parentNode.nextSibling && parentNode.nextSibling.tagName != \'UL\' && top.ICEcoder.thisFileFolderLink != this.childNodes[1].id) {top.ICEcoder.openCloseDir(this,true);}" onClick="if(!event.ctrlKey && !top.ICEcoder.cmdKey) {top.ICEcoder.openCloseDir(this,'+(actionElemType=="folder" ? 'true' : 'false')+'); if (/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)) {top.ICEcoder.openFile()}}" style="position: relative; left:-22px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span id="'+location.replace(/\/$/, "").replace(/\//g,"|")+"|"+file+'">'+file+'</span> <span style="'+permColors+'; font-size: 8px" id="'+location.replace(/\/$/, "").replace(/\//g,"|")+"|"+file+'_perms">'+perms+'</span></a>';
+			innerLI = '<a nohref title="'+location.replace(/\/$/, "")+"/"+file+'" onMouseOver="parentNode.draggable=true;top.ICEcoder.overFileFolder(\''+actionElemType+'\',this.childNodes[1].id)" onMouseOut="parentNode.draggable=false;top.ICEcoder.overFileFolder(\''+actionElemType+'\',\'\')" '+
+
+					(actionElemType == "folder" ? 'ondragover="if(parentNode.nextSibling && parentNode.nextSibling.tagName != \'UL\' && top.ICEcoder.thisFileFolderLink != this.childNodes[1].id) {top.ICEcoder.openCloseDir(this,true);}"':'')+
+
+					' onClick="if(!event.ctrlKey && !top.ICEcoder.cmdKey) {'+
+
+					(actionElemType == "folder" ? 'top.ICEcoder.openCloseDir(this,'+(actionElemType=="folder" ? 'true' : 'false')+');':'')+
+
+					' if (/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)) {top.ICEcoder.openFile()}}" style="position: relative; left:-22px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span id="'+location.replace(/\/$/, "").replace(/\//g,"|")+"|"+file+'">'+file+'</span> <span style="'+permColors+'; font-size: 8px" id="'+location.replace(/\/$/, "").replace(/\//g,"|")+"|"+file+'_perms">'+perms+'</span></a>';
+
 			// If we don't have at least 3 DOM items in here, it's an empty folder
 			if(locNest.childNodes.length<3) {
 				// We now need to begin a new UL list
@@ -1510,11 +1633,13 @@ var ICEcoder = {
 			targetElem = top.get('filesFrame').contentWindow.document.getElementById(shortURL);
 			// Set the name to be as per our new file/folder name
 			targetElem.innerHTML = file;
-			// Finally, update the ID of the target & set a new title and perms ID
+			// Update the ID of the target & set a new title and perms ID
 			targetElem.id = location.replace(/\//g,"|") + "|" + file;
 			targetElem.parentNode.title = targetElem.id.replace(/\|/g,"/");
 			targetElemPerms = top.get('filesFrame').contentWindow.document.getElementById(shortURL+"_perms");
 			targetElemPerms.id = location.replace(/\//g,"|") + "|" + file + "_perms";
+			// Finally, rename also within any children
+			top.ICEcoder.renameInChildren(targetElem, oldName, location, file);
 		}
 
 		// Moving files
@@ -1545,6 +1670,32 @@ var ICEcoder = {
 			targetElem = top.get('filesFrame').contentWindow.document.getElementById(targetElem).parentNode.parentNode;
 			top.ICEcoder.openCloseDir(targetElem.childNodes[0],false);
 			targetElem.parentNode.removeChild(targetElem);
+		}
+	},
+
+	// Rename node attributes within any renamed dirs recursively
+	renameInChildren: function(elem, oldName, location, file) {
+		var innerItems, targetElem, targetElemPerms;
+
+		// If our elem has a sibling and it's a UL, we renamed a dir
+		if(elem.parentNode.parentNode.nextSibling && elem.parentNode.parentNode.nextSibling.nodeName == "UL") {
+			innerItems = elem.parentNode.parentNode.nextSibling;
+
+			// For each one of the children in the UL, if it's a LI (may be a file or dir)
+			for (var i=0; i<innerItems.childNodes.length; i++) {
+				if (innerItems.childNodes[i].nodeName == "LI") {
+					// Get the span elem inside as our targetElem
+					targetElem = innerItems.childNodes[i].childNodes[0].childNodes[1];
+					// Update the ID of the target & set a new title
+					targetElem.id = targetElem.id.replace(oldName.replace(/\//g,"|"),location.replace(/\//g,"|")+"|"+file);
+					targetElem.parentNode.title = targetElem.id.replace(/\|/g,"/");
+					// Also update the perms ID
+					targetElemPerms = top.get('filesFrame').contentWindow.document.getElementById(targetElem.id).nextSibling.nextSibling;
+					targetElemPerms.id = targetElem.id + "_perms";
+					// Finally, test this node for ULs next to it also, incase it's a dir
+					top.ICEcoder.renameInChildren(targetElem, oldName, location, file);
+				}
+			}
 		}
 	},
 
@@ -1610,8 +1761,19 @@ var ICEcoder = {
 	},
 
 	// Find & replace text according to user selections
-	findReplace: function(findString,resultsOnly,buttonClick) {
+	findReplace: function(findString,resultsOnly,buttonClick,isCancel,findPrevious) {
 		var find, replace, results, cM, cMdiff, thisCM, content, cursor, avgBlockH, addPadding, rBlocks, blockColor, replaceQS, targetQS, filesQS;
+
+		if (isCancel){
+			// Deselect by setting value to itself, then focus on editor
+			top.get('find').value = top.get('find').value;
+			top.ICEcoder.focus();
+			return;
+		}
+		// Set findPrevious to false if not passed in
+		if ("undefined" == typeof findPrevious) {
+			findPrevious = false;
+		}
 
 		// Determine our find & replace strings and results display
 		find		= findString.toLowerCase();
@@ -1662,22 +1824,59 @@ var ICEcoder = {
 				// We need to take action instead
 				} else {
 					// Find our cursor position relative to results
-					ICEcoder.findResult = 0;
-					for (var i=0;i<ICEcoder.results.length;i++) {
-						if (ICEcoder.results[i]<thisCM.indexFromPos(thisCM.getCursor())) {
-							ICEcoder.findResult++;
+					// Go next
+					if (!findPrevious) {
+						ICEcoder.findResult = 0;
+						for (var i=0;i<ICEcoder.results.length;i++) {					
+							if (ICEcoder.results[i]<thisCM.indexFromPos({"ch": thisCM.getCursor().ch+1, "line": thisCM.getCursor().line})) {
+								ICEcoder.findResult++;
+							}
+						}
+					// Go previous
+					} else {
+						if("undefined" == typeof ICEcoder.findResult) {
+							ICEcoder.findResult = ICEcoder.results.length+1;
+						} else {
+							ICEcoder.findResult = ICEcoder.results.length;
+						}
+						for (var i=ICEcoder.results.length-1;i>=0;i--) {
+							if (ICEcoder.results[i]>thisCM.indexFromPos({"ch": thisCM.getCursor().ch-1, "line": thisCM.getCursor().line})) {
+								ICEcoder.findResult--;
+							}
 						}
 					}
-					if (ICEcoder.findResult>ICEcoder.results.length-1) {ICEcoder.findResult=0};
+
+					// Loop round to start
+					if (!findPrevious && ICEcoder.findResult>ICEcoder.results.length-1) {
+						ICEcoder.findResult = 0
+					}
+					// Loop round to end
+					if (findPrevious && ICEcoder.findResult==1) {
+						ICEcoder.findResult = ICEcoder.results.length+1;
+					}
 
 					// Update results display
-					results.innerHTML = "Highlighted result "+(ICEcoder.findResult+1)+" of "+ICEcoder.results.length+" results";
+					results.innerHTML = "Highlighted result "+(ICEcoder.findResult+(!findPrevious ? 1 : -1))+" of "+ICEcoder.results.length+" results";
 
-					cursor = thisCM.getSearchCursor(find,thisCM.getCursor(),true);
-					cursor.findNext();
-					if (!cursor.from()) {
-						cursor = thisCM.getSearchCursor(find,{line:0,ch:0},true);
+					// Now actually perform the movement in the editor
+					if (!findPrevious) {
+						// Find next instance
+						cursor = thisCM.getSearchCursor(find,{"ch": thisCM.getCursor().ch+1, "line": thisCM.getCursor().line},true);
 						cursor.findNext();
+						// Find next from start of doc
+						if (!cursor.from()) {
+							cursor = thisCM.getSearchCursor(find,{line:0,ch:0},true);
+							cursor.findNext();
+						}
+					} else {
+						// Find previous instance
+						cursor = thisCM.getSearchCursor(find,{"ch": thisCM.getCursor().ch-1, "line": thisCM.getCursor().line},true);
+						cursor.findPrevious();
+						// Find previous from end of doc
+						if (!cursor.from()) {
+							cursor = thisCM.getSearchCursor(find,{line:1000000,ch:1000000},true);
+							cursor.findPrevious();
+						}
 					}
 					// Finally, highlight our selection
 					thisCM.setSelection(cursor.from(), cursor.to());
@@ -1929,11 +2128,12 @@ var ICEcoder = {
 		}
 	},
 
-	// Draw a canvas image based on actual img node image src
-	drawCanvasImage: function (imgThis) {
-		var canvas, img, x, y, imgData, R, G, B, rgb, hex, textColor;
+	// Init the canvas by drawing the image and setting the floating containers background size (5x zoom)
+	initCanvasImage: function (imgThis) {
+		var canvas, img;
 
 		canvas = top.get('canvasPicker').getContext('2d');
+
 		img = new Image();
 		img.src = imgThis.src;
 		img.onload = function() {
@@ -1941,6 +2141,15 @@ var ICEcoder = {
 			top.get('canvasPicker').height = imgThis.height;
 			canvas.drawImage(img,0,0,imgThis.width,imgThis.height);
 		}
+
+		top.document.getElementById('floatingContainer').style.backgroundSize = (imgThis.naturalWidth*5)+"px "+(imgThis.naturalHeight*5)+"px";
+	},
+
+	// Interact with the canvas image
+	interactCanvasImage: function (imgThis) {
+		var canvas, x, y, imgData, R, G, B, rgb, hex, textColor, fcElem, fcBGX, fcBGY;
+
+		canvas = top.get('canvasPicker').getContext('2d');
 
 		// Show pointer colors on mouse move over canvas
 		top.get('canvasPicker').onmousemove = function(event) {
@@ -1961,6 +2170,25 @@ var ICEcoder = {
 			top.get('hexMouseXY').style.backgroundColor = top.get('rgbMouseXY').style.backgroundColor = '#' + hex;
 			textColor = R<128 || G<128 || B<128 && (R<200 && G<200 && B>50) ? '#fff' : '#000';
 			top.get('hexMouseXY').style.color = top.get('rgbMouseXY').style.color = textColor;
+
+			// Move the floating container to follow mouse pointer
+			fcElem = get('floatingContainer');
+			fcElem.style.left = top.ICEcoder.mouseX+20 + "px";
+			fcElem.style.top = top.ICEcoder.mouseY + "px";
+			// Move the background image for the container to match also
+			// 5 x zoom, account for scaling down of large images and shift 25px of the hover div size
+			// (55px is the 11x11 grid of pixels), minus 5px for centre row/col
+			fcBGX = -((x*5)*(imgThis.naturalWidth/imgThis.width))+25;
+			fcBGY = -((y*5)*(imgThis.naturalHeight/imgThis.height))+25;
+			fcElem.style.backgroundPosition = fcBGX+"px "+fcBGY+"px";
+		};
+		// Show image preview box on mouse over
+		top.get('canvasPicker').onmouseover = function(event) {
+			get('floatingContainer').style.visibility = "visible";
+		};
+		// Hide image preview box on mouse out
+		top.get('canvasPicker').onmouseout = function(event) {
+			get('floatingContainer').style.visibility = "hidden";
 		};
 		// Set pointer colors on clicking canvas
 		top.get('canvasPicker').onclick = function() {
@@ -2111,22 +2339,42 @@ var ICEcoder = {
 			if (item && (item.indexOf('saveFiles=')==-1 && item.indexOf('action=load')==-1)) {
 				xhr = top.ICEcoder.xhrObj();
 				xhr.onreadystatechange=function() {
-					if (xhr.readyState==4 && xhr.status==200) {
-						// console.log(xhr.responseText);
+					if (xhr.readyState==4) {
+						// Parse the response as a JSON object
 						statusObj = JSON.parse(xhr.responseText);
 
 						// Set the action end time and time taken in JSON object
 						statusObj.action.timeEnd = new Date().getTime();
 						statusObj.action.timeTaken = statusObj.action.timeEnd - statusObj.action.timeStart;
-						// console.log(statusObj);
 
-						if (statusObj.status.error) {
-							top.ICEcoder.message(statusObj.status.errorMsg);
-						} else {
-							eval(statusObj.action.doNext);
+						// User wanted raw (or both) output of the response?
+						if (["raw","both"].indexOf(top.ICEcoder.fileDirResOutput) >= 0) {
+							console.log(xhr.responseText);
 						}
-						
+						// User wanted object (or both) output of the response?
+						if (["object","both"].indexOf(top.ICEcoder.fileDirResOutput) >= 0) {
+							console.log(statusObj);
+						}
 
+						// OK reponse? If error, show that, otherwise do whatever we're required to do next
+						if (xhr.status==200) {
+							if (statusObj.status.error) {
+								top.ICEcoder.message(statusObj.status.errorMsg);
+								console.log("ICEcoder error info for your request...");
+								console.log(statusObj);
+								top.ICEcoder.serverMessage();
+								top.ICEcoder.serverQueue('del',0);
+							} else {
+								eval(statusObj.action.doNext);
+							}
+						// Some other response? Display a message about that
+						} else {
+							top.ICEcoder.message(top.t['Sorry there was...']);
+							console.log("ICEcoder error info for your request...");
+							console.log(statusObj);
+							top.ICEcoder.serverMessage();
+							top.ICEcoder.serverQueue('del',0);
+						}
 					}
 				};
 				xhr.open("POST",ICEcoder.serverQueueItems[0],true);
@@ -2163,6 +2411,40 @@ var ICEcoder = {
 		if (previousFiles=="") {previousFiles="CLEAR"};
 		// Then send through to the settings page to update setting
 		top.ICEcoder.serverQueue("add","lib/settings.php?saveFiles="+previousFiles+"&csrf="+top.ICEcoder.csrf);
+		top.ICEcoder.updateLast10List(previousFiles);
+	},
+
+	// Update the list of 10 previous files in browser
+	updateLast10List: function(previousFiles) {
+		var newFile, last10Files, last10FilesList;
+
+		// Split our previous files string into an array
+		previousFiles = previousFiles.split(',');
+		// For each one of those, if it's not 'CLEAR' we can maybe rotate the list
+		for (var i=0; i<previousFiles.length; i++) {
+			if (previousFiles[i] != "CLEAR") {
+				// Set the new file LI item to maybe insert at top of the list, including trailing new line to split on in future
+				newFile = "<li class=\"pft-file ext-"+previousFiles[i].substring(previousFiles[i].lastIndexOf(".")+1)+"\" style=\"margin-left: -21px\"><a style=\"cursor:pointer\" onclick=\"top.ICEcoder.openFile('"+previousFiles[i].replace(/\|/g,"/")+"')\">"+previousFiles[i].replace(/\|/g,"/")+"</a></li>\n";
+
+				// Get DOM elem for last 10 files
+				last10Files = top.ICEcoder.content.contentWindow.document.getElementById('last10Files');
+
+				// If the innerHTML of that doesn't contain our new item, we can insert it
+				if(last10Files.innerHTML.indexOf(newFile) == -1) {
+					// Get the last 10 files list, pop the last one off and add newFile at start
+					last10FilesList = last10Files.innerHTML.split("\n");
+					if (
+						last10FilesList.length >= 10 ||													// No more than 10
+						last10FilesList[0] == '<div style="display: inline-block; margin-left: -39px; margin-top: -4px">[none]</div><br><br>' ||	// Clear out placeholder
+						last10FilesList[last10FilesList.length-1] == ""											// No empty array items
+					) {
+						last10FilesList.pop();
+					}
+					// Update the list
+					last10Files.innerHTML = newFile + (last10FilesList.join("\n"));
+				}
+			}
+		}
 	},
 
 	// Opens the last files we had open
@@ -2186,7 +2468,7 @@ var ICEcoder = {
 
 	// Show the help screen
 	helpScreen: function() {
-		top.get('mediaContainer').innerHTML = '<iframe src="lib/help.php" class="whiteGlow" style="width: 840px; height: 515px"></iframe>';
+		top.get('mediaContainer').innerHTML = '<iframe src="lib/help.php" class="whiteGlow" style="width: 840px; height: 465px"></iframe>';
 		top.ICEcoder.showHide('show',top.get('blackMask'));
 	},
 
@@ -2258,19 +2540,32 @@ var ICEcoder = {
 	},
 
 	// Update the settings used when we make a change to them
-	useNewSettings: function(themeURL,codeAssist,lockedNav,tagWrapperCommand,autoComplete,visibleTabs,fontSize,lineWrapping,indentWithTabs,indentSize,pluginPanelAligned,bugFilePaths,bugFileCheckTimer,bugFileMaxLines,githubAuthTokenSet,updateDiffOnSave,refreshFM) {
+	useNewSettings: function(themeURL,codeAssist,lockedNav,tagWrapperCommand,autoComplete,visibleTabs,fontSize,lineWrapping,indentWithTabs,indentAuto,indentSize,pluginPanelAligned,bugFilePaths,bugFileCheckTimer,bugFileMaxLines,githubAuthTokenSet,updateDiffOnSave,refreshFM) {
 		var styleNode, strCSS, cMCSS, activeLineBG;
 
-		// Add new stylesheet for selected theme
-		top.ICEcoder.theme = themeURL.slice(themeURL.lastIndexOf("/")+1,themeURL.lastIndexOf("."));
-		if (top.ICEcoder.theme=="editor") {top.ICEcoder.theme="icecoder"};
-		styleNode = document.createElement('link');
-		styleNode.setAttribute('rel', 'stylesheet');
-		styleNode.setAttribute('type', 'text/css');
-		styleNode.setAttribute('href', themeURL);
-		top.ICEcoder.content.contentWindow.document.getElementsByTagName('head')[0].appendChild(styleNode);
-		activeLineBG = ["3024-day","base16-light","eclipse","elegant","neat","paraiso-light","solarized","xq-light"].indexOf(top.ICEcoder.theme)>-1 ? "#ccc": "#000";
-		top.ICEcoder.switchTab(top.ICEcoder.selectedTab);
+		// cut out ?microtime= at the end
+		var cleanThemeUrl = themeURL.slice(0, themeURL.lastIndexOf("?"));
+		// find out new theme name without leading path and trailing ".css"
+		var newTheme = cleanThemeUrl.slice(cleanThemeUrl.lastIndexOf("/")+1,cleanThemeUrl.lastIndexOf("."));
+		// if theme was not changed - no need to do all these tricks
+		if (top.ICEcoder.theme !== newTheme){
+			// Add new stylesheet for selected theme
+			top.ICEcoder.theme = newTheme;
+			if (top.ICEcoder.theme=="editor") {top.ICEcoder.theme="icecoder"};
+			styleNode = document.createElement('link');
+			styleNode.setAttribute('rel', 'stylesheet');
+			styleNode.setAttribute('type', 'text/css');
+			styleNode.setAttribute('href', themeURL);
+			top.ICEcoder.content.contentWindow.document.getElementsByTagName('head')[0].appendChild(styleNode);
+			if (["3024-day","base16-light","eclipse","elegant","mdn-like","neat","neo","paraiso-light","solarized","the-matrix","xq-light"].indexOf(top.ICEcoder.theme)>-1) {
+				activeLineBG = "#ccc";
+			} else if (["3024-night","blackboard","colorforth","liquibyte","night","tomorrow-night-bright","tomorrow-night-eighties","vibrant-ink"].indexOf(top.ICEcoder.theme)>-1) {
+				activeLineBG = "#888";
+			} else {
+				activeLineBG = "#000";
+			}
+			top.ICEcoder.switchTab(top.ICEcoder.selectedTab);
+		}
 
 		// Check/uncheck Code Assist setting
 		if (codeAssist != top.ICEcoder.codeAssist) {
@@ -2279,11 +2574,12 @@ var ICEcoder = {
 		}
 
 		// Unlock/lock the file manager
-		if (lockedNav != top.ICEcoder.lockedNav) {top.ICEcoder.lockUnlockNav()};
-		if (!lockedNav) {
-			ICEcoder.changeFilesW('contract'); 
+		if (lockedNav != top.ICEcoder.lockedNav) {
+			top.ICEcoder.lockUnlockNav();
+			ICEcoder.changeFilesW(!lockedNav ? 'contract' : 'expand'); 
 			top.ICEcoder.hideFileMenu();
-		}
+		};
+
 
 		cMCSS = ICEcoder.content.contentWindow.document.styleSheets[4];
 		strCSS = cMCSS.rules ? 'rules' : 'cssRules';
@@ -2295,6 +2591,7 @@ var ICEcoder = {
 		top.ICEcoder.lineWrapping = lineWrapping;
 		top.ICEcoder.indentWithTabs = indentWithTabs;
 		top.ICEcoder.indentSize = indentSize;
+		top.ICEcoder.indentAuto = indentAuto;
 		for (var i=0;i<ICEcoder.cMInstances.length;i++) {
 			// Main pane
 			ICEcoder.content.contentWindow['cM'+ICEcoder.cMInstances[i]].setOption("lineWrapping", top.ICEcoder.lineWrapping);
@@ -3074,20 +3371,15 @@ var ICEcoder = {
 					else if (key==83) {top.ICEcoder.tagWrapper('span'); return false;}
 					else if (key==80) {top.ICEcoder.tagWrapper('p'); return false;}
 					else if (key==65) {top.ICEcoder.tagWrapper('a'); return false;}
-					else if (key==66) {top.ICEcoder.tagWrapper('b'); return false;}
-					else if (key==73) {top.ICEcoder.tagWrapper('i'); return false;}
-					else if (key==71) {top.ICEcoder.tagWrapper('strong'); return false;}
-					else if (key==69) {top.ICEcoder.tagWrapper('em'); return false;}
 					else if (key==49) {top.ICEcoder.tagWrapper('h1'); return false;}
 					else if (key==50) {top.ICEcoder.tagWrapper('h2'); return false;}
 					else if (key==51) {top.ICEcoder.tagWrapper('h3'); return false;}
-					else if (key==56) {top.ICEcoder.tagWrapper('li'); return false;}
 					else if (key==13) {top.ICEcoder.addLineBreakAtEnd(); return false;}
-					else if (key==37) {top.filesFrame.contentWindow.focus();return false;}
+					else if (key==37) {top.ICEcoder.filesFrame.contentWindow.focus();return false;}
 					else {return key;}
 				}
 				// Focus on file manager (outside of content area) or last editor pane
-				if (key==37) {top.filesFrame.contentWindow.focus();return false;}
+				if (key==37) {top.ICEcoder.filesFrame.contentWindow.focus();return false;}
 				else if (key==39) {top.ICEcoder.focus(top.ICEcoder.editorFocusInstance.indexOf('diff') > -1 ? true : false);return false;}
 				else {return key;}
 			// Alt+Enter (Insert Line After)
@@ -3103,14 +3395,45 @@ var ICEcoder = {
 				top.ICEcoder.insertLineBefore();
 	        		return false;
 
-			// CTRL/Cmd+F (Find)
-			} else if(key==70 && (evt.ctrlKey||top.ICEcoder.cmdKey)) {
-				top.get('find').focus();
+			// CTRL/Cmd+F (Find next)
+			// and
+			// CTRL/Cmd+G (Find previous)
+			} else if((key==70||key==71) && (evt.ctrlKey||top.ICEcoder.cmdKey)) {
+				var find = top.get('find');
+				cM = ICEcoder.getcMInstance();
+				cMdiff = ICEcoder.getcMdiffInstance();
+				thisCM = top.ICEcoder.editorFocusInstance.indexOf('diff') > -1 ? cMdiff : cM;
+				var selections = thisCM.getSelections();
+				if (selections.length > 0){
+					if (selections[0].length > 0){
+						find.value = selections[0];
+					}
+				}
+				find.select();
+				// this is trick for Chrome - after you have used Ctrl-F once, when 
+				// you try using Ctrl-F another time, somewhy Chrome still thinks, 
+				// that find has focus and refuses to give it focus second time.
+				top.get('goToLineNo').focus();
+				find.focus();
+				// Trigger the find/replace operation
+				if(key==70) {
+					// Find next
+					top.get('findReplaceSubmit').click();
+				} else {
+					// Find previous
+					ICEcoder.findReplace(top.document.getElementById('find').value,false,true,false,'findPrevious');
+				}
 	        		return false;
 
-			// CTRL/Cmd+G (Go to line)
-			} else if(key==71 && (evt.ctrlKey||top.ICEcoder.cmdKey)) {
-				top.get('goToLineNo').focus();
+			// CTRL/Cmd+L (Go to line)
+			} else if(key==76 && (evt.ctrlKey||top.ICEcoder.cmdKey)) {
+				var goToLineInput = top.get('goToLineNo');
+				goToLineInput.select();
+				// this is trick for Chrome - after you have used Ctrl-F once, when
+				// you try using Ctrl-F another time, somewhy Chrome still thinks,
+				// that find has focus and refuses to give it focus second time.
+				top.get('find').focus();
+				goToLineInput.focus();
 	        		return false;
 
 			// CTRL/Cmd+I (Get info)

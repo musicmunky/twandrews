@@ -11,7 +11,6 @@ $text = array(
 
 	"editor" =>
 	array(
-		"Click icons for..."		=> "<b>Click icons<br>for help &amp;<br>usage info</b>",
 		"server"			=> "server",
 		"Server name, OS..."		=> "Server name, OS & IP:",
 		"Root"				=> "Root:",
@@ -21,6 +20,8 @@ $text = array(
 		"your device"			=> "your device",
 		"Browser"			=> "Browser:",
 		"Your IP"			=> "Your IP:",
+		"trial remaining"		=> "trial remaining",
+		"days left"			=> "days left",
 		"files"				=> "files",
 		"Last 10 files..."		=> "Last 10 files opened:",
 		"none"				=> "[none]",
@@ -37,6 +38,7 @@ $text = array(
 	array(
 		"Lock"				=> "Lock",
 		"Refresh"			=> "Refresh",
+		"Plugins"			=> "Plugins",
 		"ROOT"				=> "[ROOT]"
 
 	),
@@ -48,8 +50,10 @@ $text = array(
 		"Your version is"		=> "Your version is",
 		"Update now"			=> "Update now",
 		"You have some..."		=> "You have some unsaved changes",
+		"Are you sure..."		=> "Are you sure you want to close?",
 		"working"			=> "working",
 		"Color picker"			=> "Color picker",
+		"Plugins Manager"		=> "Plugins Manager",
 		"New File"			=> "New File",
 		"New Folder"			=> "New Folder",
 		"Upload File(s)"		=> "Upload File(s)",
@@ -101,7 +105,9 @@ $text = array(
 		"Code Assist"			=> "Code Assist",
 		"Go to Line"			=> "Go to Line",
 		"View"				=> "View",
-		"Bug reporting not active"	=> "Bug reporting not active"
+		"Bug reporting not active"	=> "Bug reporting not active",
+		"Single pane"			=> "Single pane",
+		"Diff pane also"		=> "Diff pane also"
 	),
 
 // /LIB
@@ -113,6 +119,7 @@ $text = array(
 
 	"file-control" =>
 	array(
+		"Sorry, bad filename..."	=> "Sorry, bad filename provided. Check the dev tools console for more info?",
 		"Sorry"				=> "Sorry",
 		"does not seem..."		=> "does not seem to exist on the server",
 		"Sorry, could not..."		=> "Sorry, could not get contents of",
@@ -155,7 +162,9 @@ $text = array(
 		"github paths"			=> "github paths",
 		"Choose existing path"		=> "Choose existing path",
 		"Local path"			=> "Local path",
+		"Slash prefixed"		=> "Slash prefixed",
 		"Remote GitHub path"		=> "Remote GitHub path",
+		"Absolute URL beginning..."	=> "Absolute URL, beginning https://github.com",
 		"Choose"			=> "Choose",
 		"Set local and..."		=> "Set local and remote path to blank to remove",
 		"Update"			=> "Update",
@@ -232,6 +241,7 @@ $text = array(
 		"Close current tab"		=> "Close current tab",
 		"Open file prompt"		=> "Open file prompt",
 		"Find"				=> "Find",
+		"Previous"			=> "Previous",
 		"Focus on Go..."		=> "Focus on Go to line input",
 		"Save"				=> "Save",
 		"Save as"			=> "Save as...",
@@ -244,6 +254,7 @@ $text = array(
 
 	"ice-coder" =>
 	array(
+		"results"			=> "results",
 		"No text selected..."		=> "No text selected to search on",
 		"all files"			=> "all files",
 		"all filenames"			=> "all filenames",
@@ -252,8 +263,9 @@ $text = array(
 		"Creating Folder"		=> "Creating Folder",
 		"Sorry you can..."		=> "Sorry, you can only have 100 files open at a time!",
 		"Opening File"			=> "Opening File",
-		"Enter relative file..."	=> "Enter relative file path (prefixed with /) or remote URL",
+		"Enter relative file..."	=> "Enter relative file path (prefixed with /) or remote URL\\nYou can enter \\n'/path/file:123' or \\n'/path/file(123)' or \\n'/path/file.ext line 123' \\nto go directly to particular line",
 		"Getting"			=> "Getting",
+		"Saving"			=> "Saving:",
 		"Please enter the..."		=> "Please enter the new name for",
 		"Renaming to"			=> "Renaming to",
 		"Moving to"			=> "Moving to",
@@ -267,6 +279,7 @@ $text = array(
 		"replace all"			=> "replace all",
 		"file"				=> "file",
 		"Replacing text in"		=> "Replacing text in",
+		"Sorry there was..."		=> "Sorry, there was an error with your request.\\n\\nPlease check your dev tools console for more info.",
 		"Cancelled tasks"		=> "Cancelled tasks",
 		"Open previous files"		=> "Open previous files?",
 		"Please enter your..."		=> "Please enter your GitHub token (either personal access token or client/secret pair token). See tooltip next to Github Auth Token on Help > Settings screen for more info",
@@ -276,8 +289,7 @@ $text = array(
 		"Error cannot find..."		=> "Error: cannot find/access the error file paths",
 		"No new errors..."		=> "No new errors found",
 		"You have made..."		=> "You have made changes. Are you sure you want to close without saving?",
-		"Close all tabs"		=> "Close all tabs?",
-		"results"			=> "results"
+		"Close all tabs"		=> "Close all tabs?"
 	),
 
 	"login" =>
@@ -371,7 +383,8 @@ $text = array(
 		"codemirror dir"		=> "codemirror dir",
 		"codemirror version"		=> "codemirror version",
 		"file manager root"		=> "file manager root",
-		"Free to use..."		=> "Free to use it for your own purposes, commercial or not, just let me know of any cool uses or customisations. :)<br><br>No warranty or liability accepted for anything, all responsibility of use is your own.<br><br>A lot of fantastic people and companies have helped build ICEcoder and there is too many to thank here. Please see the full list at",
+		"Get in contact..."		=> "Get in contact by...",
+		"You may use..."		=> "You may use ICEcoder for your own purposes, commercial or not, just let us know of any cool uses or customisations. :)<br><br>No warranty or liability accepted for anything, all responsibility of use is your own.",
 		"functionality"			=> "functionality",
 		"check for updates..."		=> "check for updates on load",
 		"auto open last..."		=> "auto open last files on login",
@@ -397,6 +410,7 @@ $text = array(
 		"indent type"			=> "indent type",
 		"indent size"			=> "indent size",
 		"font size"			=> "font size",
+		"auto indent"			=> "auto indent",
 		"layout"			=> "layout",
 		"plugin panel aligned"		=> "plugin panel aligned",
 		"file manager"			=> "file manager",
@@ -430,7 +444,19 @@ $text = array(
 	"updater" =>
 	array(
 		"Update appears to..."		=> "Update appears to be successful"
+	),
+    
+	"find-in-files" =>
+	array(
+		"Enter path to search in" => "Enter path to search in",
+		"Enter semicolon-separated masks of files to look at (e.g. *.php;*.html;*.js)" => "Enter semicolon-separated masks of files to look at (e.g. *.php;*.html;*.js)",
+		"Type of text" => "Type of text",
+		"Fixed text" => "Fixed text",
+		"Regular expression" => "Regular expression",
+		"Case sensitive" => "Case sensitive",
+		"Yes" => "Yes",
+		"No" => "No",
+		"Search" => "Search",
 	)
-
 );
 ?>

@@ -41,7 +41,13 @@ if (file_exists(dirname(__FILE__)."/plugins/stats.js/stats.min.js")) {
 <link rel="stylesheet" href="<?php
 if ($ICEcoder["theme"]=="default") {echo 'lib/editor.css';} else {echo $ICEcoder["codeMirrorDir"].'/theme/'.$ICEcoder["theme"].'.css';};
 echo "?microtime=".microtime(true);
-$activeLineBG = array_search($ICEcoder["theme"],array("3024-day","base16-light","eclipse","elegant","neat","solarized","xq-light")) !== false ? "#ccc" : "#000";
+if (array_search($ICEcoder["theme"],array("3024-day","base16-light","eclipse","elegant","mdn-like","neat","neo","paraiso-light","solarized","the-matrix","xq-light")) !== false) {
+	$activeLineBG = "#ccc";
+} elseif (array_search($ICEcoder["theme"],array("3024-night","blackboard","colorforth","liquibyte","night","tomorrow-night-bright","tomorrow-night-eighties","vibrant-ink")) !== false) {
+	$activeLineBG = "#888";
+} else {
+	$activeLineBG = "#000";
+}
 ?>">
 
 <style type="text/css">
@@ -65,7 +71,6 @@ $activeLineBG = array_search($ICEcoder["theme"],array("3024-day","base16-light",
 .fold {position: absolute; display: inline-block; width: 13px; height: 13px; font-size: 14px; text-align: center; cursor: pointer}
 .foldOn {background: #800; color: #ddd}
 .foldOff {background: rgba(255,255,255,0.04); color: #666}
-.demoArrow {position: absolute; display: inline-block; width: 99px; height: 50px; top: 0; right: 30px; background: url('images/big-arrow.gif') 0 -10px no-repeat; text-align: center; font-family: arial; font-size: 10px; padding-top: 60px}
 h2 {color: rgba(0,198,255,0.7)}
 .heading {color:#888}
 .cm-s-diff {left: 50%}
@@ -74,16 +79,19 @@ h2 {color: rgba(0,198,255,0.7)}
 .diffGrey {background: #444 !important; color: #fff !important}
 .diffGreyLighter {background: #888 !important; color: #222 !important}
 .diffNone {}
+.info {font-size: 10px; color: rgba(0,198,255,0.7); cursor: help}
+.trialBarContainer {display: inline-block; width: 170px; height: 8px; background: #0b0b0b; margin-bottom: 40px}
+.trialBarRemaining {display: inline-block; width: 170px; height: 8px; background: rgba(0,198,255,0.7); box-shadow: 0 0 10px 1px rgba(0,198,255,0.5);
+	transition: width 0.7s ease-in-out;
+}
+.trialBarText {margin-top: 6px; color: #888}
+.trialBarText a {color: #fff; text-decoration: none}
 </style>
 <link rel="stylesheet" href="lib/file-types.css?microtime=<?php echo microtime(true);?>">
 <link rel="stylesheet" href="lib/file-type-icons.css?microtime=<?php echo microtime(true);?>">
 </head>
 
-<body style="color: #fff; margin: 0" onKeyDown="return top.ICEcoder.interceptKeys('content', event);" onKeyUp="top.ICEcoder.resetKeys(event);" onBlur="parent.ICEcoder.resetKeys(event);">
-
-<?php if ($ICEcoder['demoMode']) {?>
-<div class="demoArrow"><?php echo $t['Click icons for...'];?></div>
-<?php ;}; ?>
+<body style="color: #fff; margin: 0" onKeyDown="return top.ICEcoder.interceptKeys('content', event);" onKeyUp="top.ICEcoder.resetKeys(event);" onBlur="parent.ICEcoder.resetKeys(event);" onload="if (document.getElementById('trialBarRemaining')) {setTimeout(function(){document.getElementById('trialBarRemaining').style.width = '<?php echo $tRemainingPerc*170;?>px';},150)}">
 
 <div style="display: none; margin: 32px 43px 0 43px; padding: 10px; width: 500px; font-family: arial; font-size: 10px; color: #ddd; background: #333" id="dataMessage"></div>
 
@@ -108,10 +116,18 @@ h2 {color: rgba(0,198,255,0.7)}
 	</div>
 
 	<div style="float: left">
+		<?php
+		// No valid license code - show the trial remaining bar
+		if (generateHash(strClean($ICEcoder['licenseEmail']),$ICEcoder['licenseCode'])!=$ICEcoder['licenseCode']) {?>
+		<h2><?php echo $t['trial remaining'];?></h2>
+		<div class="trialBarContainer"><div class="trialBarRemaining" id="trialBarRemaining"></div><br>
+			<div class="trialBarText"><?php echo $tDaysRemaining;?> <?php echo $t['days left'];?> - <a href="lib/login.php?get=code&csrf=<?php echo $_SESSION["csrf"];?>" target="_parent">Unlock now</a></div>
+		</div>
+		<?php ;}; ?>
+
 		<h2><?php echo $t['files'];?></h2>
 		<span class="heading"><?php echo $t['Last 10 files...'];?></span><br>
-		<ul class="fileManager" style="margin-left: 0; line-height: 20px">
-		<?php
+		<ul class="fileManager" id="last10Files" style="margin-left: 0; line-height: 20px"><?php
 			$last10FilesArray = explode(",",$ICEcoder["last10Files"]);
 			for ($i=0;$i<count($last10FilesArray);$i++) {
 				if ($ICEcoder["last10Files"]=="") {
@@ -121,14 +137,13 @@ h2 {color: rgba(0,198,255,0.7)}
 					// Get extension (prefix 'ext-' to prevent invalid classes from extensions that begin with numbers)
 					$ext = "ext-".pathinfo($docRoot.$iceRoot.$fileFolderName, PATHINFO_EXTENSION);
 					echo '<li class="pft-file '.strtolower($ext).'" style="margin-left: -21px">';
-					echo '<a style="cursor:pointer" onClick="top.ICEcoder.openFile(\''.str_replace("|","/",$last10FilesArray[$i]).'\')">';
+					echo '<a style="cursor:pointer" onClick="top.ICEcoder.openFile(\''.str_replace($docRoot,"",str_replace("|","/",$last10FilesArray[$i])).'\')">';
 					echo str_replace($docRoot,"",str_replace("|","/",$last10FilesArray[$i]));
-					echo '</a></li>'.PHP_EOL;
-					if ($i==count($last10FilesArray)-1) {echo '<br>'.PHP_EOL;};
+					echo '</a></li>';
+					if ($i<count($last10FilesArray)-1) {echo PHP_EOL;};
 				}
 			}
-		;?>
-		</ul>
+		;?></ul>
 	</div>
 
 	<div style="clear: both"></div>
@@ -158,7 +173,7 @@ h2 {color: rgba(0,198,255,0.7)}
 	<div style="float: left">
 		<h2><?php echo $t['dev mode'];?> <?php echo $ICEcoder['devMode'] ? "on" : "off";?></h2>
 		<span class="heading"><?php echo $t['Status'];?>:</span><br>
-		<?php echo $t['Using']?> <?php echo $ICEcoder['devMode'] ? "ice-coder.js" : "ice-coder.min.js";?> <a title="<?php echo $t['You can switch...'];?>" style="cursor: pointer">[?]</a>
+		<?php echo $t['Using']?> <?php echo $ICEcoder['devMode'] ? "ice-coder.js" : "ice-coder.min.js";?> <a title="<?php echo $t['You can switch...'];?>" class="info">[?]</a>
 	</div>
 	<div style="clear: both"></div>
 </div>
@@ -166,7 +181,12 @@ h2 {color: rgba(0,198,255,0.7)}
 <script>
 CodeMirror.keyMap.ICEcoder = {
 	"Tab": function(cm) {
-		return cm.somethingSelected() ? cm.execCommand("indentAuto") : CodeMirror.Pass // Falls through to default or Emmet plugin
+		return cm.somethingSelected()
+		? (top.ICEcoder.indentAuto
+			? cm.execCommand("indentAuto")	// Honour our own setting indentAuto
+			: cm.indentSelection("add")	// Add indent (this is default handler in CodeMirror)
+		  )
+		: CodeMirror.Pass 			// Falls through to default or Emmet plugin
 	},
 	"Shift-Tab": "indentLess",
 	"Ctrl-Space": "autocomplete",
@@ -175,6 +195,23 @@ CodeMirror.keyMap.ICEcoder = {
 	"Esc" : false,
 	fallthrough: ["default"]
 };
+
+// CodeMirror does not honor indentWithTabs = false properly when handling Tab key
+// Marijn said that it is by design, so we need to make a workaround of our own
+(function(){
+	// let's back up original insertTab function which actually puts  
+	var originalInsertTabFunction = CodeMirror.commands.insertTab;
+	// and replace it with our own, which branches on whether our ICEcoder.indentWithTabs value is true or false
+	CodeMirror.commands.insertTab = function(cm){
+		if (top.ICEcoder.indentWithTabs){
+			// if it is true, then we should still put there, let's use original function 
+			return originalInsertTabFunction(cm);
+		} else {
+			// otherwise - let's call another handler, insertSoftTab which will do the job
+			return cm.execCommand("insertSoftTab");
+		}
+	}
+}());
 
 function createNewCMInstance(num) {
 	// Establish the filename for the tab

@@ -178,8 +178,8 @@ function transposeSettings($oldFile,$newFile,$saveFile) {
 			// And override with old setting if not blank, not in excluded array and we have a match
 			if ($thisKey != "" && $thisKey != "versionNo" && $thisKey != "codeMirrorDir" && strpos($oldSettingsArray[$j],'"'.$thisKey.'"') > -1) {
 				$contentLine = $oldSettingsArray[$j].PHP_EOL;
-				// If the old setting we're copying over isn't replacing the last line and doesn't end in a comma (after an rtrim to remove line endings), add one
-				if ($i != count($newSettingsArray)-1 && substr(rtrim($contentLine),-1) != ",") {
+				// If the old setting we're copying over isn't replacing the last line and doesn't end in a comma (after an rtrim to remove line endings), and doesn't contain a comment, add one
+				if ($i != count($newSettingsArray)-1 && substr(rtrim($contentLine),-1) != "," && strpos($contentLine,"//") == -1) {
 					$contentLine = str_replace(PHP_EOL,",".PHP_EOL,$contentLine);	
 				}
 			}
@@ -193,10 +193,23 @@ function transposeSettings($oldFile,$newFile,$saveFile) {
 }
 
 function copyOverSettings($icvInfo) {
-	global $updateDone;
+	global $updateDone, $configSettings;
 
 	// System settings
 	echo 'Transposing system settings...<br>';
+	// Create a new config file if it doesn't exist yet.
+	// The reason we create it, is so it has PHP write permissions, meaning we can update it later
+	if (!file_exists(dirname(__FILE__)."/".$configSettings)) {
+		echo 'Creating new settings file...<br>';
+		// Include our params to make use of (as $newConfigSettingsFile)
+		include(dirname(__FILE__)."/settings-system-params.php");
+		if ($fConfigSettings = fopen(dirname(__FILE__)."/".$configSettings, 'w')) {
+			fwrite($fConfigSettings, $newConfigSettingsFile);
+			fclose($fConfigSettings);
+		} else {
+			die("Cannot update config file lib/".$configSettings.". Please check write permissions on lib/ and try again");
+		}
+	}
 	transposeSettings(PATH."lib/config___settings.php","config___settings.php","config___settings.php");
 
 	// Users template settings
@@ -220,10 +233,10 @@ startUpdate();
 if ($updateDone) {
 	echo 'Updated successfully!<br><br>';
 	echo 'Restarting ICEcoder...';
-	echo '<script>alert("'.$t['Update appears to...'].'");window.location = "../?display=updated&csrf='.$_SESSION["csrf"].";</script>';
+	echo '<script>alert("'.$t['Update appears to...'].'");window.location = "../?display=updated&csrf='.$_SESSION["csrf"].'";</script>';
 } else {
 	echo 'Something appears to have gone wrong :-/<br><br>';
-	echo 'Please report bugs at <a href="https://github.com/mattpass/ICEcoder" style="color: #fff">https://github.com/mattpass/ICEcoder</a><br><br>';
+	echo 'Please report bugs at <a href=\"https://github.com/mattpass/ICEcoder\" style=\"color: #fff\">https://github.com/mattpass/ICEcoder</a><br><br>';
 	echo 'You can recover the old version from ICEcoder\'s tmp dir';
 }
 ?>

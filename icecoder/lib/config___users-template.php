@@ -1,6 +1,6 @@
 <?php
 $ICEcoderUserSettings = array(
-"versionNo"		=> "5.0 beta",
+"versionNo"		=> "5.1",
 "licenseEmail"		=> "",
 "licenseCode"		=> "",
 "configCreateDate"	=> 0,
@@ -14,7 +14,7 @@ $ICEcoderUserSettings = array(
 "visibleTabs"		=> false,
 "lockedNav"		=> true,
 "tagWrapperCommand"	=> "ctrl+alt",
-"autoComplete"		=> "ctrl+space",
+"autoComplete"		=> "keypress",
 "password"		=> "",
 "bannedFiles"		=> array(),
 "bannedPaths"		=> array("/var/www/.git","/var/www/sites/all/modules","/var/www/sites/default/files"),
@@ -23,6 +23,7 @@ $ICEcoderUserSettings = array(
 "fontSize"		=> "13px",
 "lineWrapping"		=> true,
 "indentWithTabs"	=> true,
+"indentAuto"		=> true,
 "indentSize"		=> 4,
 "pluginPanelAligned"	=> "left",
 "bugFilePaths"		=> array(),

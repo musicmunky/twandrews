@@ -126,7 +126,7 @@ foreach($finalArray as $entry) {
 	for ($i=0;$i<count($_SESSION['bannedFiles']);$i++) {
 		if($_SESSION['bannedFiles'][$i] != "" && strpos($entry,$_SESSION['bannedFiles'][$i])!==false) {$canAdd = false;}
 	}
-	if ("/".$entry == $ICEcoderDir) {
+	if ($docRoot.$iceRoot.$location."/".$entry == $docRoot.$ICEcoderDir) {
 		$canAdd = false;
 	}
 	if ($entry != "." && $entry != ".." && $canAdd) {
@@ -152,7 +152,15 @@ for ($i=0;$i<count($finalArray);$i++) {
 	}
 	$type == "folder" ? $class = 'pft-directory' : $class = 'pft-file '.strtolower($ext);
 	$loadParam = $type == "folder" ? "true" : "false";
-	echo "<li class=\"".$class."\" draggable=\"false\" ondrag=\"top.ICEcoder.draggingWithKeyTest(event);if(top.ICEcoder.getcMInstance()){top.ICEcoder.editorFocusInstance.indexOf('diff') == -1 ? top.ICEcoder.getcMInstance().focus() : top.ICEcoder.getcMdiffInstance().focus()}\" ondragend=\"top.ICEcoder.dropFile(this)\"><a nohref title=\"$fileFolderName\" onMouseOver=\"parentNode.draggable=true;top.ICEcoder.overFileFolder('$type',this.childNodes[1].id)\" onMouseOut=\"parentNode.draggable=false;top.ICEcoder.overFileFolder('$type','')\" ondragover=\"if(parentNode.nextSibling && parentNode.nextSibling.tagName != 'UL' && top.ICEcoder.thisFileFolderLink != this.childNodes[1].id) {top.ICEcoder.openCloseDir(this,true);}\" onClick=\"if(!event.ctrlKey && !top.ICEcoder.cmdKey) {top.ICEcoder.openCloseDir(this,$loadParam); if (/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)) {top.ICEcoder.openFile()}}\" style=\"position: relative; left:-22px\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span id=\"".str_replace($docRoot,"",str_replace("/","|",$fileFolderName))."\">".xssClean(basename($fileFolderName),"html")."</span> ";
+	echo "<li class=\"".$class."\" draggable=\"false\" ondrag=\"top.ICEcoder.draggingWithKeyTest(event);if(top.ICEcoder.getcMInstance()){top.ICEcoder.editorFocusInstance.indexOf('diff') == -1 ? top.ICEcoder.getcMInstance().focus() : top.ICEcoder.getcMdiffInstance().focus()}\" ondragend=\"top.ICEcoder.dropFile(this)\"><a nohref title=\"$fileFolderName\" onMouseOver=\"parentNode.draggable=true;top.ICEcoder.overFileFolder('$type',this.childNodes[1].id)\" onMouseOut=\"parentNode.draggable=false;top.ICEcoder.overFileFolder('$type','')\" ".
+
+	(($type == "folder")?"ondragover=\"if(parentNode.nextSibling && parentNode.nextSibling.tagName != 'UL' && top.ICEcoder.thisFileFolderLink != this.childNodes[1].id) {top.ICEcoder.openCloseDir(this,true);}\"":"").
+
+	" onClick=\"if(!event.ctrlKey && !top.ICEcoder.cmdKey) {".
+
+	(($type == "folder")?" top.ICEcoder.openCloseDir(this,$loadParam);":"").
+
+	" if (/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)) {top.ICEcoder.openFile()}}\" style=\"position: relative; left:-22px\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span id=\"".str_replace($docRoot,"",str_replace("/","|",$fileFolderName))."\">".xssClean(basename($fileFolderName),"html")."</span> ";
 	$thisPermVal = $serverType=="Linux" ? substr(sprintf('%o', fileperms($docRoot.$iceRoot.$fileFolderName)), -3) : '';
 	$permColors = $thisPermVal == 777 ? 'background: #800; color: #eee' : 'color: #888';
 	echo '<span style="'.$permColors.'; font-size: 8px" id="'.str_replace($docRoot,"",str_replace("/","|",$fileFolderName)).'_perms">';
@@ -188,7 +196,7 @@ if ($_SESSION['githubDiff']) {
 				if (array_search($fileExt,array("gif","jpg","jpeg","png"))!==false) {$finfo = "image";};
 				if (array_search($fileExt,array("doc","docx","ppt","rtf","pdf","zip","tar","gz","swf","asx","asf","midi","mp3","wav","aiff","mov","qt","wmv","mp4","odt","odg","odp"))!==false) {$finfo = "other";};
 			}
-			if (strpos($finfo,"text")===0 || strpos($finfo,"empty")!==false) {
+			if (strpos($finfo,"text")===0 || strpos($finfo, "application/xml")===0 || strpos($finfo,"empty")!==false) {
 				$contents = str_replace("\r","",$contents);
 			};
 			// Establish the blob SHA contents and push name, SHA and type into 3 arrays

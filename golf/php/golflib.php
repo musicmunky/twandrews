@@ -33,11 +33,13 @@
 
 		switch($method)
 		{
-			case 'getUserInfo': getUserInfo($REQ, $mysqli);
+			case 'getUserInfo':		getUserInfo($REQ, $mysqli);
 				break;
-			case 'getForecastInfo': getForecastInfo($REQ);
+			case 'getCourseInfo':	getCourseInfo($REQ, $mysqli);
 				break;
-			case 'getWeatherInfo': getWeatherInfo($REQ);
+			case 'saveUserInfo':	saveUserInfo($REQ, $mysqli);
+				break;
+			case 'saveCourseInfo':	saveCourseInfo($REQ, $mysqli);
 				break;
 			default: noFunction($REQ['method']);
 				break;
@@ -57,22 +59,6 @@
 		echo json_encode($result);
 	}
 
-
-	function getWeatherInfo($P)
-	{
-		$P = escapeArray($P);
-
-		$status  = "";
-		$message = "";
-		$content = array();
-
-		$result = array(
-				"status" => $status,
-				"message" => $message,
-				"content" => $content
-		);
-		echo json_encode($result);
-	}
 
 	function getUserInfo($P, $m)
 	{
@@ -103,32 +89,45 @@
 	}
 
 
-	function getForecastInfo($P, $ajax = true)
+	function getCourseInfo($P, $m)
 	{
-		if($ajax){
-			$P = escapeArray($P);
-		}
+		$P = escapeArray($P, $m);
 
-		$status = "success";
-		$fcstatus = "";
+		$status  = "";
+		$message = "";
 		$content = array();
-
+/*
+		$user = $m->query("SELECT FIRSTNAME, LASTNAME, ID, GOLFNAME, EMAILADDRESS FROM golfusers WHERE ID=" . $P['golfid'] . ";");
+		if($user)
+		{
+			$rslt = $user->fetch_assoc();
+			$content['FIRSTNAME'] = $rslt['FIRSTNAME'];
+			$content['LASTNAME']  = $rslt['LASTNAME'];
+			$content['USERNAME']  = $rslt['GOLFNAME'];
+			$content['EMAILADD']  = $rslt['EMAILADDRESS'];
+			$content['GOLFID']	  = $rslt['ID'];
+			$status = "success";
+		}
+*/
 		$result = array(
-				"status" 		=> $status,
-				"statuscode" 	=> $fcstatus,
-				"message" 		=> "",
-				"content" 		=> $content
+				"status"  => $status,
+				"message" => $message,
+				"content" => $content
 		);
-		if($ajax){
-			echo json_encode($result);
-		}
-		else {
-			return $result;
-		}
+
+		echo json_encode($result);
 	}
 
 
-	function escapeArray($post, $m)
+	function saveUserInfo($P, $m)
+	{}
+
+
+	function saveCourseInfo($P, $m)
+	{}
+
+
+	function escapeArray($post, $mysqli)
 	{
 		//recursive function called on the POST object sent back by an AJAX call
 		//it accounts for nested arrays/hashes (these were being nulled out previously)
@@ -139,7 +138,7 @@
 			}
 			else {
 				$val = urldecode($val);
-				$val = $m->real_escape_string($val);
+				$val = $mysqli->real_escape_string($val);
 				$post[$key] = $val;
 			}
 		}

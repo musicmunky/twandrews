@@ -71,8 +71,14 @@ for ($i=0;$i<count($themeArray);$i++) {
 	<?php echo $ICEcoder['root'] == "" ? "/" : $ICEcoder['root'];?>
 	<br><br>
 
-	<div style="font-size: 10px; line-height: 12px">ICEcoder on Twitter (<a href="https://www.twitter.com/icecoder" style="font-size: 10px" target="_blank">@icecoder</a>)<br><br>
-		<?php echo $t['Free to use...'];?> <a href="https://icecoder.net" target="_blank">https://icecoder.net</a>
+	<div style="font-size: 10px; line-height: 12px">
+		<?php echo $t['Get in contact...'];?><br>
+		<a href="https://www.twitter.com/icecoder" style="font-size: 10px" target="_blank">Twitter</a><br>
+		<a href="https://facebook.com/ICEcoder.net" style="font-size: 10px" target="_blank">Facebook</a><br>
+		<a href="https://groups.google.com/forum/#!forum/icecoder" style="font-size: 10px" target="_blank">Google Groups</a><br>
+		<a href="https://github.com/mattpass/ICEcoder" style="font-size: 10px" target="_blank">GitHub</a><br>
+		<a href="mailto:info@icecoder.net" style="font-size: 10px">Email</a><br><br>
+		<?php echo $t['You may use...'];?>
 	</div>
 	</p>
 </div>
@@ -85,17 +91,13 @@ for ($i=0;$i<count($themeArray);$i++) {
 <input type="checkbox" onclick="showButton()" name="updateDiffOnSave" value="true"<?php if($ICEcoder["updateDiffOnSave"]) {echo ' checked';};?>> update diff pane on save<br>
 language <span class="info" title="Reload required after changing">[?]</span><br>
 <select onchange="showButton()" name="languageUser">
-	<option value="chinese-simplified.php"<?php if($ICEcoder["languageUser"]=='chinese-simplified.php') {echo " selected";};?>>中国（简体）</option>
-	<option value="chinese-traditional.php"<?php if($ICEcoder["languageUser"]=='chinese-traditional.php') {echo " selected";};?>>中國（繁體）</option>
-	<option value="dutch.php"<?php if($ICEcoder["languageUser"]=='dutch.php') {echo " selected";};?>>Nederlands</option>
-	<option value="english.php"<?php if($ICEcoder["languageUser"]=='english.php') {echo " selected";};?>>English</option>
-	<option value="french.php"<?php if($ICEcoder["languageUser"]=='french.php') {echo " selected";};?>>Français</option>
-	<option value="german.php"<?php if($ICEcoder["languageUser"]=='german.php') {echo " selected";};?>>Deutsch</option>
-	<option value="italian.php"<?php if($ICEcoder["languageUser"]=='italian.php') {echo " selected";};?>>Italiano</option>
-	<option value="norwegian.php"<?php if($ICEcoder["languageUser"]=='norwegian.php') {echo " selected";};?>>Norsk</option>
-	<option value="persian.php"<?php if($ICEcoder["languageUser"]=='persian.php') {echo " selected";};?>>فارسی</option>
-	<option value="portuguese_brazilian.php"<?php if($ICEcoder["languageUser"]=='portuguese_brazilian.php') {echo " selected";};?>>Portugues(br)</option>
-Nederlands
+<?php
+$langFiles = array("chinese-simplified.php","chinese-traditional.php","dutch.php","english.php","french.php","german.php","italian.php","norwegian.php","persian.php","portuguese-brazilian.php","spanish.php");
+$langText = array("中国（简体）","中國（繁體）","Nederlands","English","Français","Deutsch","Italiano","Norsk","فارسی","Portugues(br)","Espa&ntilde;ol");
+for ($i=0; $i<count($langFiles); $i++) {
+	echo '<option value="'.$langFiles[$i].'"'.($ICEcoder["languageUser"]==$langFiles[$i] ? ' selected' : '').'>'.$langText[$i].'</option>'.PHP_EOL;
+}
+?>
 </select><br>
 <br>
 <?php echo $t['when finding in...'];?>:<br>
@@ -147,15 +149,7 @@ for ($i=0;$i<count($themeArray);$i++) {
 ?>
 </select>
 
-<span style="position: absolute; margin: -15px 0 0 10px">
-	<?php echo $t['line wrapping'];?><br>
-	<select onchange="showButton()" name="lineWrapping">
-		<option value="true"<?php if($ICEcoder["lineWrapping"]) {echo " selected";};?>>yes</option>
-		<option value="false"<?php if(!$ICEcoder["lineWrapping"]) {echo " selected";};?>>no</option>
-	</select>
-</span>
-
-<span style="position: absolute; margin: -15px 0 0 100px">
+<span style="position: absolute; margin: -15px 0 0 15px">
 	<?php echo $t['indent type'];?><br>
 	<select onchange="showButton()" name="indentWithTabs">
 		<option value="true"<?php if($ICEcoder["indentWithTabs"]) {echo " selected";};?>>tabs</option>
@@ -163,16 +157,33 @@ for ($i=0;$i<count($themeArray);$i++) {
 	</select>
 </span>
 
-<span style="position: absolute; margin: -15px 0 0 190px">
+<span style="position: absolute; margin: -15px 0 0 100px">
 	<?php echo $t['indent size'];?><br>
 	<input type="text" name="indentSize" id="indentSize" style="width: 30px" onkeydown="showButton()" onkeyup="changeIndentSize()" value="<?php echo $ICEcoder["indentSize"];?>">
 </span>
 
-<span style="position: absolute; margin: -15px 0 0 267px">
+<span style="position: absolute; margin: -15px 0 15px 175px">
+	<?php echo $t['auto indent'];?><br>
+	<select onchange="showButton()" name="indentAuto">
+		<option value="true"<?php if($ICEcoder["indentAuto"]) {echo " selected";};?>>yes</option>
+		<option value="false"<?php if(!$ICEcoder["indentAuto"]) {echo " selected";};?>>no</option>
+	</select>
+</span>
+<br>
+<span style="position: absolute; margin: 5px 0 0 0">
+	<?php echo $t['line wrapping'];?><br>
+	<select onchange="showButton()" name="lineWrapping">
+		<option value="true"<?php if($ICEcoder["lineWrapping"]) {echo " selected";};?>>yes</option>
+		<option value="false"<?php if(!$ICEcoder["lineWrapping"]) {echo " selected";};?>>no</option>
+	</select>
+</span>
+
+<span style="position: absolute; margin: 5px 0 0 95px">
 	<?php echo $t['font size'];?><br>
 	<input type="text" name="fontSize" id="fontSize" style="width: 44px" onkeydown="showButton()" onkeyup="changeFontSize()" value="<?php echo $ICEcoder["fontSize"];?>">
 </span>
-<br><br>
+
+<br><br><br><br>
 
 <textarea id="code" name="code">
 function findSequence(goal) {
@@ -189,7 +200,7 @@ function findSequence(goal) {
 }</textarea>
 <br>
 
-<span style="position: absolute; top: 300px">
+<span style="position: absolute; top: 325px">
 
 	<div style="position: relative; display: inline-block; margin-right: 20px">
 		<h2><?php echo $t['layout'];?></h2>

@@ -19,58 +19,72 @@ $errorMsg = "None";
 $saveType = isset($_GET['saveType']) ? strClean($_GET['saveType']) : "";
 
 // Establish the filename/new filename
-$file = str_replace("|","/",strClean(
-	isset($_POST['newFileName']) && $_POST['newFileName']!=""
-	? $_POST['newFileName']
-	: $_REQUEST['file']
-	));
-
-// Establish the actual name as we may have HTML entities in filename
-$file = html_entity_decode($file);
-
-// Put the original $file var aside for use
-$fileOrig = $file;
-
-// Trim any +'s or spaces from the end of file
-$file = rtrim(rtrim($file,'+'),' ');
-
-// Also remove [NEW] from $file, we can consider $_GET['action'] or $fileOrig to pick that up
-$file = rtrim($file,'[NEW]');
-
-// Make each path in $file a full path (; seperated list)
-$allFiles = explode(";",$file);
-for ($i=0; $i<count($allFiles); $i++) {
-	if (strpos($allFiles[$i],$docRoot)===false && $_GET['action']!="getRemoteFile") {
-		$allFiles[$i]=str_replace("|","/",$docRoot.$iceRoot.$allFiles[$i]);
-	}
+if (isset($_POST['newFileName']) && $_POST['newFileName']!="") {
+	$file = $_POST['newFileName'];	// New file
+} elseif (isset($_REQUEST['file'])) {
+	$file = $_REQUEST['file'];	// Existing file
+} else {
+	$file = "";			// Error
+	$finalAction = "nothing";
+	$doNext = "";
+	$error = true;
+	$errorStr = "true";
+	$errorMsg = $t['Sorry, bad filename...'];
 };
-$file = implode(";",$allFiles);
 
-// Establish the $fileLoc and $fileName (used in single file cases, eg opening. Multiple file cases, eg deleting, is worked out in that loop)
-$fileLoc = substr(str_replace($docRoot,"",$file),0,strrpos(str_replace($docRoot,"",$file),"/"));
-$fileName = basename($file);
+// If we have file(s) to work with...
+if (!$error) {
+	// Replace pipes with slashes, after cleaning the chars
+	$file = str_replace("|","/",strClean($file));
 
-// Check through all files to make sure they're valid/safe
-$allFiles = explode(";",$file);
-for ($i=0; $i<count($allFiles); $i++) {
+	// Establish the actual name as we may have HTML entities in filename
+	$file = html_entity_decode($file);
 
-	// Uncomment to alert and console.log the action and file, useful for debugging
-	// echo ";alert('".xssClean($_GET['action'],"html")." : ".$allFiles[$i]."');console.log('".xssClean($_GET['action'],"html")." : ".$allFiles[$i]."');";
+	// Put the original $file var aside for use
+	$fileOrig = $file;
 
-	// Die if the file requested isn't something we expect
-	if(
-		// A local folder that isn't the doc root or starts with the doc root
-		($_GET['action']!="getRemoteFile" &&
-			rtrim($allFiles[$i],"/") !== rtrim($docRoot,"/") && 0
-			//strpos(realpath(rtrim(dirname($allFiles[$i]),"/")),realpath(rtrim($docRoot,"/"))) !== 0
-		) ||
-		// Or a remote URL that doesn't start http
-		($_GET['action']=="getRemoteFile" && strpos($allFiles[$i],"http") !== 0)
-		) {
-		$error = true;
-		$errorStr = "true";
-		$errorMsg = "Sorry! - problem with file requested";
+	// Trim any +'s or spaces from the end of file
+	$file = rtrim(rtrim($file,'+'),' ');
+
+	// Also remove [NEW] from $file, we can consider $_GET['action'] or $fileOrig to pick that up
+	$file = rtrim($file,'[NEW]');
+
+	// Make each path in $file a full path (; seperated list)
+	$allFiles = explode(";",$file);
+	for ($i=0; $i<count($allFiles); $i++) {
+		if (strpos($allFiles[$i],$docRoot)===false && $_GET['action']!="getRemoteFile") {
+			$allFiles[$i]=str_replace("|","/",$docRoot.$iceRoot.$allFiles[$i]);
+		}
 	};
+	$file = implode(";",$allFiles);
+
+	// Establish the $fileLoc and $fileName (used in single file cases, eg opening. Multiple file cases, eg deleting, is worked out in that loop)
+	$fileLoc = substr(str_replace($docRoot,"",$file),0,strrpos(str_replace($docRoot,"",$file),"/"));
+	$fileName = basename($file);
+
+	// Check through all files to make sure they're valid/safe
+	$allFiles = explode(";",$file);
+	for ($i=0; $i<count($allFiles); $i++) {
+
+		// Uncomment to alert and console.log the action and file, useful for debugging
+		// echo ";alert('".xssClean($_GET['action'],"html")." : ".$allFiles[$i]."');console.log('".xssClean($_GET['action'],"html")." : ".$allFiles[$i]."');";
+
+		// Die if the file requested isn't something we expect
+		if(
+			// A local folder that isn't the doc root or starts with the doc root
+			($_GET['action']!="getRemoteFile" &&
+				rtrim($allFiles[$i],"/") !== rtrim($docRoot,"/") &&
+				//strpos(realpath(rtrim(dirname($allFiles[$i]),"/")),realpath(rtrim($docRoot,"/"))) !== 0
+				0
+			) ||
+			// Or a remote URL that doesn't start http
+			($_GET['action']=="getRemoteFile" && strpos($allFiles[$i],"http") !== 0)
+			) {
+			$error = true;
+			$errorStr = "true";
+			$errorMsg = "Sorry! - problem with file requested";
+		};
+	}
 }
 
 // ============
@@ -94,7 +108,7 @@ if (!$error && $_GET['action']=="save") {
 			if (newFileName) {
 				if (newFileName.substr(0,1)!="/") {newFileName = "/" + newFileName};
 				newFileName = fileLoc + newFileName;
-				if (top.document.getElementById("filesFrame").contentWindow.document.getElementById(newFileName.replace(/\\\//g,"|"))) {
+				if (top.ICEcoder.filesFrame.contentWindow.document.getElementById(newFileName.replace(/\\\//g,"|"))) {
 					overwriteOK = top.ICEcoder.ask("'.$t['That file exists...'].'");
 				}
 			};
@@ -153,12 +167,25 @@ if (!$error && $_GET['action']=="save") {
 			if (!(isset($_GET['fileMDT']))||$filemtime==$_GET['fileMDT']) {
 				// Newly created files have the perms set too
 				$setPerms = (!file_exists($file)) ? true : false;
+				// get old file contents, if file exists, and count stats on usage \n and \r there
+				// in this case we can keep line endings, which file had before, without
+				// making code version control systems going crazy about line endings change in whole file. 
+				$oldContents = file_exists($file)?file_get_contents($file):'';
+				$unixNewLines = preg_match_all('/[^\r][\n]/u', $oldContents);
+				$windowsNewLines = preg_match_all('/[\r][\n]/u', $oldContents);
 				$fh = fopen($file, 'w') or die($t['Sorry, cannot save']);
 				// replace \r\n (Windows), \r (old Mac) and \n (Linux) line endings with whatever we chose to be lineEnding
 				$contents = $_POST['contents'];
 				$contents = str_replace("\r\n", $ICEcoder["lineEnding"], $contents);
 				$contents = str_replace("\r", $ICEcoder["lineEnding"], $contents);
 				$contents = str_replace("\n", $ICEcoder["lineEnding"], $contents);
+				if (($unixNewLines > 0) || ($windowsNewLines > 0)){
+					if ($unixNewLines > $windowsNewLines){
+						$contents = str_replace($ICEcoder["lineEnding"], "\n", $contents);
+					} elseif ($windowsNewLines > $unixNewLines){
+						$contents = str_replace($ICEcoder["lineEnding"], "\r\n", $contents);
+					}
+				}
 				// Now write that content, close the file and clear the statcache
 				fwrite($fh, $contents);
 				fclose($fh);
@@ -394,12 +421,19 @@ if (!$error && $_GET['action']=="upload") {
 		$doNext = "";
 		class fileUploader {  
 			public function __construct($uploads) {
-				global $docRoot,$iceRoot,$doNext;
+				global $docRoot,$iceRoot,$ICEcoder,$doNext;
 				$uploadDir=$docRoot.$iceRoot.str_replace("..","",str_replace("|","/",strClean($_POST['folder'])."/"));
 				foreach($uploads as $current) {  
 					$this->uploadFile=$uploadDir.$current->name;
 					$fileName = $current->name;
-					if ($this->upload($current,$this->uploadFile)) {
+					// Get & set existing perms for existing files, or set to newFilePerms setting for new files
+                                        if (file_exists($this->uploadFile)) {
+                                                $chmodInfo = substr(sprintf('%o', fileperms($this->uploadFile)), -4);
+                                                $setPerms = substr($chmodInfo,1,3); // reduces 0755 down to 755
+                                        } else {
+                                                $setPerms = $ICEcoder['newFilePerms'];
+                                        }
+					if ($this->upload($current,$this->uploadFile,$setPerms)) {
 						$doNext .= 'top.ICEcoder.updateFileManagerList(\'add\',top.ICEcoder.selectedFiles[top.ICEcoder.selectedFiles.length-1].replace(/\|/g,\'/\'),\''.str_replace("'","\'",$fileName).'\',false,false,true,\'file\'); top.ICEcoder.serverMessage("'.$t['Uploaded file(s) OK'].'");setTimeout(function(){top.ICEcoder.serverMessage();},2000);';
 						$finalAction = "upload";
 					} else {
@@ -409,8 +443,9 @@ if (!$error && $_GET['action']=="upload") {
 				}  
 			}  
 
-			public function upload($current,$uploadFile){ 
+			public function upload($current,$uploadFile,$setPerms){ 
 				if(move_uploaded_file($current->tmp_name,$uploadFile)){
+					chmod($uploadFile,octdec($setPerms));
 					return true;  
 				}  
 			}  
@@ -520,6 +555,7 @@ if (!$error && $_GET['action']=="replaceText") {
 // ==========================
 
 if (!$error && $_GET['action']=="getRemoteFile") {
+	$lineNumber = max(isset($_REQUEST['lineNumber'])?intval($_REQUEST['lineNumber']):1, 1);
 	$doNext = "";
 	if ($remoteFile = toUTF8noBOM(file_get_contents($file,false,$context),true)) {
 		// replace \r\n (Windows), \r (old Mac) and \n (Linux) line endings with whatever we chose to be lineEnding
@@ -528,6 +564,7 @@ if (!$error && $_GET['action']=="getRemoteFile") {
 		$remoteFile = str_replace("\n", $ICEcoder["lineEnding"], $remoteFile);
 		$doNext .= 'top.ICEcoder.newTab();';
 		$doNext .= 'top.ICEcoder.getcMInstance().setValue(\''.str_replace("\r","",str_replace("\t","\\\\t",str_replace("\n","\\\\n",str_replace("'","\\\\'",str_replace("\\","\\\\",preg_quote($remoteFile)))))).'\');';
+		$doNext .= 'top.ICEcoder.goToLine('.$lineNumber.');';
 		$finalAction = "getRemoteFile";
 		// Run our custom processes
 		include_once("../processes/on-get-remote-file.php");
@@ -564,6 +601,13 @@ if (!$error && $_GET['action']=="perms") {
 // JSON DATA TO RETURN
 // ===================
 
+// No $filemtime yet? Get it now!
+if (!isset($filemtime)) {
+	$filemtime = $serverType=="Linux" ? filemtime($file) : "1000000";
+}
+// Set $timeStart, use 0 if not available
+$timeStart = isset($_POST["timeStart"]) ? $_POST["timeStart"] : 0;
+
 echo '{
 	"file": {
 		"absPath": "'.$file.'",
@@ -576,7 +620,7 @@ echo '{
 	"action": {
 		"initial" : "'.$_GET["action"].'",
 		"final" : "'.$finalAction.'",
-		"timeStart": '.$_POST["timeStart"].',
+		"timeStart": '.$timeStart.',
 		"timeEnd": 0,
 		"timeTaken": 0,
 		"csrf": "'.$_GET["csrf"].'",
