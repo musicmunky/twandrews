@@ -37,7 +37,17 @@
 	{
 		while($row = $users->fetch_assoc())
 		{
-			$userhtml .= "<a href='javascript:void(0)' onclick='loadUserForm(\"" . $row['ID'] . "\")' class='collection-item'>" . $row['FIRSTNAME'] . " " . $row['LASTNAME'] . "</a>";
+			$userhtml .= "<a href='javascript:void(0)' onclick='adminLoadUserForm(\"" . $row['ID'] . "\")' class='collection-item'>" . $row['FIRSTNAME'] . " " . $row['LASTNAME'] . "</a>";
+		}
+	}
+
+	$usertypehtml = "<option value='' disabled selected>Select User Type...</option>";
+	$usertypes		= $mysqli->query("SELECT * FROM usertypes ORDER BY TYPENAME DESC;");
+	if($usertypes)
+	{
+		while($row = $usertypes->fetch_assoc())
+		{
+			$usertypehtml .= "<option value='" . $row['ID'] . "'>" . $row['TYPENAME'] . "</option>";
 		}
 	}
 
@@ -47,7 +57,7 @@
 	{
 		while($row = $courses->fetch_assoc())
 		{
-			$coursehtml .= "<a href='javascript:void(0)' onclick='loadCourseForm(\"" . $row['ID'] . "\")' class='collection-item'>" . $row['COURSENAME'] . "</a>";
+			$coursehtml .= "<a href='javascript:void(0)' onclick='adminLoadCourseForm(\"" . $row['ID'] . "\")' class='collection-item'>" . $row['COURSENAME'] . "</a>";
 		}
 	}
 
@@ -175,9 +185,14 @@
 									</div>
 								</div>
 								<div class="row">
-									<div class="input-field col s12">
+									<div class="input-field col s6">
 										<input id="username" type="text" class="validate">
 										<label id="lblusername" for="username">Username</label>
+									</div>
+									<div class="input-field col s6">
+										<select id="usertype">
+											<?php echo $usertypehtml; ?>
+										</select>
 									</div>
 								</div>
 								<div class="row">

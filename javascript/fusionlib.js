@@ -331,17 +331,18 @@ FUSION.error = {
 		var hash = h || {};
 		var did = hash['divid'] || "jserrorform";
 		var ttl = hash['title'] || "Error Message";
-		var msg = hash['message'] || "It looks like something went wrong!  Please click the link below to let the dev team know about the error."
+		var msg = hash['message'] || "It looks like something went wrong!  Please try again, or let the administrator know about the error."
 		var lnk = hash['linktext'] || "Click here to notify the developers of this error";
 		var eml = hash['emailfunction'] || "";
 		var stk = hash['stacktrace'] || "";
 		var err = hash['errormessage'] || "";
-		var vislnk = hash['linkvisible'] || true;
+		var vislnk = hash['linkvisible'] || false;
 
 		var div = "<div id='" + did + "' title='" + ttl + "'>";
-		div += "<div style='with:100%;margin-top:15px;height:165px;'>";
+		div += "<div style='with:100%;margin-top:15px;height:165px;overflow-y:auto;'>";
 		div += "<label style='width:100%;text-align:center;'>" + msg + "</label>";
 		div += "<label style='width:100%;text-align:center;margin-top:10px;'>";
+		div += "<label style='width:100%;text-align:center;'>ERROR: <span style='color:#F00;'>" + err.toString() + "</span></label>";
 		if(vislnk){
 			div += "<a href='javascript:void(0)' onclick='" + eml + "' style='color:#68a4c4;'>" + lnk + "</a>";
 		}
@@ -350,21 +351,10 @@ FUSION.error = {
 		div += "<input type='hidden' id='fullstacktrace' value='" + stk + "' />";
 		div += "</div></div>";
 
-		var	html = jQuery.parseHTML( div );
-		jQuery("body").append(html);
-		jQuery( "#" + did ).dialog({
-			modal: true,
-			autoOpen: true,
-			width:350,
-			height:330,
-			close: function() {
-				jQuery(this).dialog('destroy').remove();
-			},
-			buttons: {
-				Close: function() {
-					jQuery(this).dialog("close");
-				}
-			}
+		FUSION.lib.alert({
+			"message":div,
+			"height":230,
+			"width":350
 		});
 	},
 };
@@ -546,8 +536,8 @@ FUSION.lib = {
 				else
 				{
 					FUSION.set.overlayMouseNormal();
-					FUSION.error.showErrorDialog({'stacktrack':response['content'],
-												  'errormessage':response['message'],
+					FUSION.error.showErrorDialog({'stacktrace':response['content'],
+												  'message':response['message'],
 												  'linkvisible':false});
 				}
 			},

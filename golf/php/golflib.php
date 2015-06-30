@@ -18,8 +18,6 @@
 
 	define('INCLUDE_CHECK',true);
 	require 'connect.php';
-	//require 'forecastio.php';
-	//require 'geocode.php';
 
 	date_default_timezone_set('America/New_York');
 
@@ -68,17 +66,33 @@
 		$message = "";
 		$content = array();
 
-		$user = $m->query("SELECT FIRSTNAME, LASTNAME, ID, GOLFNAME, EMAILADDRESS FROM golfusers WHERE ID=" . $P['golfid'] . ";");
-		if($user)
+		$user = $m->prepare("SELECT u.FIRSTNAME, u.LASTNAME, u.ID, u.GOLFNAME, u.EMAILADDRESS, u.USERTYPEID, t.TYPENAME
+							FROM golfusers AS u INNER JOIN usertypes AS t
+								ON u.USERTYPEID = t.ID
+							WHERE u.ID = ? LIMIT 1;");
+		$user->bind_param("i", $P['golfid']);
+		$user->execute();
+
+		if($user->errno != 0)
 		{
-			$rslt = $user->fetch_assoc();
+			$status = "failure";
+			$message = "Error attempting to retrieve user info:<br>" . $user->error . "<br>Error code: " . $user->errno;
+		}
+		else
+		{
+			$result = $user->get_result();
+			$rslt	= $result->fetch_assoc();
 			$content['FIRSTNAME'] = $rslt['FIRSTNAME'];
 			$content['LASTNAME']  = $rslt['LASTNAME'];
 			$content['USERNAME']  = $rslt['GOLFNAME'];
 			$content['EMAILADD']  = $rslt['EMAILADDRESS'];
 			$content['GOLFID']	  = $rslt['ID'];
+			$content['USERTYPE']  = $rslt['USERTYPEID'];
+			$content['TYPENAME']  = $rslt['TYPENAME'];
 			$status = "success";
 		}
+		$user->close();
+
 		$result = array(
 				"status"  => $status,
 				"message" => $message,
@@ -96,19 +110,8 @@
 		$status  = "";
 		$message = "";
 		$content = array();
-/*
-		$user = $m->query("SELECT FIRSTNAME, LASTNAME, ID, GOLFNAME, EMAILADDRESS FROM golfusers WHERE ID=" . $P['golfid'] . ";");
-		if($user)
-		{
-			$rslt = $user->fetch_assoc();
-			$content['FIRSTNAME'] = $rslt['FIRSTNAME'];
-			$content['LASTNAME']  = $rslt['LASTNAME'];
-			$content['USERNAME']  = $rslt['GOLFNAME'];
-			$content['EMAILADD']  = $rslt['EMAILADDRESS'];
-			$content['GOLFID']	  = $rslt['ID'];
-			$status = "success";
-		}
-*/
+
+
 		$result = array(
 				"status"  => $status,
 				"message" => $message,
@@ -120,11 +123,162 @@
 
 
 	function saveUserInfo($P, $m)
-	{}
+	{
+		global $webaddress;
+
+		$P = escapeArray($P, $m);
+		$status = "";
+		$message = "";
+		$content = array();
+
+		$userid = $P['userid'];
+		if($userid == 0)
+		{
+			//insert new user, but first check for existing username and email address
+			$usercheck = $m->prepare("SELECT ID FROM golfusers WHERE GOLFNAME = ?;");
+			$usercheck->bind_param("s", $P['username']);
+			$usercheck->execute();
+			$userreslt = $usercheck->get_result();
+			$usercheck->close();
+
+			$emalcheck = $m->prepare("SELECT ID FROM golfusers WHERE EMAILADDRESS = ?;");
+			$emalcheck->bind_param("s", $P['emailaddress']);
+			$emalcheck->execute();
+			$emalreslt = $emalcheck->get_result();
+			$emalcheck->close();
+
+			if($userreslt->num_rows > 0 || $emalreslt->num_rows > 0)
+			{
+				$status = "failure";
+				$message = "";
+				if($userreslt->num_rows > 0){
+					$message .= "<br>That username is not available - please use a different name";
+				}
+				if($emalreslt->num_rows > 0){
+					$message .= "<br>That email address is already being used - please use a different address";
+				}
+			}
+			else
+			{
+				$chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+				$count = mb_strlen($chars);
+				$password = "";
+				$length = 12;
+				for ($i = 0, $password = ''; $i < $length; $i++)
+				{
+					$index = rand(0, $count - 1);
+					$password .= mb_substr($chars, $index, 1);
+				}
+				$hashedpassword = md5($password);
+
+				$insert = $m->prepare("INSERT INTO golfusers(GOLFNAME, USERTYPEID, FIRSTNAME, LASTNAME, GOLFPASSWORD, EMAILADDRESS)
+										VALUES (?, ?, ?, ?, ?, ?)");
+				$insert->bind_param("sissss",
+									$P['username'],
+									$P['usertype'],
+									$P['firstname'],
+									$P['lastname'],
+									$hashedpassword,
+									$P['emailaddress']);
+				$insert->execute();
+				if($insert->errno != 0)
+				{
+					$status = "failure";
+					$message = "Error attempting to add user:<br>" . $insert->error . "<br>Error code: " . $insert->errno;
+				}
+				else
+				{
+					$userid  = $insert->insert_id;
+					$message = "New user created!";
+// 					$to      = $email;
+					$to      = "musicmunky@gmail.com";
+					$subject = "New Account Created";
+					$emailmessage =  "Hello,\r\n\r\nYour account has been created!\r\n\r\nYour login information is:\r\n" .
+						"username: " . $P['username'] . "\r\npassword: " . $password . "\r\n\r\n" .
+						"Please go here to login and change your password:\r\n" .
+						$webaddress . "/login.php";
+					$headers =  "From: admin@twandrews.com" . "\r\n" .
+						"Reply-To: admin@twandrews.com" . "\r\n" .
+						"X-Mailer: PHP/" . phpversion();
+					mail($to, $subject, $emailmessage, $headers);
+
+					$status = "success";
+					$message = "User added successfully!";
+				}
+				$insert->close();
+			}
+		}
+		else
+		{
+			//update existing user
+			$emalcheck = $m->prepare("SELECT ID FROM golfusers WHERE EMAILADDRESS = ? and ID != ?;");
+			$emalcheck->bind_param("si", $P['emailaddress'], $userid);
+			$emalcheck->execute();
+			$emalreslt = $emalcheck->get_result();
+			$emalcheck->close();
+
+			if($emalreslt->num_rows > 0)
+			{
+				$status  = "failure";
+				$message = "<br>That email address is already being used - please use a different address";
+			}
+			else
+			{
+				$update = $m->prepare("UPDATE golfusers SET GOLFNAME = ?, USERTYPEID = ?, FIRSTNAME = ?, LASTNAME = ?, EMAILADDRESS = ?
+										WHERE ID = ?");
+				$update->bind_param("sisssi",
+								    $P['username'],
+									$P['usertype'],
+									$P['firstname'],
+									$P['lastname'],
+									$P['emailaddress'],
+								    $userid);
+				$update->execute();
+
+				if($update->errno != 0)
+				{
+					$status = "failure";
+					$message = "Error attempting to update user:<br>" . $update->error . "<br>Error code: " . $update->errno;
+				}
+				else
+				{
+					$status = "success";
+					$message = "User added successfully!";
+				}
+				$update->close();
+			}
+		}
+
+		$content['userid']		= $userid;
+		$content['firstname']	= $P['firstname'];
+		$content['lastname']	= $P['lastname'];
+		$content['username']	= $P['username'];
+
+		$result = array(
+				"status"  => $status,
+				"message" => $message,
+				"content" => $content
+		);
+
+		echo json_encode($result);
+	}
 
 
 	function saveCourseInfo($P, $m)
-	{}
+	{
+		$P = escapeArray($P, $m);
+		$status = "";
+		$message = "";
+		$content = array();
+
+		$result = array(
+				"status"  => $status,
+				"message" => $message,
+				"content" => $content
+		);
+
+		echo json_encode($result);
+	}
 
 
 	function escapeArray($post, $mysqli)

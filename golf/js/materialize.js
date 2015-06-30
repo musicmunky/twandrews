@@ -2629,7 +2629,7 @@ $(document).ready(function(){
   $.fn.material_select = function (callback) {
     $(this).each(function(){
       $select = $(this);
-
+console.log("ID IS: " + $select.attr("id"));
       if ( $select.hasClass('browser-default')) {
         return; // Continue to next (return false breaks out of entire loop)
       }
@@ -2692,8 +2692,12 @@ $(document).ready(function(){
       var dropdownIcon = $('<i class="mdi-navigation-arrow-drop-down"></i>');
       if ( $select.is(':disabled') )
         dropdownIcon.addClass('disabled');
-
-      var $newSelect = $('<input type="text" class="select-dropdown" readonly="true" ' + (($select.is(':disabled')) ? 'disabled' : '')
+	  var inputid = "";
+	  if($select.attr("id"))
+	  {
+		  inputid = ' id="select-input-' + $select.attr("id") + '"';
+	  }
+      var $newSelect = $('<input type="text"' + inputid + ' class="select-dropdown" readonly="true" ' + (($select.is(':disabled')) ? 'disabled' : '')
                        + ' data-activates="select-options-' + uniqueID +'" value="'+ label.html() +'"/>');
       $select.before($newSelect);
       $newSelect.before(dropdownIcon);

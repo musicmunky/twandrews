@@ -1,4 +1,3 @@
-
 var states = [	"Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado",
 				"Connecticut", "Delaware", "District of Columbia", "Florida", "Georgia",
 				"Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky",
@@ -10,61 +9,8 @@ var states = [	"Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colora
 				"West Virginia", "Wisconsin", "Wyoming" ];
 
 jQuery(document).ready(function() {
+
 	jQuery('select').material_select();
-	/*
-	var states = [
-		"Alabama",
-		"Alaska",
-		"Arizona",
-		"Arkansas",
-		"California",
-		"Colorado",
-		"Connecticut",
-		"Delaware",
-		"District of Columbia",
-		"Florida",
-		"Georgia",
-		"Hawaii",
-		"Idaho",
-		"Illinois",
-		"Indiana",
-		"Iowa",
-		"Kansas",
-		"Kentucky",
-		"Louisiana",
-		"Maine",
-		"Maryland",
-		"Massachusetts",
-		"Michigan",
-		"Minnesota",
-		"Mississippi",
-		"Missouri",
-		"Montana",
-		"Nebraska",
-		"Nevada",
-		"New Hampshire",
-		"New Jersey",
-		"New Mexico",
-		"New York",
-		"North Carolina",
-		"North Dakota",
-		"Ohio",
-		"Oklahoma",
-		"Oregon",
-		"Pennsylvania",
-		"Rhode Island",
-		"South Carolina",
-		"South Dakota",
-		"Tennessee",
-		"Texas",
-		"Utah",
-		"Vermont",
-		"Virginia",
-		"Washington",
-		"West Virginia",
-		"Wisconsin",
-		"Wyoming"
-	];*/
 	jQuery( "#state" ).autocomplete({
 		source: states,
 		messages: {
@@ -82,11 +28,6 @@ function checkState(s)
 
 		FUSION.lib.alert("<p>Please enter a valid State name</p>");
 		FUSION.lib.focus("state");
-		/*
-		setTimeout(function() {
-			FUSION.get.node("state").focus()
-		}, 10);
-		*/
 	}
 }
 
@@ -98,6 +39,8 @@ function adminUpdateUser()
 		var frstnm = FUSION.get.node("firstname").value;
 		var lastnm = FUSION.get.node("lastname").value;
 		var usernm = FUSION.get.node("username").value;
+		var usertp = FUSION.get.node("usertype").value;
+		var typenm = FUSION.get.node("select-input-usertype").value;
 		var emladd = FUSION.get.node("email").value;
 		var errstr = "";
 		var errcnt = 80;
@@ -118,6 +61,10 @@ function adminUpdateUser()
 			errstr += "<br>User Name";
 			errcnt += 20;
 		}
+		if(FUSION.lib.isBlank(usertp) || typenm == "Select User Type...") {
+			errstr += "<br>User Type";
+			errcnt += 20;
+		}
 		if(FUSION.lib.isBlank(emladd)) {
 			errstr += "<br>Email Address";
 			errcnt += 20;
@@ -129,9 +76,34 @@ function adminUpdateUser()
 							  "text-align":"center"});
 			return false;
 		}
+
+		var info = {
+			"type": "POST",
+			"path": "php/golflib.php",
+			"data": {
+				"method":	"saveUserInfo",
+				"libcheck":	true,
+				"userid": userid,
+				"firstname": frstnm,
+				"lastname": lastnm,
+				"username": usernm,
+				"usertype": usertp,
+				"typename": typenm,
+				"emailaddress": emladd
+			},
+			"func": adminUpdateUserResponse
+		};
+		FUSION.lib.ajaxCall(info);
+
 	}
 	catch(err)
 	{}
+}
+
+
+function adminUpdateUserResponse(h)
+{
+	var hash = h || {};
 }
 
 
@@ -258,6 +230,8 @@ function adminLoadUserResponse(h)
 	FUSION.get.node("username").value	= hash['USERNAME'];
 	FUSION.get.node("email").value		= hash['EMAILADD'];
 	FUSION.get.node("golfid").value		= hash['GOLFID'];
+	FUSION.set.selectedText("usertype", hash['TYPENAME']);
+	FUSION.get.node("select-input-usertype").value = hash['TYPENAME'];
 
 	FUSION.get.node("firstname").className	= "validate valid";
 	FUSION.get.node("lastname").className	= "validate valid";
@@ -278,6 +252,8 @@ function adminClearUserForm()
 	FUSION.get.node("username").value	= "";
 	FUSION.get.node("email").value		= "";
 	FUSION.get.node("golfid").value		= "";
+	FUSION.get.node("usertype").selectedIndex = -1;
+	FUSION.get.node("select-input-usertype").value = "Select User Type...";
 
 	FUSION.get.node("firstname").className	= "validate";
 	FUSION.get.node("lastname").className	= "validate";
