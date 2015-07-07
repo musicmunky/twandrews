@@ -60,6 +60,7 @@ table {
 	background-color:#EFEFEF;
 	height:100%;
 	margin-top:60px;
+	box-shadow: 0 0 2px 2px #D0D0D0;
 }
 
 .navbuttons {

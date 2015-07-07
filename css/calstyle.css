@@ -352,6 +352,7 @@ a {
 .calendar-table {
 	border: 1px solid;
     border-collapse: collapse;
+	box-shadow: 0 2px 2px 0 #333;
     height: 250px;
     width: 100%;
 }

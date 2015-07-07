@@ -19,7 +19,28 @@ jQuery(document).ready(function() {
 		}
 	});
 
+	if(window.location.hash){
+		try {
+			var h = window.location.hash;
+			jQuery('ul.tabs').tabs('select_tab', h);
+		}
+		catch(err){}
+	}
 });
+
+
+function setWindowHash(h)
+{
+	try {
+		if(history.pushState) {
+			history.pushState(null, null, h);
+		}
+		else {
+			location.hash = h;
+		}
+	}
+	catch(err){}
+}
 
 
 function checkState(s)
@@ -112,9 +133,9 @@ function adminUpdateUserResponse(h)
 	{
 		var lnkdiv	= FUSION.get.node("user-list");
 		var lnk		= lnkdiv.innerHTML;
-		lnk			+= "<a href='javascript:void(0)' id='user-list-link-" + hash['userid'];
-		lnk			+= "' onclick='adminLoadUserForm(\"" + hash['userid'] + "\")' class='collection-item'>";
-		lnk			+= hash['firstname'] + " " + hash['lastname'] + "</a>";
+			lnk		+= "<a href='javascript:void(0)' id='user-list-link-" + hash['userid'];
+			lnk		+= "' onclick='adminLoadUserForm(\"" + hash['userid'] + "\")' class='collection-item'>";
+			lnk		+= hash['firstname'] + " " + hash['lastname'] + "</a>";
 		var html	= jQuery.parseHTML(lnk);
 		jQuery("#user-list").html(html);
 	}
@@ -224,9 +245,9 @@ function adminUpdateCourseResponse(h)
 	{
 		var lnkdiv	= FUSION.get.node("course-list");
 		var lnk		= lnkdiv.innerHTML;
-		lnk			+= "<a href='javascript:void(0)' id='course-list-link-" + hash['courseid'];
-		lnk			+= "' onclick='adminLoadCourseForm(" + hash['courseid'] + ", " + hash['locationid'] + ")' class='collection-item'>";
-		lnk			+= hash['coursename'] + "</a>";
+			lnk		+= "<a href='javascript:void(0)' id='course-list-link-" + hash['courseid'];
+			lnk		+= "' onclick='adminLoadCourseForm(" + hash['courseid'] + ", " + hash['locationid'] + ")' class='collection-item'>";
+			lnk		+= hash['coursename'] + "</a>";
 		var html	= jQuery.parseHTML(lnk);
 		jQuery("#course-list").html(html);
 	}

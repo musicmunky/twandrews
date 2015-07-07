@@ -478,11 +478,11 @@
 	}
 
 
-	function escapeArray($post, $mysqli)
+	function escapeArray($req, $mysqli)
 	{
-		//recursive function called on the POST object sent back by an AJAX call
+		//recursive function called on the REQ object sent back by an AJAX call
 		//it accounts for nested arrays/hashes (these were being nulled out previously)
-		foreach($post as $key => $val)
+		foreach($req as $key => $val)
 		{
 			if(gettype($val) == "array") {
 				escapeArray($val);
@@ -490,10 +490,10 @@
 			else {
 				$val = urldecode($val);
 				$val = $mysqli->real_escape_string($val);
-				$post[$key] = $val;
+				$req[$key] = $val;
 			}
 		}
-		return $post;
+		return $req;
 	}
 
 ?>

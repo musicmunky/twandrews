@@ -89,8 +89,8 @@
 			<div class="row">
 				<div class="col s12">
 					<ul class="tabs">
-						<li class="tab col s3"><a class="active" href="#courses">Courses</a></li>
-						<li class="tab col s3"><a href="#users">Users</a></li>
+						<li class="tab col s3"><a onclick="setWindowHash(this.href)" class="active" href="#courses">Courses</a></li>
+						<li class="tab col s3"><a onclick="setWindowHash(this.href)" href="#users">Users</a></li>
 					</ul>
 				</div>
 				<div id="courses" class="col s12">
