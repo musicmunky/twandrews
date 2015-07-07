@@ -14,7 +14,7 @@
 		$hashedpassword = md5($pass);
 
 		$myquery = "SELECT gu.ID, gu.GOLFNAME, ut.TYPENAME
-					FROM golfusers gu, usertypes ut
+					FROM golf_users gu, user_types ut
 					WHERE gu.GOLFNAME='" . $user . "'
 						AND gu.GOLFPASSWORD='" . $hashedpassword . "'
 							AND gu.USERTYPEID=ut.TYPEID;";

@@ -32,17 +32,20 @@
 	}
 
 	$userhtml	= "";
-	$users		= $mysqli->query("SELECT FIRSTNAME, LASTNAME, ID FROM golfusers ORDER BY LASTNAME;");
+	$users		= $mysqli->query("SELECT FIRSTNAME, LASTNAME, ID FROM golf_users ORDER BY LASTNAME;");
 	if($users)
 	{
 		while($row = $users->fetch_assoc())
 		{
-			$userhtml .= "<a href='javascript:void(0)' onclick='adminLoadUserForm(\"" . $row['ID'] . "\")' class='collection-item'>" . $row['FIRSTNAME'] . " " . $row['LASTNAME'] . "</a>";
+			$userhtml .= "<a href='javascript:void(0)' id='user-list-link-" . $row['ID'] . "'
+							 onclick='adminLoadUserForm(\"" . $row['ID'] . "\")' class='collection-item'>" .
+							$row['FIRSTNAME'] . " " . $row['LASTNAME'] .
+						"</a>";
 		}
 	}
 
 	$usertypehtml = "<option value='' disabled selected>Select User Type...</option>";
-	$usertypes		= $mysqli->query("SELECT * FROM usertypes ORDER BY TYPENAME DESC;");
+	$usertypes		= $mysqli->query("SELECT * FROM user_types ORDER BY TYPENAME DESC;");
 	if($usertypes)
 	{
 		while($row = $usertypes->fetch_assoc())
@@ -52,12 +55,15 @@
 	}
 
 	$coursehtml	= "";
-	$courses	= $mysqli->query("SELECT ID, COURSENAME FROM course ORDER BY ID ASC;");
+	$courses	= $mysqli->query("SELECT ID, LOCATIONID, COURSENAME FROM course ORDER BY ID ASC;");
 	if($courses)
 	{
 		while($row = $courses->fetch_assoc())
 		{
-			$coursehtml .= "<a href='javascript:void(0)' onclick='adminLoadCourseForm(\"" . $row['ID'] . "\")' class='collection-item'>" . $row['COURSENAME'] . "</a>";
+			$coursehtml .= "<a href='javascript:void(0)' id='course-list-link-" . $row['ID'] . "'
+								onclick='adminLoadCourseForm(" . $row['ID'] . ", " . $row['LOCATIONID'] . ")' class='collection-item'>" .
+								$row['COURSENAME'] .
+							"</a>";
 		}
 	}
 
@@ -100,6 +106,7 @@
 								<div class="row">
 									<div class="input-field col s4">
 										<input id="courseid" type="hidden" value="0" />
+										<input id="locationid" type="hidden" value="0" />
 										<input id="coursename" type="text" class="validate">
 										<label id="lblcoursename" for="coursename">Course Name</label>
 									</div>
@@ -145,7 +152,7 @@
 										<label id="lblstate" for="state">State</label>
 									</div>
 									<div class="input-field col s4">
-										<input id="zipcode" type="text" class="validate">
+										<input id="zipcode" type="text" class="validate" onkeyup="FUSION.lib.noAlpha(this)">
 										<label id="lblzipcode" for="zipcode">Zip Code</label>
 									</div>
 								</div>

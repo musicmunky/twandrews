@@ -67,7 +67,7 @@
 		$content = array();
 
 		$user = $m->prepare("SELECT u.FIRSTNAME, u.LASTNAME, u.ID, u.GOLFNAME, u.EMAILADDRESS, u.USERTYPEID, t.TYPENAME
-							FROM golfusers AS u INNER JOIN usertypes AS t
+							FROM golf_users AS u INNER JOIN user_types AS t
 								ON u.USERTYPEID = t.ID
 							WHERE u.ID = ? LIMIT 1;");
 		$user->bind_param("i", $P['golfid']);
@@ -107,10 +107,68 @@
 	{
 		$P = escapeArray($P, $m);
 
-		$status  = "";
-		$message = "";
-		$content = array();
+		$status   = "";
+		$message  = "";
+		$content  = array();
+		$course   = array();
+		$location = array();
 
+		$crs = $m->prepare("SELECT c.ID, c.LOCATIONID, c.COURSENAME, c.TYPEID, c.NUMHOLES, t.TYPENAME
+							FROM course AS c INNER JOIN course_type AS t
+								ON c.TYPEID = t.ID
+							WHERE c.ID = ? LIMIT 1;");
+		$crs->bind_param("i", $P['courseid']);
+		$crs->execute();
+
+		if($crs->errno != 0)
+		{
+			$status = "failure";
+			$message = "Error attempting to retrieve course info:<br>" . $crs->error . "<br>Error code: " . $crs->errno;
+		}
+		else
+		{
+			$result = $crs->get_result();
+			$rslt	= $result->fetch_assoc();
+			$locid  = $rslt['LOCATIONID'];
+
+			$course['COURSEID']		= $rslt['ID'];
+			$course['COURSENAME']	= $rslt['COURSENAME'];
+			$course['COURSETYPE']	= $rslt['TYPEID'];
+			$course['TYPENAME']		= ucfirst($rslt['TYPENAME']);
+			$course['COURSELENGTH'] = $rslt['NUMHOLES'];
+			$status = "success";
+			$crs->close();
+
+			$loc = $m->prepare("SELECT *
+								FROM course_location
+								WHERE ID = ? LIMIT 1;");
+			$loc->bind_param("i", $locid);
+			$loc->execute();
+			if($loc->errno != 0)
+			{
+				$status = "failure";
+				$message = "Error attempting to retrieve course info:<br>" . $loc->error . "<br>Error code: " . $loc->errno;
+			}
+			else
+			{
+				$result = $loc->get_result();
+				$rslt	= $result->fetch_assoc();
+				$location['LOCATIONID']	= $rslt['ID'];
+				$location['ADDRESS1']	= $rslt['ADDRESS1'];
+				$location['ADDRESS2']	= $rslt['ADDRESS2'];
+				$location['ADDRESS3']	= $rslt['ADDRESS3'];
+				$location['CITY']		= $rslt['CITY'];
+				$location['STATE']		= $rslt['STATE'];
+				$location['ZIPCODE']	= $rslt['ZIPCODE'];
+				$loc->close();
+			}
+		}
+		if(is_resource($crs)){
+			$crs->close();
+		}
+
+		$content['course']   = $course;
+		$content['location'] = $location;
 
 		$result = array(
 				"status"  => $status,
@@ -129,19 +187,22 @@
 		$P = escapeArray($P, $m);
 		$status = "";
 		$message = "";
+		$n_or_e = 1;
 		$content = array();
 
 		$userid = $P['userid'];
 		if($userid == 0)
 		{
 			//insert new user, but first check for existing username and email address
-			$usercheck = $m->prepare("SELECT ID FROM golfusers WHERE GOLFNAME = ?;");
+			$n_or_e = 0;
+
+			$usercheck = $m->prepare("SELECT ID FROM golf_users WHERE GOLFNAME = ?;");
 			$usercheck->bind_param("s", $P['username']);
 			$usercheck->execute();
 			$userreslt = $usercheck->get_result();
 			$usercheck->close();
 
-			$emalcheck = $m->prepare("SELECT ID FROM golfusers WHERE EMAILADDRESS = ?;");
+			$emalcheck = $m->prepare("SELECT ID FROM golf_users WHERE EMAILADDRESS = ?;");
 			$emalcheck->bind_param("s", $P['emailaddress']);
 			$emalcheck->execute();
 			$emalreslt = $emalcheck->get_result();
@@ -171,7 +232,7 @@
 				}
 				$hashedpassword = md5($password);
 
-				$insert = $m->prepare("INSERT INTO golfusers(GOLFNAME, USERTYPEID, FIRSTNAME, LASTNAME, GOLFPASSWORD, EMAILADDRESS)
+				$insert = $m->prepare("INSERT INTO golf_users(GOLFNAME, USERTYPEID, FIRSTNAME, LASTNAME, GOLFPASSWORD, EMAILADDRESS)
 										VALUES (?, ?, ?, ?, ?, ?)");
 				$insert->bind_param("sissss",
 									$P['username'],
@@ -193,13 +254,13 @@
 // 					$to      = $email;
 					$to      = "musicmunky@gmail.com";
 					$subject = "New Account Created";
-					$emailmessage =  "Hello,\r\n\r\nYour account has been created!\r\n\r\nYour login information is:\r\n" .
-						"username: " . $P['username'] . "\r\npassword: " . $password . "\r\n\r\n" .
-						"Please go here to login and change your password:\r\n" .
-						$webaddress . "/login.php";
-					$headers =  "From: admin@twandrews.com" . "\r\n" .
-						"Reply-To: admin@twandrews.com" . "\r\n" .
-						"X-Mailer: PHP/" . phpversion();
+					$emailmessage = "Hello,\r\n\r\nYour account has been created!\r\n\r\nYour login information is:\r\n" .
+									"username: " . $P['username'] . "\r\npassword: " . $password . "\r\n\r\n" .
+									"Please go here to login and change your password:\r\n" .
+									$webaddress . "/login.php";
+					$headers =	"From: admin@twandrews.com" . "\r\n" .
+								"Reply-To: admin@twandrews.com" . "\r\n" .
+								"X-Mailer: PHP/" . phpversion();
 					mail($to, $subject, $emailmessage, $headers);
 
 					$status = "success";
@@ -211,7 +272,7 @@
 		else
 		{
 			//update existing user
-			$emalcheck = $m->prepare("SELECT ID FROM golfusers WHERE EMAILADDRESS = ? and ID != ?;");
+			$emalcheck = $m->prepare("SELECT ID FROM golf_users WHERE EMAILADDRESS = ? and ID != ?;");
 			$emalcheck->bind_param("si", $P['emailaddress'], $userid);
 			$emalcheck->execute();
 			$emalreslt = $emalcheck->get_result();
@@ -224,7 +285,7 @@
 			}
 			else
 			{
-				$update = $m->prepare("UPDATE golfusers SET GOLFNAME = ?, USERTYPEID = ?, FIRSTNAME = ?, LASTNAME = ?, EMAILADDRESS = ?
+				$update = $m->prepare("UPDATE golf_users SET GOLFNAME = ?, USERTYPEID = ?, FIRSTNAME = ?, LASTNAME = ?, EMAILADDRESS = ?
 										WHERE ID = ?");
 				$update->bind_param("sisssi",
 								    $P['username'],
@@ -250,6 +311,7 @@
 		}
 
 		$content['userid']		= $userid;
+		$content['neworexist']	= $n_or_e;
 		$content['firstname']	= $P['firstname'];
 		$content['lastname']	= $P['lastname'];
 		$content['username']	= $P['username'];
@@ -267,9 +329,144 @@
 	function saveCourseInfo($P, $m)
 	{
 		$P = escapeArray($P, $m);
-		$status = "";
+		$status  = "";
 		$message = "";
+		$n_or_e  = 1;
 		$content = array();
+
+		$courseid	= $P['courseid'];
+		$locationid = $P['locationid'];
+		if($courseid == 0)
+		{
+			//insert new user, but first check for existing username and email address
+			$n_or_e = 0;
+
+			$addrcheck = $m->prepare("SELECT ID FROM course_location WHERE ADDRESS1 = ?;");
+			$addrcheck->bind_param("s", $P['address1']);
+			$addrcheck->execute();
+			$addrreslt = $addrcheck->get_result();
+			$addrcheck->close();
+
+			$namecheck = $m->prepare("SELECT ID FROM course WHERE COURSENAME = ?;");
+			$namecheck->bind_param("s", $P['coursename']);
+			$namecheck->execute();
+			$namereslt = $namecheck->get_result();
+			$namecheck->close();
+
+			if($addrreslt->num_rows > 0 || $namereslt->num_rows > 0)
+			{
+				$status = "failure";
+				$message = "";
+				if($addrreslt->num_rows > 0){
+					$message .= "<br>That address is already in the database";
+				}
+				if($namereslt->num_rows > 0){
+					$message .= "<br>That course is already in the database";
+				}
+			}
+			else
+			{
+				$insert = $m->prepare("INSERT INTO course_location(ADDRESS1, ADDRESS2, ADDRESS3, CITY, STATE, ZIPCODE)
+										VALUES (?, ?, ?, ?, ?, ?)");
+				$insert->bind_param("sssssi",
+									$P['address1'],
+									$P['address2'],
+									$P['address3'],
+									$P['city'],
+									$P['state'],
+									$P['zipcode']);
+				$insert->execute();
+				if($insert->errno != 0)
+				{
+					$status = "failure";
+					$message = "Error attempting to add course address:<br>" . $insert->error . "<br>Error code: " . $insert->errno;
+				}
+				else
+				{
+					$locationid = $insert->insert_id;
+					$message	= "New location added!";
+					$status		= "success";
+					$message	= "Location added successfully!";
+					$insert->close();
+
+					$insert = $m->prepare("INSERT INTO course(COURSENAME, LOCATIONID, TYPEID, NUMHOLES)
+											VALUES (?, ?, ?, ?)");
+					$insert->bind_param("siii",
+										$P['coursename'],
+										$locationid,
+										$P['coursestyle'],
+										$P['courselength']);
+					$insert->execute();
+					if($insert->errno != 0)
+					{
+						$status = "failure";
+						$message = "Error attempting to add course:<br>" . $insert->error . "<br>Error code: " . $insert->errno;
+					}
+					else
+					{
+						$courseid	= $insert->insert_id;
+						$message	= "New course added!";
+						$status		= "success";
+						$message	= "Course added successfully!";
+					}
+				}
+				$insert->close();
+			}
+		}
+		else
+		{
+			//update existing course
+			$update = $m->prepare("UPDATE course_location SET ADDRESS1 = ?, ADDRESS2 = ?, ADDRESS3 = ?, CITY = ?, STATE = ?, ZIPCODE = ?
+									WHERE ID = ?");
+			$update->bind_param("sssssii",
+								$P['address1'],
+								$P['address2'],
+								$P['address3'],
+								$P['city'],
+								$P['state'],
+								$P['zipcode'],
+								$P['locationid']);
+			$update->execute();
+
+			if($update->errno != 0)
+			{
+				$status = "failure";
+				$message = "Error attempting to update location:<br>" . $update->error . "<br>Error code: " . $update->errno;
+			}
+			else
+			{
+				//update existing course
+				$status = "success";
+				$message = "Location updated successfully!";
+				$update->close();
+
+				$update = $m->prepare("UPDATE course SET COURSENAME = ?, TYPEID = ?, NUMHOLES = ?
+										WHERE ID = ?");
+				$update->bind_param("siii",
+									$P['coursename'],
+									$P['coursestyle'],
+									$P['courselength'],
+									$P['courseid']);
+				$update->execute();
+
+				if($update->errno != 0)
+				{
+					$status = "failure";
+					$message = "Error attempting to update course:<br>" . $update->error . "<br>Error code: " . $update->errno;
+				}
+				else
+				{
+					$status = "success";
+					$message = "Course updated successfully!";
+				}
+			}
+			$update->close();
+		}
+
+		$content['courseid']	= $courseid;
+		$content['locationid']	= $locationid;
+		$content['neworexist']	= $n_or_e;
+		$content['coursename']	= $P['coursename'];
 
 		$result = array(
 				"status"  => $status,
