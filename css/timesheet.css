@@ -103,7 +103,7 @@ table {
 .blacktext { color: #000000; }
 .mondayrow { border-top:2px solid; }
 .fridayrow { border-bottom:2px solid; }
-.weekendrow { background-color:#BFBFBF; }
+.weekendrow { background-color:#E5E5E5; }
 .mainrow { background:#FFFFFF; }
 .altrow { background:#BBDDFF; }
 .pendingrow { background:#FEC9C1; }

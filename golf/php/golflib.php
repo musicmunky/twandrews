@@ -66,32 +66,32 @@
 		$message = "";
 		$content = array();
 
-		$user = $m->prepare("SELECT u.FIRSTNAME, u.LASTNAME, u.ID, u.GOLFNAME, u.EMAILADDRESS, u.USERTYPEID, t.TYPENAME
+		$usr = $m->prepare("SELECT u.FIRSTNAME, u.LASTNAME, u.ID, u.GOLFNAME, u.EMAILADDRESS, u.USERTYPEID, t.TYPENAME
 							FROM golf_users AS u INNER JOIN user_types AS t
 								ON u.USERTYPEID = t.ID
 							WHERE u.ID = ? LIMIT 1;");
-		$user->bind_param("i", $P['golfid']);
-		$user->execute();
+		$usr->bind_param("i", $P['golfid']);
+		$usr->execute();
 
-		if($user->errno != 0)
+		if($usr->errno != 0)
 		{
 			$status = "failure";
-			$message = "Error attempting to retrieve user info:<br>" . $user->error . "<br>Error code: " . $user->errno;
+			$message = "Error attempting to retrieve user info:<br>" . $usr->error . "<br>Error code: " . $usr->errno;
 		}
 		else
 		{
-			$result = $user->get_result();
-			$rslt	= $result->fetch_assoc();
-			$content['FIRSTNAME'] = $rslt['FIRSTNAME'];
-			$content['LASTNAME']  = $rslt['LASTNAME'];
-			$content['USERNAME']  = $rslt['GOLFNAME'];
-			$content['EMAILADD']  = $rslt['EMAILADDRESS'];
-			$content['GOLFID']	  = $rslt['ID'];
-			$content['USERTYPE']  = $rslt['USERTYPEID'];
-			$content['TYPENAME']  = $rslt['TYPENAME'];
+			$result = $usr->get_result();
+			$rfa	= $result->fetch_assoc();
+			$content['FIRSTNAME'] = $rfa['FIRSTNAME'];
+			$content['LASTNAME']  = $rfa['LASTNAME'];
+			$content['USERNAME']  = $rfa['GOLFNAME'];
+			$content['EMAILADD']  = $rfa['EMAILADDRESS'];
+			$content['GOLFID']	  = $rfa['ID'];
+			$content['USERTYPE']  = $rfa['USERTYPEID'];
+			$content['TYPENAME']  = $rfa['TYPENAME'];
 			$status = "success";
 		}
-		$user->close();
+		$usr->close();
 
 		$result = array(
 				"status"  => $status,
@@ -128,14 +128,14 @@
 		else
 		{
 			$result = $crs->get_result();
-			$rslt	= $result->fetch_assoc();
-			$locid  = $rslt['LOCATIONID'];
+			$rfa	= $result->fetch_assoc();
+			$locid  = $rfa['LOCATIONID'];
 
-			$course['COURSEID']		= $rslt['ID'];
-			$course['COURSENAME']	= $rslt['COURSENAME'];
-			$course['COURSETYPE']	= $rslt['TYPEID'];
-			$course['TYPENAME']		= ucfirst($rslt['TYPENAME']);
-			$course['COURSELENGTH'] = $rslt['NUMHOLES'];
+			$course['COURSEID']		= $rfa['ID'];
+			$course['COURSENAME']	= $rfa['COURSENAME'];
+			$course['COURSETYPE']	= $rfa['TYPEID'];
+			$course['TYPENAME']		= ucfirst($rfa['TYPENAME']);
+			$course['COURSELENGTH'] = $rfa['NUMHOLES'];
 			$status = "success";
 			$crs->close();
 
@@ -152,14 +152,14 @@
 			else
 			{
 				$result = $loc->get_result();
-				$rslt	= $result->fetch_assoc();
-				$location['LOCATIONID']	= $rslt['ID'];
-				$location['ADDRESS1']	= $rslt['ADDRESS1'];
-				$location['ADDRESS2']	= $rslt['ADDRESS2'];
-				$location['ADDRESS3']	= $rslt['ADDRESS3'];
-				$location['CITY']		= $rslt['CITY'];
-				$location['STATE']		= $rslt['STATE'];
-				$location['ZIPCODE']	= $rslt['ZIPCODE'];
+				$rfa	= $result->fetch_assoc();
+				$location['LOCATIONID']	= $rfa['ID'];
+				$location['ADDRESS1']	= $rfa['ADDRESS1'];
+				$location['ADDRESS2']	= $rfa['ADDRESS2'];
+				$location['ADDRESS3']	= $rfa['ADDRESS3'];
+				$location['CITY']		= $rfa['CITY'];
+				$location['STATE']		= $rfa['STATE'];
+				$location['ZIPCODE']	= $rfa['ZIPCODE'];
 				$loc->close();
 			}
 		}
