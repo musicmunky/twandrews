@@ -1,0 +1,151 @@
+body {
+	background-color:#EEE !important;
+	font-family:Helvetica;
+}
+a {
+	text-decoration:none;
+	color:#333;
+	outline:none !important;
+	cursor:pointer;
+}
+a:hover {
+	text-decoration:none;
+}
+ul {
+	list-style: none outside none;
+}
+.logoutdiv{
+	padding:10px;
+	border-top:1px solid #333;
+	width:100%;
+	font-weight:bold;
+	font-size:21px;
+	margin-top:20px;
+	float:left;
+}
+.lglink {
+	float:right;
+}
+.lglink:hover {
+	color:#23527C;
+	text-decoration:none;
+}
+.navspan {
+	margin-right:10px;
+	vertical-align:middle;
+	margin-top:-5px;
+}
+.nswarning { color:#dd9a3b; }
+.nsokay { color:#5CB85C; }
+.mainwrapper {
+	background-color: #fff;
+	border-left: 1px solid #CCC;
+	border-right: 1px solid #CCC;
+	height: 100%;
+	margin-left: auto;
+	margin-right: auto;
+	min-height: 700px;
+	padding-left: 10px;
+	padding-right: 10px;
+	width: 1000px;
+}
+.maindiv {
+	width:100%;
+	float:left;
+}
+.lidiv {
+	border-top: 1px solid #333;
+	width:100%;
+	font-size:24px;
+	margin-top:20px;
+	margin-bottom:20px;
+}
+.pagecolumn {
+	width:50%;
+	float:left;
+	padding:20px;
+}
+.ulnav {
+	margin-top:10px;
+	margin-bottom:10px;
+	padding-left:0px;
+}
+.linav {
+	height:55px;
+	border-radius:4px;
+}
+.ulnav > li > a {
+	display: block;
+	padding: 10px 15px;
+	position: relative;
+	border-radius:4px;
+	width:80%;
+	float:left;
+}
+.ulnav > li:hover {
+	background-color:#EEE !important;
+}
+.colheader {
+	width:100%;
+	font-weight:bold;
+	font-size:24px;
+}
+.remlnk {
+	font-size: 18px;
+	padding: 18px 10px !important;
+	text-align: center;
+	width: 10% !important;
+}
+.editlnk {
+	font-size: 18px;
+	padding: 18px 10px !important;
+	text-align: center;
+	width: 10% !important;
+}
+.alert_closebtn {
+	float:right;
+	width:30px;
+	height:26px;
+	background-color:#EDDDCD;
+	border:1px solid #DADADA;
+	border-radius:4px;
+	margin:5px;
+}
+.alert_content {
+	width:100%;
+	float:left;
+}
+.new_item_cell {
+	float:left;
+	width:100%;
+	margin-top:10px;
+}
+.new_item_lbl {
+	font-size:14px;
+	margin-bottom:0;
+	width:100%;
+	display:block;
+	float:left;
+	margin-top:5px;
+}
+.new_item_txt, .new_item_slct, .new_item_txtarea {
+	background-color:#F3F3F3;
+	border:none;
+	box-shadow:0 2px 3px -2px #666;
+	float:left;
+	font-size:14px;
+	height:30px;
+	width:100%;
+	padding:5px;
+}
+.new_item_txtarea {
+	height:60px !important;
+	resize:none;
+}
+#new_item_header {
+	background-color:#68A4C4;
+	border-bottom:1px solid #888;
+	border-radius:3px;
+	box-shadow:0 2px 2px -2px #666;
+	padding-top:3px;
+}
