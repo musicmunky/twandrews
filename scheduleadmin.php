@@ -83,12 +83,12 @@
 	</head>
 	<body>
 		<div class="header">
-			Calendar Administration			
+			Calendar Administration
 			<span style="cursor:pointer;float:right;font-family:Monaco,Consolas,'Lucida Console',monospace;font-size:16px;margin-top:12px;">
 				<a id="logout" name="logout" style="text-decoration:none;" href="scheduleadmin.php?logout">logout</a>
 			</span>
 		</div>
-		<div style="margin-left:50px;margin-bottom: 50px;width:1000px;float:left;">
+		<div style="margin-top:100px;margin-left:50px;margin-bottom:50px;width:1000px;float:left;">
 			<div id="admintabs">
 				<ul>
 					<li><a href="#newtab">Add New Event</a></li>
@@ -97,7 +97,6 @@
 				</ul>
 				<div id="newtab">
 					<div style="width:100%;margin-top:20px;">
-						<?php echo $disclaimer; ?>
 						<form id="newevenform">
 							<div class="fielddivs">
 								<div class="labeldivs">Event Title:<span style="color:red;">*</span></div>
@@ -155,7 +154,8 @@
 									<option value="pm">pm</option>
 								</select>
 								<div class="labeldivs" style="float:left;width:140px;">
-									<input type="checkbox" id="eventallday" name="chkday" onclick="eventChkBoxClick(this, '');" style="margin-left:10px;margin-right:10px;" />
+									<input type="checkbox" id="eventallday" name="chkday"
+										   onclick="eventChkBoxClick(this, '');" style="margin-left:10px;margin-right:10px;" />
 									<span style="display:block;float:right;margin-top:-1px;">All Day Event</span>
 								</div>
 							</div>
@@ -194,7 +194,8 @@
 									<option value="pm">pm</option>
 								</select>
 								<div class="labeldivs" style="float:left;width:155px;">
-									<input type="checkbox" id="eventmultiday" name="chkday" onclick="eventChkBoxClick(this, '');" style="margin-left:10px;margin-right:10px;" />
+									<input type="checkbox" id="eventmultiday" name="chkday"
+										   onclick="eventChkBoxClick(this, '');" style="margin-left:10px;margin-right:10px;" />
 									<span style="display:block;float:right;margin-top:-1px;">Multi-Day Event</span>
 								</div>
 							</div>
@@ -207,7 +208,6 @@
 				</div>
 				<div id="edittab">
 					<div style="width:100%;margin-top:20px;">
-						<?php echo $disclaimer; ?>
 							<div class="fielddivs">
 								<div class="labeldivs">Filter by Title: </div>
 								<input type="text" id="comicquery" name="comicquery" onkeyup="comicQuery();" class="fieldinputs" value="" />
@@ -225,7 +225,8 @@
 										</thead>
 										<tbody id="comictablebody" name="comictablebody">
 											<tr class='mainrow'>
-												<td colspan='3' style="background-image:url(logos/loader.gif);height:30px;background-repeat:no-repeat;background-position:center;"></td>
+												<td colspan='3'
+													style="background-image:url(logos/loader.gif);height:30px;background-repeat:no-repeat;background-position:center;"></td>
 											</tr>
 											<?php //echo $comichtmltable; ?>
 										</tbody>
@@ -284,12 +285,14 @@
 									<option value="11:00">11:00</option>
 									<option value="11:30">11:30</option>
 								</select>
-								<select id="editstartampm" style="float:left;" onChange="setOptionTimes(this, 'start', 'edit')" name="editeventtimes">
+								<select id="editstartampm" style="float:left;"
+										onChange="setOptionTimes(this, 'start', 'edit')" name="editeventtimes">
 									<option value="am">am</option>
 									<option value="pm">pm</option>
 								</select>
 								<div class="labeldivs" style="float:left;width:140px;">
-									<input type="checkbox" id="editeventallday" name="editchkday" onclick="eventChkBoxClick(this, 'edit');" style="margin-left:10px;margin-right:10px;" />
+									<input type="checkbox" id="editeventallday" name="editchkday"
+										   onclick="eventChkBoxClick(this, 'edit');" style="margin-left:10px;margin-right:10px;" />
 									<span style="display:block;float:right;margin-top:-1px;">All Day Event</span>
 								</div>
 							</div>
@@ -328,12 +331,14 @@
 									<option value="pm">pm</option>
 								</select>
 								<div class="labeldivs" style="float:left;width:155px;">
-									<input type="checkbox" id="editeventmultiday" name="editchkday" onclick="eventChkBoxClick(this, 'edit');" style="margin-left:10px;margin-right:10px;" />
+									<input type="checkbox" id="editeventmultiday" name="editchkday"
+										   onclick="eventChkBoxClick(this, 'edit');" style="margin-left:10px;margin-right:10px;" />
 									<span style="display:block;float:right;margin-top:-1px;">Multi-Day Event</span>
 								</div>
 							</div>
 							<div class="fielddivs" style="text-align: center;">
-								<input type="button" class="uploadbtn" value="Add Event" onclick="validateEvent('edit');" style="margin-right:40px;" />
+								<input type="button" class="uploadbtn" value="Add Event"
+									   onclick="validateEvent('edit');" style="margin-right:40px;" />
 								<input type="button" class="uploadbtn" value="Clear Form" onclick="clearEventForm(0, 'edit');" />
 							</div>
 						</form>
@@ -345,13 +350,14 @@
 							<?php echo $html; ?>
 						</div>
 						<div class="fielddivs" style="text-align: center;padding-top:20px;">
-							<input type="button" id="adduserbtn" name="adduserbtn" class="uploadbtn" value="Add User" onclick="showCreateUserForm();" />
+							<input type="button" id="adduserbtn" name="adduserbtn"
+								   class="uploadbtn" value="Add User" onclick="showCreateUserForm();" />
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-		
+
 		<div id="userform">
 			<p class="validateTips"><i>All fields are required.</i></p>
 			<form>
