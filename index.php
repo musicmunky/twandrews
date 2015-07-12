@@ -1,9 +1,6 @@
 <?php
-//	define('LIBRARY_CHECK',true);
-//	require 'php/library.php';
-
-	define('INCLUDE_CHECK',true);
-	require 'golf/php/connect.php';
+	define('LIBRARY_CHECK',true);
+	require 'php/indexlib.php';
 
 	if(isset($_GET['logout']))
 	{
@@ -152,13 +149,13 @@
 					</div>
 					<div class="new_item_cell">
 						<label class="new_item_lbl">Page Type:</label>
-						<select id="ni_pagetype" class="new_item_slct">
+						<select id="ni_pagetype" class="new_item_slct" onchange="enDisStat(this.value)">
 							<option value="">Please select a type...</option>
 							<option value="project">Project</option>
 							<option value="tool">Tool</option>
 						</select>
 					</div>
-					<div class="new_item_cell">
+					<div id="pagestatdiv" class="new_item_cell">
 						<label class="new_item_lbl">Page Status:</label>
 						<select id="ni_pagestat" class="new_item_slct">
 							<option value="">Please select a status...</option>
@@ -170,7 +167,10 @@
 						<label class="new_item_lbl">Page Description:</label>
 						<textarea id="ni_pagedesc" class="new_item_txtarea"></textarea>
 					</div>
-
+					<div class="new_item_cell" style="margin-top:30px;">
+						<input type="button" class="new_item_btn" value="Save" onclick="updateItem()" style="float:left;" />
+						<input type="button" class="new_item_btn" value="Cancel" onclick="hideNewItem()" style="float:right;" />
+					</div>
 				</div>
 			</div>
 		</div>

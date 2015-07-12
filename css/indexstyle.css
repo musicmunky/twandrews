@@ -81,6 +81,8 @@ ul {
 	border-radius:4px;
 	width:80%;
 	float:left;
+	white-space:nowrap;
+	overflow-x:hidden;
 }
 .ulnav > li:hover {
 	background-color:#EEE !important;
@@ -141,6 +143,23 @@ ul {
 .new_item_txtarea {
 	height:60px !important;
 	resize:none;
+}
+.new_item_btn {
+	background-color: #666;
+    border: medium none;
+    border-radius: 2px;
+    color: #eee;
+    font-family: "Lucida Console";
+    font-weight: bold;
+    height: 40px;
+    width: 100px;
+	box-shadow: 0 3px 3px -2px #666;
+}
+.new_item_btn:hover {
+	background-color:#888;
+}
+.new_item_btn:active {
+	box-shadow: none;
 }
 #new_item_header {
 	background-color:#68A4C4;

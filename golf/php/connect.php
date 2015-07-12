@@ -12,16 +12,16 @@
 		</div>');
 
 
-        /* Database config */
-        $db_host     = 'localhost:3306';
-        $db_user     = 'musicmunky';
-        $db_pass     = 'Pas9b53!';
-        $db_database = 'golfdb';
-        /* End config */
+	/* Database config */
+	$db_host     = 'localhost:3306';
+	$db_user     = 'musicmunky';
+	$db_pass     = 'Pas9b53!';
+	$db_database = 'golfdb';
+	/* End config */
 
-        $mysqli = mysqli_connect($db_host, $db_user, $db_pass, $db_database);
+	$mysqli = mysqli_connect($db_host, $db_user, $db_pass, $db_database);
+
 	if (mysqli_connect_errno($mysqli)) {
 		die("Failed to connect to MySQL: " . mysqli_connect_error());
 	}
-        //mysql_query("SET names UTF8");
 ?>
