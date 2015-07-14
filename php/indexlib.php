@@ -88,7 +88,7 @@
 			$item->close();
 		}
 		catch(Exception $e){
-			$status = "ERROR: " . $e->getMessage();
+			$status  = "ERROR: " . $e->getMessage();
 			$message = "ERROR: " . $e->getMessage();
 		}
 
@@ -106,10 +106,93 @@
 	{
 		global $webaddress;
 
-		$P = escapeArray($P, $m);
+		//$P = escapeArray($P, $m);
 		$status = "";
 		$message = "";
 		$content = array();
+
+		try {
+			$m->select_db("andrewsdb");
+
+			$itmid = $P['itemid'];
+			$check = $m->prepare("SELECT * FROM projectpages WHERE PAGENAME = ? LIMIT 1;");
+			$check->bind_param("s", $P['pname']);
+			$check->execute();
+			$reslt = $check->get_result();
+			$check->close();
+
+			if($reslt->num_rows > 0)
+			{
+				$status  = "failure";
+				$message = "<br>That item name is already being used - please use a different name";
+			}
+			else
+			{
+				$pstat = $P['ptype'] == "tool" ? "" : $P['pstat'];
+				if($itmid == 0)
+				{
+					//new item
+					$insert = $m->prepare("INSERT INTO projectpages(PAGENAME, PAGELINK, PAGETYPE, PAGESTAT, PAGEDESC)
+											VALUES (?, ?, ?, ?, ?)");
+					$insert->bind_param("sssss",
+										$P['pname'],
+										$P['plink'],
+										$P['ptype'],
+										$pstat,
+										$P['pdesc']);
+					$insert->execute();
+					if($insert->errno != 0)
+					{
+						$status = "failure";
+						$message = "Error attempting to add item:<br>" . $insert->error . "<br>Error code: " . $insert->errno;
+					}
+					else
+					{
+						$itmid   = $insert->insert_id;
+						$status  = "success";
+						$message = "Item added successfully!";
+					}
+					$insert->close();
+				}
+				else
+				{
+					//update existing item
+					$update = $m->prepare("UPDATE projectpages SET PAGENAME = ?, PAGELINK = ?, PAGETYPE = ?, PAGESTAT = ?, PAGEDESC = ?
+											WHERE ID = ?");
+					$update->bind_param("sssssi",
+										$P['pname'],
+										$P['plink'],
+										$P['ptype'],
+										$pstat,
+										$P['pdesc'],
+										$itmid);
+					$update->execute();
+
+					if($update->errno != 0)
+					{
+						$status  = "failure";
+						$message = "Error attempting to update item:<br>" . $update->error . "<br>Error code: " . $update->errno;
+					}
+					else
+					{
+						$status  = "success";
+						$message = "Item updated successfully!";
+					}
+					$update->close();
+				}
+				$content['pageid'] = $itmid;
+				$content['pname']  = $P['pname'];
+				$content['plink']  = $P['plink'];
+				$content['ptype']  = $P['ptype'];
+				$content['pstat']  = $P['pstat'];
+				$content['pdesc']  = $P['pdesc'];
+			}
+		}
+		catch(Exception $e)
+		{
+			$status  = "ERROR: " . $e->getMessage();
+			$message = "ERROR: " . $e->getMessage();
+		}
 
 		$result = array(
 				"status"  => $status,

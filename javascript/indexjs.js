@@ -1,11 +1,11 @@
 jQuery(document).ready(function() {
-	$('.remlnk').click(function(){
+	jQuery('.remlnk').click(function(){
 		removeItem(this.id);
 	});
-	$('.editlnk').click(function(){
+	jQuery('.editlnk').click(function(){
 		getItemInfo(this.id);
 	});
-	$("#addlnk").click(function(){
+	jQuery("#addlnk").click(function(){
 		showAddItem({"pageid":0});
 	});
 });
@@ -14,7 +14,7 @@ jQuery(document).ready(function() {
 function updateItem()
 {
 	try {
-		var id = parseInt(FUSION.get.node("ni_pageid").value);
+		var id = FUSION.get.node("ni_pageid").value ? parseInt(FUSION.get.node("ni_pageid").value) : 0;
 		var pname = FUSION.get.node("ni_pagename").value;
 		var ptype = FUSION.get.node("ni_pagetype").value;
 		var plink = FUSION.get.node("ni_pagelink").value;
@@ -24,6 +24,10 @@ function updateItem()
 		var errstr = "";
 		var errcnt = 80;
 
+		if(FUSION.lib.isBlank(id)) {
+			FUSION.lib.alert("<p>There was a problem getting the item information - please refresh the page and try again</p>");
+			return false;
+		}
 		if(FUSION.lib.isBlank(pname)) {
 			errstr += "<br>Project Name";
 			errcnt += 20;
@@ -47,6 +51,29 @@ function updateItem()
 							  "text-align":"center"});
 			return false;
 		}
+
+		pname = pname.trim();
+		plink = plink.trim();
+		pdesc = pdesc.trim();
+		pstat = (ptype == "tool") ? "" : pstat;
+
+		var info = {
+			"type": "POST",
+			"path": "php/indexlib.php",
+			"data": {
+				"method": "saveItemInfo",
+				"libcheck":	true,
+				"itemid": id,
+				"pname":  pname,
+				"ptype":  ptype,
+				"plink":  plink,
+				"pstat":  pstat,
+				"pdesc":  pdesc
+			},
+			"func": updateItemResponse
+		};
+
+	FUSION.lib.ajaxCall(info);
 	}
 	catch(err){
 		FUSION.lib.alert("Error saving item - please refresh the page and try again");

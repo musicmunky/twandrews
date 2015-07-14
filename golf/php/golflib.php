@@ -304,7 +304,7 @@
 				else
 				{
 					$status = "success";
-					$message = "User added successfully!";
+					$message = "User updated successfully!";
 				}
 				$update->close();
 			}
