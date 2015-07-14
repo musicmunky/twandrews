@@ -310,11 +310,11 @@ a {
 }
 
 .hour:hover {
-	margin-top:-3px;
+	margin-top:-1px;
 }
 
 .hourofday:hover {
-	box-shadow: 0 0 5px 5px #CCC;
+	box-shadow: 0 2px 3px 0px #CCC;
 }
 
 .searchbox {

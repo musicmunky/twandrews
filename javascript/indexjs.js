@@ -85,6 +85,26 @@ function updateItem()
 function updateItemResponse(h)
 {
 	var hash = h || {};
+	try {
+		var iid = hash['pageid'];
+		var cn = FUSION.get.node("link_" + iid).childNodes;
+		for(var i = 0; i < cn.length; i++)
+		{
+			var nn = cn[i].nodeName;
+			if(nn == "#text")
+			{
+				cn[i].nodeValue = hash['pname'];
+				break;
+			}
+		}
+		FUSION.get.node("link_" + iid).href = hash['plink'];
+		hideNewItem();
+		return false;
+	}
+	catch(err){
+		FUSION.lib.alert("Error during item update: " + err.toString());
+		return false;
+	}
 }
 
 
@@ -92,14 +112,15 @@ function getItemInfo(i)
 {
 	clearItemForm();
 	var id = i || "";
+	var tmp = id.split("_");
+	var iid = tmp[1];
+
 	if(FUSION.lib.isBlank(id))
 	{
 		FUSION.lib.alert("Invalid ID - please refresh the page and try again");
 		return false;
 	}
 
-	var tmp = id.split("_");
-	var iid = tmp[1];
 	var info = {
 		"type": "POST",
 		"path": "php/indexlib.php",

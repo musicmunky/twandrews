@@ -106,17 +106,18 @@
 	{
 		global $webaddress;
 
-		//$P = escapeArray($P, $m);
 		$status = "";
 		$message = "";
 		$content = array();
+		$n_or_e = "new";
+		$prevtyp = $P['ptype'];
 
 		try {
 			$m->select_db("andrewsdb");
 
 			$itmid = $P['itemid'];
-			$check = $m->prepare("SELECT * FROM projectpages WHERE PAGENAME = ? LIMIT 1;");
-			$check->bind_param("s", $P['pname']);
+			$check = $m->prepare("SELECT * FROM projectpages WHERE PAGENAME = ? AND ID != ? LIMIT 1;");
+			$check->bind_param("si", $P['pname'], $itmid);
 			$check->execute();
 			$reslt = $check->get_result();
 			$check->close();
@@ -157,6 +158,19 @@
 				else
 				{
 					//update existing item
+					$n_or_e = "existing";
+
+					$oldtype = $m->prepare("SELECT PAGETYPE FROM projectpages WHERE ID = ? LIMIT 1;");
+					$oldtype->bind_param("i", $itmid);
+					$oldtype->execute();
+					$result = $oldtype->get_result();
+					$rfa	= $result->fetch_assoc();
+					if($rfa['PAGETYPE'] != $prevtyp)
+					{
+						$prevtyp = $rfa['PAGETYPE'];
+					}
+					$oldtype->close();
+
 					$update = $m->prepare("UPDATE projectpages SET PAGENAME = ?, PAGELINK = ?, PAGETYPE = ?, PAGESTAT = ?, PAGEDESC = ?
 											WHERE ID = ?");
 					$update->bind_param("sssssi",
@@ -186,6 +200,8 @@
 				$content['ptype']  = $P['ptype'];
 				$content['pstat']  = $P['pstat'];
 				$content['pdesc']  = $P['pdesc'];
+				$content['prvtp']  = $prevtyp;
+				$content['n_or_e'] = $n_or_e;
 			}
 		}
 		catch(Exception $e)

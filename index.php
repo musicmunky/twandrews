@@ -50,10 +50,8 @@
 				}
 
 				$projshtml .= "<li class='linav' title='" . $ttltxt . "'>
-								<a href='" . $row['PAGELINK'] . "' target='_blank'>
-									<span class='" . $csscls . "' aria-hidden='true'></span>
-									" . $row['PAGENAME'] . "
-								</a>
+								<a id='link_" . $row['ID'] . "' href='" . $row['PAGELINK'] . "' target='_blank'>" .
+									"<span id='gispan_" . $row['ID'] . "' class='" . $csscls . "' aria-hidden='true'></span>" . $row['PAGENAME'] . "</a>
 								<a title=\"Edit " . $row['PAGENAME'] . "\"
 								   class='editlnk glyphicon glyphicon-pencil' id='editlnk_" . $row['ID'] . "'></a>
 								<a title=\"Remove " . $row['PAGENAME'] . "\"
@@ -69,9 +67,8 @@
 		{
 			while($row = $tools->fetch_assoc())
 			{
-				$toolshtml .= "<li class='linav'><a href='" . $row['PAGELINK'] . "' target='_blank'>
-								" . $row['PAGENAME'] . "
-								</a>
+				$toolshtml .= "<li class='linav'>
+								<a id='link_" . $row['ID'] . "' href='" . $row['PAGELINK'] . "' target='_blank'>" . $row['PAGENAME'] . "</a>
 								<a title=\"Edit " . $row['PAGENAME'] . "\"
 								   class='editlnk glyphicon glyphicon-pencil' id='editlnk_" . $row['ID'] . "'></a>
 								<a title=\"Remove " . $row['PAGENAME'] . "\"
@@ -106,7 +103,7 @@
 							Please choose a project:
 						</div>
 						<div class="lidiv">
-							<ul class="ulnav"><?php echo $projshtml; ?></ul>
+							<ul id="projectul" class="ulnav"><?php echo $projshtml; ?></ul>
 						</div>
 					</div>
 					<div id="tooldiv" class="pagecolumn">
@@ -114,7 +111,7 @@
 							Please select a tool:
 						</div>
 						<div class="lidiv">
-							<ul class="ulnav"><?php echo $toolshtml; ?></ul>
+							<ul id="toolul" class="ulnav"><?php echo $toolshtml; ?></ul>
 						</div>
 					</div>
 				</div>
@@ -129,8 +126,7 @@
 		<div id="new_item_overlay" class="fl_alert_overlay">
 			<div id="new_item_wrapper" class="fl_alert_wrapper" style="width:350px;height:500px;padding:15px;top:200px">
 				<div id="new_item_header" class="alert_content alert_dragable">
-					<span id="new_item_title"
-						  style="display:block;float:left;font-weight:bold;font-size:18px;height:40px;line-height:37px;margin-left:5px;color:#FFF;">
+					<span id="new_item_title" class="fl_alert_modal_title">
 						Add New Item
 					</span>
 					<button onclick="hideNewItem()" style="background-color:#EEE;" class="alert_closebtn">

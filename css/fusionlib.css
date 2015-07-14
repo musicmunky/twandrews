@@ -23,6 +23,17 @@ button, input, optgroup, select, textarea {
 	-moz-box-sizing:border-box;
 }
 
+.fl_alert_modal_title {
+	display:block;
+	float:left;
+	font-weight:bold;
+	font-size:18px;
+	height:40px;
+	line-height:37px;
+	margin-left:5px;
+	color:#FFF;
+}
+
 .fl_alert_message_div {
 	cursor:default;
 	width:100%;
