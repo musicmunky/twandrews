@@ -1,13 +1,17 @@
 jQuery(document).ready(function() {
-	jQuery('.remlnk').click(function(){
+
+	jQuery('.ulnav').on('click', 'a.remlnk', function (event) {
 		removeItem(this.id);
 	});
-	jQuery('.editlnk').click(function(){
+
+	jQuery('.ulnav').on('click', "a.editlnk", function (event) {
 		getItemInfo(this.id);
 	});
+
 	jQuery("#addlnk").click(function(){
 		showAddItem({"pageid":0});
 	});
+
 });
 
 
@@ -87,17 +91,88 @@ function updateItemResponse(h)
 	var hash = h || {};
 	try {
 		var iid = hash['pageid'];
-		var cn = FUSION.get.node("link_" + iid).childNodes;
-		for(var i = 0; i < cn.length; i++)
+		var ul = FUSION.get.node(hash['ptype'] + "ul");
+		if(hash['n_or_e'] == "new")
 		{
-			var nn = cn[i].nodeName;
-			if(nn == "#text")
+			//add new li to correct ul
+			var newli = FUSION.lib.createHtmlElement({"type":"li","attributes":{"id":"li_" + iid, "class":"linav"}});
+			var plink = FUSION.lib.createHtmlElement({"type":"a","attributes":{
+																	"id":"link_" + iid,
+																	"target":"_blank",
+																	"href":hash['plink']},
+													  	"text":hash['pname']});
+			var elink = FUSION.lib.createHtmlElement({"type":"a","attributes":{
+													 				"title":"Edit " + hash['pname'],
+													 				"class":"editlnk glyphicon glyphicon-pencil",
+													 				"id":"editlnk_" + iid}});
+			var rlink = FUSION.lib.createHtmlElement({"type":"a","attributes":{
+													 				"title":"Remove " + hash['pname'],
+													 				"class":"remlnk glyphicon glyphicon-remove",
+													 				"id":"remlnk_" + iid}});
+			if(hash['ptype'] == "project")
 			{
-				cn[i].nodeValue = hash['pname'];
-				break;
+				var cls = (hash['pstat'] == "development") ?
+								"glyphicon glyphicon-exclamation-sign navspan nswarning" :
+									"glyphicon glyphicon-ok-sign navspan nsokay";
+				var ttl = (hash['pstat'] == "development") ? "Currently under development" : "Primary development complete";
+				var gispan = FUSION.lib.createHtmlElement({"type":"span",
+														   "attributes":{
+															   "id":"gispan_" + iid,
+															   "aria-hidden":"true",
+															   "class":cls}});
+				newli.setAttribute("title", ttl);
+				plink.insertBefore(gispan, plink.firstChild);
+			}
+			newli.appendChild(plink);
+			newli.appendChild(elink);
+			newli.appendChild(rlink);
+			ul.appendChild(newli);
+		}
+		else
+		{
+			if(hash['ptype'] != hash['prvtp'])
+			{
+				//move li from old to new ul
+				var li = FUSION.get.node("li_" + iid);
+				var licopy = li;
+				if(hash['ptype'] == "tool")
+				{
+					licopy.removeChild(FUSION.get.node("gispan_" + iid));
+					licopy.setAttribute("title", "");
+				}
+				else
+				{
+					var cls = (hash['pstat'] == "development") ?
+								"glyphicon glyphicon-exclamation-sign navspan nswarning" :
+									"glyphicon glyphicon-ok-sign navspan nsokay";
+					var ttl = (hash['pstat'] == "development") ? "Currently under development" : "Primary development complete";
+					var gispan = FUSION.lib.createHtmlElement({"type":"span",
+															   "attributes":{
+																   "id":"gispan_" + iid,
+																   "aria-hidden":"true",
+																   "class":cls}});
+					licopy.insertBefore(gispan, FUSION.get.node("link_" + iid).firstChild);
+					licopy.setAttribute("title", ttl);
+				}
+				FUSION.remove.node(li);
+				ul.appendChild(licopy);
+			}
+			else
+			{
+				//update current li with new info (name and link are only display elements to update)
+				var cn = FUSION.get.node("link_" + iid).childNodes;
+				for(var i = 0; i < cn.length; i++)
+				{
+					var nn = cn[i].nodeName;
+					if(nn == "#text")
+					{
+						cn[i].nodeValue = hash['pname'];
+						break;
+					}
+				}
+				FUSION.get.node("link_" + iid).href = hash['plink'];
 			}
 		}
-		FUSION.get.node("link_" + iid).href = hash['plink'];
 		hideNewItem();
 		return false;
 	}

@@ -29,7 +29,8 @@
 	{
 		$mysqli->select_db("andrewsdb");
 
-		$projshtml	= "";
+		$compshtml  = "";
+		$dvlpmhtml  = "";
 		$toolshtml	= "";
 		$projs		= $mysqli->query("SELECT * FROM projectpages
 									  WHERE PAGETYPE='project'
@@ -38,36 +39,42 @@
 		{
 			while($row = $projs->fetch_assoc())
 			{
-				if($row['PAGESTAT'] == "development" && $row['PAGETYPE'] == "project")
+				if($row['PAGESTAT'] == "development")
 				{
-					$ttltxt = "Currently under development";
-					$csscls = "glyphicon glyphicon-exclamation-sign navspan nswarning";
-				}
-				else
-				{
-					$ttltxt = "Primary development complete";
-					$csscls = "glyphicon glyphicon-ok-sign navspan nsokay";
-				}
-
-				$projshtml .= "<li class='linav' title='" . $ttltxt . "'>
+					$dvlpmhtml .= "<li id='li_" . $row['ID'] . "' class='linav' title='Currently under development'>
 								<a id='link_" . $row['ID'] . "' href='" . $row['PAGELINK'] . "' target='_blank'>" .
-									"<span id='gispan_" . $row['ID'] . "' class='" . $csscls . "' aria-hidden='true'></span>" . $row['PAGENAME'] . "</a>
+									"<span id='gispan_" . $row['ID'] . "' class='glyphicon glyphicon-exclamation-sign navspan nswarning' aria-hidden='true'></span>" . $row['PAGENAME'] . "</a>
 								<a title=\"Edit " . $row['PAGENAME'] . "\"
 								   class='editlnk glyphicon glyphicon-pencil' id='editlnk_" . $row['ID'] . "'></a>
 								<a title=\"Remove " . $row['PAGENAME'] . "\"
 								   class='remlnk glyphicon glyphicon-remove' id='remlnk_" . $row['ID'] . "'></a>
 							</li>";
+				}
+				else
+				{
+					$compshtml .= "<li id='li_" . $row['ID'] . "' class='linav' title='Primary development complete'>
+								<a id='link_" . $row['ID'] . "' href='" . $row['PAGELINK'] . "' target='_blank'>" .
+									"<span id='gispan_" . $row['ID'] . "' class='glyphicon glyphicon-ok-sign navspan nsokay' aria-hidden='true'>" .
+									"</span>" . $row['PAGENAME'] . "</a>
+								<a title=\"Edit " . $row['PAGENAME'] . "\"
+								   class='editlnk glyphicon glyphicon-pencil' id='editlnk_" . $row['ID'] . "'></a>
+								<a title=\"Remove " . $row['PAGENAME'] . "\"
+								   class='remlnk glyphicon glyphicon-remove' id='remlnk_" . $row['ID'] . "'></a>
+							</li>";
+				}
+
+
 			}
 		}
 
-		$tools		= $mysqli->query("SELECT * FROM projectpages
-									  WHERE PAGETYPE='tool'
-									  ORDER BY ID ASC;");
+		$tools	= $mysqli->query("SELECT * FROM projectpages
+								  WHERE PAGETYPE='tool'
+								  ORDER BY ID ASC;");
 		if($tools)
 		{
 			while($row = $tools->fetch_assoc())
 			{
-				$toolshtml .= "<li class='linav'>
+				$toolshtml .= "<li id='li_" . $row['ID'] . "' class='linav'>
 								<a id='link_" . $row['ID'] . "' href='" . $row['PAGELINK'] . "' target='_blank'>" . $row['PAGENAME'] . "</a>
 								<a title=\"Edit " . $row['PAGENAME'] . "\"
 								   class='editlnk glyphicon glyphicon-pencil' id='editlnk_" . $row['ID'] . "'></a>
@@ -103,7 +110,8 @@
 							Please choose a project:
 						</div>
 						<div class="lidiv">
-							<ul id="projectul" class="ulnav"><?php echo $projshtml; ?></ul>
+							<ul id="completeul" class="ulnav" style="margin-bottom:0px;"><?php echo $compshtml; ?></ul>
+							<ul id="developmentul" class="ulnav" style="margin-top:0px;"><?php echo $dvlpmhtml; ?></ul>
 						</div>
 					</div>
 					<div id="tooldiv" class="pagecolumn">
