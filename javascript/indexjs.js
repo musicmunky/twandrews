@@ -91,7 +91,7 @@ function updateItemResponse(h)
 	var hash = h || {};
 	try {
 		var iid = hash['pageid'];
-		var ul = FUSION.get.node(hash['ptype'] + "ul");
+		var ul  = {};
 		if(hash['n_or_e'] == "new")
 		{
 			//add new li to correct ul
@@ -111,10 +111,21 @@ function updateItemResponse(h)
 													 				"id":"remlnk_" + iid}});
 			if(hash['ptype'] == "project")
 			{
-				var cls = (hash['pstat'] == "development") ?
-								"glyphicon glyphicon-exclamation-sign navspan nswarning" :
-									"glyphicon glyphicon-ok-sign navspan nsokay";
-				var ttl = (hash['pstat'] == "development") ? "Currently under development" : "Primary development complete";
+				var cls = "";
+				var ttl = "";
+				if(hash['pstat'] == "development")
+				{
+					ul  = FUSION.get.node("developmentul");
+					cls = "glyphicon glyphicon-exclamation-sign navspan nswarning";
+					ttl = "Currently under development";
+				}
+				else
+				{
+					ul  = FUSION.get.node("completeul");
+					cls = "glyphicon glyphicon-ok-sign navspan nsokay";
+					ttl = "Primary development complete";
+				}
+
 				var gispan = FUSION.lib.createHtmlElement({"type":"span",
 														   "attributes":{
 															   "id":"gispan_" + iid,
@@ -123,6 +134,11 @@ function updateItemResponse(h)
 				newli.setAttribute("title", ttl);
 				plink.insertBefore(gispan, plink.firstChild);
 			}
+			else
+			{
+				ul = FUSION.get.node("toolul");
+			}
+
 			newli.appendChild(plink);
 			newli.appendChild(elink);
 			newli.appendChild(rlink);
@@ -142,15 +158,27 @@ function updateItemResponse(h)
 				}
 				else
 				{
-					var cls = (hash['pstat'] == "development") ?
-								"glyphicon glyphicon-exclamation-sign navspan nswarning" :
-									"glyphicon glyphicon-ok-sign navspan nsokay";
-					var ttl = (hash['pstat'] == "development") ? "Currently under development" : "Primary development complete";
+					var cls = "";
+					var ttl = "";
+					if(hash['pstat'] == "development")
+					{
+						ul  = FUSION.get.node("developmentul");
+						cls = "glyphicon glyphicon-exclamation-sign navspan nswarning";
+						ttl = "Currently under development";
+					}
+					else
+					{
+						ul  = FUSION.get.node("completeul");
+						cls = "glyphicon glyphicon-ok-sign navspan nsokay";
+						ttl = "Primary development complete";
+					}
+
 					var gispan = FUSION.lib.createHtmlElement({"type":"span",
 															   "attributes":{
 																   "id":"gispan_" + iid,
 																   "aria-hidden":"true",
 																   "class":cls}});
+
 					licopy.insertBefore(gispan, FUSION.get.node("link_" + iid).firstChild);
 					licopy.setAttribute("title", ttl);
 				}
