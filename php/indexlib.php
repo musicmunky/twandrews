@@ -35,6 +35,8 @@
 				break;
 			case 'saveItemInfo':	saveItemInfo($REQ, $mysqli);
 				break;
+			case 'removeItem':		removeItem($REQ, $mysqli);
+				break;
 			default: noFunction($REQ['method']);
 				break;
 		}
@@ -50,6 +52,47 @@
 				"message"	=> "User attempted to call function: " . $func . " which does not exist",
 				"content"	=> "You seem to have encountered an error - Contact the web admin if this keeps happening!"
 		);
+		echo json_encode($result);
+	}
+
+
+	function removeItem($P, $m)
+	{
+		$P = escapeArray($P, $m);
+
+		$status  = "";
+		$message = "";
+		$content = array();
+
+		try {
+			$m->select_db("andrewsdb");
+			$item = $m->prepare("DELETE FROM projectpages WHERE ID = ?;");
+			$item->bind_param("i", $P['itemid']);
+			$item->execute();
+
+			if($item->errno != 0)
+			{
+				$status = "failure";
+				$message = "Error attempting to remove item:<br>" . $item->error . "<br>Error code: " . $item->errno;
+			}
+			else
+			{
+				$content['pageid']	 = $P['itemid'];
+				$status = "success";
+			}
+			$item->close();
+		}
+		catch(Exception $e){
+			$status  = "ERROR: " . $e->getMessage();
+			$message = "ERROR: " . $e->getMessage();
+		}
+
+		$result = array(
+				"status"  => $status,
+				"message" => $message,
+				"content" => $content
+		);
+
 		echo json_encode($result);
 	}
 
@@ -170,7 +213,7 @@
 					{
 						$prevtyp = $rfa['PAGETYPE'];
 					}
-					if($rfw['PAGESTAT'] != $pstat)// && $rfw['PAGESTAT'] != "" && $pstat != "")
+					if($rfa['PAGESTAT'] != $pstat)// && $rfw['PAGESTAT'] != "" && $pstat != "")
 					{
 						$prevstt = $rfa['PAGESTAT'];
 //						$prevstt = "FOOBAR";

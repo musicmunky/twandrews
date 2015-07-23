@@ -62,8 +62,6 @@
 								   class='remlnk glyphicon glyphicon-remove' id='remlnk_" . $row['ID'] . "'></a>
 							</li>";
 				}
-
-
 			}
 		}
 

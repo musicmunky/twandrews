@@ -312,12 +312,39 @@ function hideNewItem()
 
 function removeItem(i)
 {
-	if(FUSION.lib.isBlank(i)){
+	if(FUSION.lib.isBlank(i))
+	{
 		FUSION.lib.alert("Invalid ID - please refresh the page and try again");
+		return false;
 	}
-	else{
-		alert("I WAS CALLED");
+	else
+	{
+		var yn = confirm("Are you sure you would like to remove this item?");
+		if(yn)
+		{
+			var tmp = i.split("_");
+			var iid = tmp[1];
+
+			var info = {
+				"type": "POST",
+				"path": "php/indexlib.php",
+				"data": {
+					"method":	"removeItem",
+					"libcheck":	true,
+					"itemid":	iid
+				},
+				"func": removeItemResponse
+			};
+			FUSION.lib.ajaxCall(info);
+		}
 	}
+}
+
+
+function removeItemResponse(h)
+{
+	var hash = h || {};
+	FUSION.remove.node("li_" + hash['pageid']);
 }
 
 
