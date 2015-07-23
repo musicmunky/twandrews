@@ -1,3 +1,14 @@
+
+/**
+ *	FUSION javascipt library
+ *
+ *  This is a library of functions created by Tim Andrews and infrequently updated with new functionality.
+ *  It is essentially a set of wrapper functions for code/behaviors that I use most often and honestly
+ *  don't feel like writing over and over again.
+ *
+ */
+
+//create the FUSION object
 var FUSION = FUSION || {};
 
 var loadjq = window.jQuery ? true : false;
@@ -5,8 +16,11 @@ if(!loadjq){
 	console.log("NOTICE: jQuery library is not loaded");
 }
 
+
+//Getter methods
 FUSION.get = {
 
+	//function to return the "true" page height, not just the displayed window size
 	pageHeight: function() {
 		try {
 			var body = document.body;
@@ -19,6 +33,7 @@ FUSION.get = {
 		}
 	},
 
+	//returns the users browser and version number - will need to be updated when Windows 10 is pushed
 	browser: function() {
 		var br = {};
 		var ua = navigator.userAgent, tem,
@@ -46,6 +61,8 @@ FUSION.get = {
 		return br;
 	},
 
+	//returns a specified DOM node by ID
+	//if no element is found it returns a null value
 	node: function(el) {
 		try {
 			var elm = (typeof el === "string") ? document.getElementById(el) : el;
@@ -57,6 +74,8 @@ FUSION.get = {
 		}
 	},
 
+	//returns an array of DOM Elements by name as an array
+	//if no elements are found it returns an empty array
 	byName: function(el) {
 		try {
 			var elm = (typeof el === "string") ? document.getElementsByName(el) : [];
@@ -68,6 +87,8 @@ FUSION.get = {
 		}
 	},
 
+	//returns an array of elements by tag name (div, p, tr, etc)
+	//if no elements are found it returns an empty array
 	byTagName: function(el) {
 		try {
 			var elm = (typeof el === "string") ? document.getElementsByTagName(el) : [];
@@ -79,6 +100,7 @@ FUSION.get = {
 		}
 	},
 
+	//returns the X coordinate of the current mouse position
 	mouseX: function(e) {
 		if (e.pageX) {
 			return e.pageX;
@@ -91,6 +113,7 @@ FUSION.get = {
 		return null;
 	},
 
+	//returns the Y coordinate of the current mouse position
 	mouseY: function(e) {
 		if (e.pageY) {
 			return e.pageY;
@@ -103,6 +126,9 @@ FUSION.get = {
 		return null;
 	},
 
+	//returns the size of an object - this is more geared towards JSON or
+	//Javascript objects rather than DOM objects, simply because DOM objects
+	//don't really have a "size" per se
 	objSize: function(obj) {
 		try {
 			var hasNonLeafNodes = false;
@@ -120,7 +146,7 @@ FUSION.get = {
 					childCount++;
 				}
 			}
-			if(hasNonLeafNodes)
+			/*if(hasNonLeafNodes)
 			{
 				obj.num_children = childCount;
 				return childCount;
@@ -128,22 +154,25 @@ FUSION.get = {
 			else
 			{
 				return childCount;
-			}
+			}*/
+			return childCount;
 		}
 		catch(err) {
-			obj.is_error = true;
-			obj.error_message = err;
-			console.log("ERROR: " + err);
+			//obj.is_error = true;
+			//obj.error_message = err;
+			FUSION.error.logError(err);
 			return 0;
 		}
 	},
 
+	//returns the value of a URL parameter by name
 	urlParamByName: function(name) {
 		return decodeURI(
 			(RexExp(name + "=" + "(.+?)(&|$)").exec(location.search)||[,null])[1]
 		);
 	},
 
+	//returns all of the parameters in a url in a JSON object (hash table)
 	urlParams: function() {
 		var phash = {};
 		try {
@@ -166,8 +195,8 @@ FUSION.get = {
 		}
 	},
 
+	//get the currently selected text in a select box / dropdown list
 	selectedText: function(el) {
-		//get the currently selected text in a select box / dropdown list
 		try {
 			var sel = FUSION.get.node(el);
 			var idx = sel.selectedIndex;
@@ -180,8 +209,8 @@ FUSION.get = {
 		}
 	},
 
+	//get the currently selected text in a select box / dropdown list
 	selectedValue: function(el) {
-		//get the currently selected text in a select box / dropdown list
 		try {
 			var sel = FUSION.get.node(el);
 			var val = (sel.options[sel.selectedIndex]) ? sel.options[sel.selectedIndex].value : "";
@@ -193,6 +222,9 @@ FUSION.get = {
 		}
 	},
 
+	//returns an array of elements that have a specified attribute
+	//admittedly this function is expensive, so is more of an idea to build on
+	//than usable code
 	elementsByAttr: function(attr) {
 		var matchingElements = [];
 		var allElements = FUSION.get.byTagName('*');
@@ -211,19 +243,19 @@ FUSION.get = {
 //BEGIN LIBRARY SETTER METHODS
 FUSION.set = {
 
+	//Set the mouse cursor to the "waiting" icon
 	overlayMouseWait: function() {
-		//Set the mouse cursor to the "waiting" icon
 		jQuery("body").addClass("wait");
 	},
 
+	//Set the mouse cursor back to the "default" icon
 	overlayMouseNormal: function() {
-		//Set the mouse cursor back to the "default" icon
 		jQuery("body").removeClass("wait");
 	},
 
+	//set the selected text of a select box / dropdown list
+	//return true if a value is found, otherwise return false
 	selectedText: function(el,t) {
-		//set the selected text of a select box / dropdown list
-		//return true if a value is found, otherwise return false
 		try {
 			var sel = FUSION.get.node(el);
 			var res = false;
@@ -250,6 +282,9 @@ FUSION.set = {
 //BEGIN LIBRARY REMOVE METHODS
 FUSION.remove = {
 
+	//remove a table row by id
+	//originally written because of a bug in the DataTables jQuery plugin,
+	//kept for sentimental reasons
 	rowById: function(id) {
 		try {
 			var row = FUSION.get.node(id);
@@ -263,6 +298,8 @@ FUSION.remove = {
 		}
 	},
 
+	//as above, written due to a bug in the DataTables plugin,
+	//not really used anymore but juuuuuust in case...keeping it.
 	dTRowById: function(t, r) {
 		try {
 			var remrow = FUSION.get.node(r);
@@ -280,6 +317,7 @@ FUSION.remove = {
 		}
 	},
 
+	//remove a node either by value (passing the actual DOM object) or by ID (as a string)
 	node: function(el) {
 		try {
 			var elm = FUSION.get.node(el);
@@ -298,6 +336,8 @@ FUSION.remove = {
 //BEGIN LIBRARY ERROR METHODS
 FUSION.error = {
 
+	//this function needs work...still not happy with the how it's built or functions.
+	//may end up removing.
 	showError: function(e, m) {
 		var emsg = "An error occurred during this operation:\n'" + e + "'\nPlease try again, or contact your administrator";
 		if(typeof m !== "undefined")
@@ -307,6 +347,9 @@ FUSION.error = {
 		alert(emsg);
 	},
 
+	//logs javascript errors to the console.  This *attempts* to use the functionality
+	//available in browsers like Chrome and Firefox, but should work as a basic console logger
+	//in IE
 	logError: function(e, m) {
 		m = m || "";
 		var usrmsg = !FUSION.lib.isBlank(m) ? "DEVELOPER MESSAGE: " + m + "\n" : "";
@@ -326,6 +369,8 @@ FUSION.error = {
 		console.log(usrmsg + errnme + errmsg + functn + lnenmb);
 	},
 
+	//need to finalize the CSS and structure of the html being written here...it's not very pretty
+	//at the moment, but does allow for some interesting functionality
 	showErrorDialog: function(h)
 	{
 		var hash = h || {};
@@ -363,6 +408,7 @@ FUSION.error = {
 //BEGIN LIBRARY GENERIC METHODS
 FUSION.lib = {
 
+	//focus the cursor on a specific DOM element, usually an input field or a select box
 	focus: function(el) {
 		try {
 			//need to declare f here to avoid null reference errors
@@ -376,6 +422,7 @@ FUSION.lib = {
 		}
 	},
 
+	//convert a string to Title Case
 	titleCase: function(str) {
 		try {
 			return str.replace(/\w\S*/g, function(txt){ return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase(); });
@@ -386,6 +433,9 @@ FUSION.lib = {
 		}
 	},
 
+	//allows an html element to be clicked/dragged around the page
+	//needs to parameters: the "cel" to click and drag, and the containing
+	//div (or other element) of that cel.
 	dragable: function(cel, del) {
 		//cel = div to click and drag
 		//del = containing div
@@ -451,6 +501,10 @@ FUSION.lib = {
 		/*
 		 * TODO: Extend for "levels", ie, Message, Info, Warning, Error, etc
 		 */
+		//great little function for displaying alerts that are a bit more pretty and flexible
+		//than the standard browser alert.
+		//you can pass in either just a message string or a full JSON object with various parameters
+		//set to customize the look and feel of the alert
 		var obj = o || {};
 		var msg = (typeof obj === "string") ? obj : obj['message'];
 		var hgt = obj['height'] 		|| 120;
@@ -505,6 +559,14 @@ FUSION.lib = {
 		FUSION.lib.dragable(idid, idid);
 	},
 
+	//this is more a wrapper function for my own personal AJAX calls
+	//it assumes a basic return structure from the server - a hash containing the following entries:
+	//	 - a status
+	//	 - a message of some sort (can be blank)
+	//	 - a content object, containing the information retrieved from the server (can be empty)
+	//it requires two functions:
+	//	 - the calling function
+	//	 - the response function
 	ajaxCall: function(ajaxobj) {
 		if(!ajaxobj['type'] || !ajaxobj['data'] || !ajaxobj['path'])
 		{
@@ -591,16 +653,22 @@ FUSION.lib = {
 		}
 	},
 
+	//returns a "random" integer between the min and max specified
+	//may update to make the min/max optional
 	getRandomInt: function(min, max) {
  		return Math.floor(Math.random() * (max - min)) + min;
 	},
 
+	//pads as many zeroes as needed, or other strings, to number:
+	//turns 4 into 004 if you call FUSION.lib.padZero(4, 3)
 	padZero: function(n, width, z) {
 		z = z || '0';
 		n = n + '';
 		return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
 	},
 
+	//returns the days in the month of a given year
+	//helpful for leap years and such, but overall not used often
 	daysInMonth: function(month,year) {
 		try{
     		return new Date(year, month, 0).getDate();
@@ -611,6 +679,9 @@ FUSION.lib = {
 		}
 	},
 
+	//quick tool to verify a variable has a value
+	//returns true if a variable is blank, false otherwise
+	//it accounts for white space, so "   " would be considered a blank string
 	isBlank: function(t) {
 		try {
 			var ts = t.toString();
@@ -622,6 +693,7 @@ FUSION.lib = {
 		}
 	},
 
+	//returns the max value in an array
 	getMax: function(a) {
 		try {
 			return Math.max.apply(Math, a);
@@ -632,6 +704,7 @@ FUSION.lib = {
 		}
 	},
 
+	//returns the min value in an array
 	getMin: function(a) {
 		try {
 			return Math.min.apply(Math, a);
@@ -642,12 +715,29 @@ FUSION.lib = {
 		}
 	},
 
+	//check if a year is a leap year or not
 	isLeapYear: function(year) {
 		var y = parseInt(year);
 		return ((y % 4 == 0) && (y % 100 != 0)) || (y % 400 == 0);
 	},
 
 	//create an HTMLElement with parameters passed in by hash
+	/*
+		As an example of its use:
+
+		var link = FUSION.lib.createHtmlElement({
+								"type":"a",
+								"attributes":{
+									"id":"link-id",
+									"target":"_blank",
+									"href":"http://www.google.com"},
+								"text":"Some Link Text"});
+
+	*/
+	//can set a variety of parameters such as onclick, onkeyup, style, class, id...almost anything
+	//you might ask why not just use the jQuery "html()" function?
+	//well...because I can't always assume the presence of jQuery and because (for me at least),
+	//it's often easier to read a hash object than a string of html
 	createHtmlElement: function(hash)
 	{
 		try {
@@ -728,6 +818,8 @@ FUSION.lib = {
 		}
 	},
 
+	//may end up removing this - it assumes too much regarding server configuration
+	//it was a good idea, but will probably be scrapped
 	sendErrorEmail: function(id) {
 		var uid = id;
 		var msg = FUSION.get.node("errormessage").value;
@@ -751,6 +843,7 @@ FUSION.lib = {
 		th.value = th.value.replace(/[^\d]+/,"");
 	},
 
+	//check if the given object is a DOM node
 	isNode: function(o) {
 		return (
 			typeof Node === "object" ? o instanceof Node :
@@ -758,6 +851,7 @@ FUSION.lib = {
 		);
 	},
 
+	//check if the given object is an HTML element
 	isElement: function(o) {
 		return (
 			typeof HTMLElement === "object" ? o instanceof HTMLElement :
@@ -783,16 +877,16 @@ FUSION.lib = {
 	*/
 	vardump: function(var_value, var_name)
 	{
-		// Check for a third argument and if one exists, capture it's value, else
-		// default to TRUE.  When the third argument is true, this function
-		// publishes the result to the document body, else, it outputs a string.
-		// The third argument is intend for use by recursive calls within this
-		// function, but there is no reason why it couldn't be used in other ways.
+		//Check for a third argument and if one exists, capture it's value, else
+		//default to TRUE.  When the third argument is true, this function
+		//publishes the result to the document body, else, it outputs a string.
+		//The third argument is intend for use by recursive calls within this
+		//function, but there is no reason why it couldn't be used in other ways.
 		var is_publish_to_body = typeof arguments[2] === 'undefined' ? true:arguments[2];
 
-		// Check for a fourth argument and if one exists, add three to it and
-		// use it to indent the out block by that many characters.  This argument is
-		// not intended to be used by any other than the recursive call.
+		//Check for a fourth argument and if one exists, add three to it and
+		//use it to indent the out block by that many characters.  This argument is
+		//not intended to be used by any other than the recursive call.
 		var indent_by = typeof arguments[3] === 'undefined' ? 0:arguments[3]+3;
 
 		var do_boolean = function (v)
@@ -858,9 +952,9 @@ FUSION.lib = {
 			}
 		};
 
-		// Makes it easier, later on, to switch behaviors based on existance or
-		// absence of a var_name parameter.  By converting 'undefined' to 'empty 
-		// string', the length greater than zero test can be applied in all cases.
+		//Makes it easier, later on, to switch behaviors based on existance or
+		//absence of a var_name parameter.  By converting 'undefined' to 'empty
+		//string', the length greater than zero test can be applied in all cases.
 		var_name = typeof var_name === 'undefined' ? '':var_name;
 		var out = '';
 		var v_name = '';
@@ -975,6 +1069,7 @@ FUSION.lib = {
 
 	},
 
+	//a lovely function that enables you to search through the DOM and return elements with a regex!
 	findByRegex: function(rgx) {
 		jQuery.expr[':'].regex = function(elem, index, match) {
 			var matchParams = match[3].split(','),
@@ -991,6 +1086,8 @@ FUSION.lib = {
 		return jQuery(rgx);
 	},
 
+	//an interesting thing I wrote a while ago to sort complex nested arrays/objects...not super useful
+	//now, but keeping it just in case I run into such objects again
 	sort_by: function(field, reverse, primer) {
 		var key = function (x) {return primer ? primer(x[field]) : x[field]};
 		return function (a,b)
