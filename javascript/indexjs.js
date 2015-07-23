@@ -95,95 +95,19 @@ function updateItemResponse(h)
 		if(hash['n_or_e'] == "new")
 		{
 			//add new li to correct ul
-			var newli = FUSION.lib.createHtmlElement({"type":"li","attributes":{"id":"li_" + iid, "class":"linav"}});
-			var plink = FUSION.lib.createHtmlElement({"type":"a","attributes":{
-																	"id":"link_" + iid,
-																	"target":"_blank",
-																	"href":hash['plink']},
-													  	"text":hash['pname']});
-			var elink = FUSION.lib.createHtmlElement({"type":"a","attributes":{
-													 				"title":"Edit " + hash['pname'],
-													 				"class":"editlnk glyphicon glyphicon-pencil",
-													 				"id":"editlnk_" + iid}});
-			var rlink = FUSION.lib.createHtmlElement({"type":"a","attributes":{
-													 				"title":"Remove " + hash['pname'],
-													 				"class":"remlnk glyphicon glyphicon-remove",
-													 				"id":"remlnk_" + iid}});
-			if(hash['ptype'] == "project")
-			{
-				var cls = "";
-				var ttl = "";
-				if(hash['pstat'] == "development")
-				{
-					ul  = FUSION.get.node("developmentul");
-					cls = "glyphicon glyphicon-exclamation-sign navspan nswarning";
-					ttl = "Currently under development";
-				}
-				else
-				{
-					ul  = FUSION.get.node("completeul");
-					cls = "glyphicon glyphicon-ok-sign navspan nsokay";
-					ttl = "Primary development complete";
-				}
-
-				var gispan = FUSION.lib.createHtmlElement({"type":"span",
-														   "attributes":{
-															   "id":"gispan_" + iid,
-															   "aria-hidden":"true",
-															   "class":cls}});
-				newli.setAttribute("title", ttl);
-				plink.insertBefore(gispan, plink.firstChild);
-			}
-			else
-			{
-				ul = FUSION.get.node("toolul");
-			}
-
-			newli.appendChild(plink);
-			newli.appendChild(elink);
-			newli.appendChild(rlink);
+			var newli = createLi(hash);
+			ul = (hash['ptype'] == "project") ? FUSION.get.node(hash['pstat'] + "ul") : FUSION.get.node("toolul");
 			ul.appendChild(newli);
 		}
 		else
 		{
-			if(hash['ptype'] != hash['prvtp'])
+			if(hash['ptype'] != hash['prvtp'] || (hash['pstat'] != hash['prvst'] && !FUSION.lib.isBlank(hash['pstat']) && !FUSION.lib.isBlank(hash['prvst'])))
 			{
 				//move li from old to new ul
-				var li = FUSION.get.node("li_" + iid);
-				var licopy = li;
-				if(hash['ptype'] == "tool")
-				{
-					licopy.removeChild(FUSION.get.node("gispan_" + iid));
-					licopy.setAttribute("title", "");
-				}
-				else
-				{
-					var cls = "";
-					var ttl = "";
-					if(hash['pstat'] == "development")
-					{
-						ul  = FUSION.get.node("developmentul");
-						cls = "glyphicon glyphicon-exclamation-sign navspan nswarning";
-						ttl = "Currently under development";
-					}
-					else
-					{
-						ul  = FUSION.get.node("completeul");
-						cls = "glyphicon glyphicon-ok-sign navspan nsokay";
-						ttl = "Primary development complete";
-					}
-
-					var gispan = FUSION.lib.createHtmlElement({"type":"span",
-															   "attributes":{
-																   "id":"gispan_" + iid,
-																   "aria-hidden":"true",
-																   "class":cls}});
-
-					licopy.insertBefore(gispan, FUSION.get.node("link_" + iid).firstChild);
-					licopy.setAttribute("title", ttl);
-				}
-				FUSION.remove.node(li);
-				ul.appendChild(licopy);
+				FUSION.remove.node("li_" + iid);
+				var newli = createLi(hash);
+				ul = (hash['ptype'] == "project") ? FUSION.get.node(hash['pstat'] + "ul") : FUSION.get.node("toolul");
+				ul.appendChild(newli);
 			}
 			else
 			{
@@ -202,12 +126,115 @@ function updateItemResponse(h)
 			}
 		}
 		hideNewItem();
+
+		//sort the three ULs to get them in correct order (by ID)
+		sortUl("toolul");
+		sortUl("completeul");
+		sortUl("developmentul");
 		return false;
 	}
 	catch(err){
+		FUSION.error.logError(err);
 		FUSION.lib.alert("Error during item update: " + err.toString());
 		return false;
 	}
+}
+
+
+function sortUl(id)
+{
+	//send in the id of UL you would like sorted
+	//this case is fairly specific, requiring li elements with ids
+	//in the format "string_integer", such as "li_4"
+	if(FUSION.lib.isBlank(id))
+	{
+		FUSION.lib.alert("Can not sort list - does not exist");
+		return false;
+	}
+	var lst = FUSION.get.node(id);
+	var ary = [];
+	var chl = lst.children
+	var len = chl.length
+    for(var i = 0; i < len; i++)
+	{
+		ary[i] = chl[i]; //store the NodeList in an array
+	}
+
+    ary.sort(function(a, b) {
+		//need to split and parseInt because the sort function
+		//was placing ids like "li_10" above "li_7" because it compared 1 to 7, not 10 to 7
+		var atmp = a.id.split("_");
+		var btmp = b.id.split("_");
+		var ai = parseInt(atmp[1]);
+		var bi = parseInt(btmp[1]);
+		return ai < bi ? -1 : 1;
+	});
+
+	for(var j = 0; j < len; j++)
+	{
+		lst.appendChild(ary[j]);
+	}
+}
+
+
+function createLi(hash)
+{
+	var h = hash || {};
+	if(FUSION.get.objSize(h) == 0)
+	{
+		FUSION.lib.alert("Unable to create list element with no parameters!");
+		return false;
+	}
+	var iid = h['pageid'];
+	var nam = h['pname'];
+	var lnk = h['plink'];
+	var typ = h['ptype'];
+	var dsc = h['pdesc'];
+	var stt = h['pstat'];
+
+	var newli = FUSION.lib.createHtmlElement({"type":"li","attributes":{"id":"li_" + iid, "class":"linav"}});
+	var plink = FUSION.lib.createHtmlElement({"type":"a","attributes":{
+															"id":"link_" + iid,
+															"target":"_blank",
+															"href":lnk},
+												"text":nam});
+	var elink = FUSION.lib.createHtmlElement({"type":"a","attributes":{
+															"title":"Edit " + nam,
+															"class":"editlnk glyphicon glyphicon-pencil",
+															"id":"editlnk_" + iid}});
+	var rlink = FUSION.lib.createHtmlElement({"type":"a","attributes":{
+															"title":"Remove " + nam,
+															"class":"remlnk glyphicon glyphicon-remove",
+															"id":"remlnk_" + iid}});
+	if(typ == "project")
+	{
+		var cls = "";
+		var ttl = "";
+		if(stt == "development")
+		{
+			cls = "glyphicon glyphicon-exclamation-sign navspan nswarning";
+			ttl = "Currently under development";
+		}
+		else
+		{
+			cls = "glyphicon glyphicon-ok-sign navspan nsokay";
+			ttl = "Primary development complete";
+		}
+
+		var gispan = FUSION.lib.createHtmlElement({"type":"span",
+												   "attributes":{
+													   "id":"gispan_" + iid,
+													   "aria-hidden":"true",
+													   "class":cls}});
+		newli.setAttribute("title", ttl);
+		plink.insertBefore(gispan, plink.firstChild);
+	}
+
+	newli.appendChild(plink);
+	newli.appendChild(elink);
+	newli.appendChild(rlink);
+
+	return newli;
 }
 
 

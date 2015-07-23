@@ -111,6 +111,7 @@
 		$content = array();
 		$n_or_e = "new";
 		$prevtyp = $P['ptype'];
+		$prevstt = $P['pstat'];
 
 		try {
 			$m->select_db("andrewsdb");
@@ -160,7 +161,7 @@
 					//update existing item
 					$n_or_e = "existing";
 
-					$oldtype = $m->prepare("SELECT PAGETYPE FROM projectpages WHERE ID = ? LIMIT 1;");
+					$oldtype = $m->prepare("SELECT PAGETYPE, PAGESTAT FROM projectpages WHERE ID = ? LIMIT 1;");
 					$oldtype->bind_param("i", $itmid);
 					$oldtype->execute();
 					$result = $oldtype->get_result();
@@ -168,6 +169,11 @@
 					if($rfa['PAGETYPE'] != $prevtyp)
 					{
 						$prevtyp = $rfa['PAGETYPE'];
+					}
+					if($rfw['PAGESTAT'] != $pstat)// && $rfw['PAGESTAT'] != "" && $pstat != "")
+					{
+						$prevstt = $rfa['PAGESTAT'];
+//						$prevstt = "FOOBAR";
 					}
 					$oldtype->close();
 
@@ -201,6 +207,7 @@
 				$content['pstat']  = $P['pstat'];
 				$content['pdesc']  = $P['pdesc'];
 				$content['prvtp']  = $prevtyp;
+				$content['prvst']  = $prevstt;
 				$content['n_or_e'] = $n_or_e;
 			}
 		}
