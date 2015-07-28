@@ -71,7 +71,7 @@
 			$app_token = "rO91a2ol0Bibnga9u74y0VFNc";
 
 			$ginfo = getGoogleInfo($P['searchstring'], $m);
-			$range = $P['range'];
+			$range = $P['range'] * 1609.64; //convert miles to meters
 
 			if($ginfo['status'] == "OK")
 			{
@@ -88,8 +88,8 @@
 					reset($locations);
 					$placeid = key($locations);
 
-					$latitude  = $locations[$placeid]['lat'],
-					$longitude = $locations[$placeid]['lng'],
+					$latitude  = $locations[$placeid]['lat'];
+					$longitude = $locations[$placeid]['lng'];
 
 					if($latitude != NULL && $longitude != NULL && $range != NULL)
 					{

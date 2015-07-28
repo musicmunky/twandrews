@@ -39,7 +39,6 @@ function runSearch(s, r)
 	}
 
 	str = str.replace(/\s/ig, "+");
-	rng = rng * 1609.34; //convert the range into meters
 	var info = {
 		"type": "GET",
 		"path": "php/challengelib.php",
