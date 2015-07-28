@@ -67,34 +67,41 @@
 */
 
 		/**
-		* Create a new instance
+		* Create a new instance of the Geocode object
 		*
-		* @param Boolean $loadfromdb
-		* @param String $apikey
-		* @param String $apiurl
+		* @param MySQLi $mysqli
 		*/
-		function __construct($loadfromdb, $apikey = "", $apiurl = "")
+		function __construct($mysqli)
 		{
-			if($loadfromdb)
-			{
-				try {
-					$apinfo = mysql_fetch_assoc(mysql_query("SELECT APIKEY, URL FROM weatherapikeys WHERE SERVICE='google';"));
-					$apikey = $apinfo['APIKEY'];
-					$apiurl = $apinfo['URL'];
-				}
-				catch(Exception $e) {}
+			try {
+				$mysqli->select_db("andrewsdb");
+				$apiqry = $mysqli->prepare("SELECT APIKEY, URL FROM weatherapikeys WHERE SERVICE='google';");
+				$apiqry->execute();
 
+				if($apiqry->errno != 0)
+				{
+					throw new Exception("Error attempting to API info:<br>" . $apiqry->error . "<br>Error code: " . $apiqry->errno);
+				}
+				else
+				{
+					$result = $apiqry->get_result();
+					$rfetch	= $result->fetch_assoc();
+					$this->setApiKey($apinfo['APIKEY']);
+					$this->setApiUrl($apinfo['URL']);
+				}
+				$apiqry->close();
 			}
-			$this->apikey = $apikey;
-			$this->apiurl = $apiurl;
+			catch(Exception $e) {
+				return "ERROR: " . $e->getMessage();
+			}
 		}
 
-		public function getApiKey()
+		private function getApiKey()
 		{
 			return $this->apikey;
 		}
 
-		public function setApiKey($key)
+		private function setApiKey($key)
 		{
 			$r = true;
 			try {
@@ -106,12 +113,12 @@
 			return $r;
 		}
 
-		public function getApiUrl()
+		private function getApiUrl()
 		{
 			return $this->apiurl;
 		}
 
-		public function setApiUrl($url)
+		private function setApiUrl($url)
 		{
 			$r = true;
 			try {
@@ -190,7 +197,8 @@
 
 		public function loadGeoData($srch)
 		{
-			try {
+			try
+			{
 				$url = $this->getApiUrl();
 				$key = $this->getApiKey();
 				if($srch == "")
@@ -217,7 +225,8 @@
 				$this->geodat = $rescon['results'];
 				$this->status = $rescon['status'];
 			}
-			catch(Exception $e){
+			catch(Exception $e)
+			{
 				$this->status = "ERROR: " . $e->getMessage();
 				$this->rescnt = -1;
 				$this->geodat = array("ERROR" => $e->getMessage());

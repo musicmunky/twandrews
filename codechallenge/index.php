@@ -1,25 +1,10 @@
 <?php
-	require_once("socrata.php");
+
+	define('LIBRARY_CHECK',true);
+	require 'php/challengelib.php';
 
 	$title = "CrimeWatch";
 
-	$view_uid = "3k2p-39jp";
-	$root_url = "https://data.seattle.gov";
-	$app_token = "rO91a2ol0Bibnga9u74y0VFNc";
-	$response = NULL;
-
-	$latitude = array_get("latitude", $_POST);
-	$longitude = array_get("longitude", $_POST);
-	$range = array_get("range", $_POST);
-
-	if($latitude != NULL && $longitude != NULL && $range != NULL) {
-		// Create a new unauthenticated client
-		$socrata = new Socrata($root_url, $app_token);
-
-		$params = array("\$where" => "within_circle(location, $latitude, $longitude, $range)");
-
-		$response = $socrata->get("/resource/$view_uid.json", $params);
-	}
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11-strict.dtd">
@@ -38,8 +23,8 @@
 		<script language="javascript" type="text/javascript" src="javascript/challenge.js"></script>
 	</head>
 	<body>
-		<!-- default to NYC if there's no localStorage -->
-		<input type="hidden" id="defaultzipcode" value="10001" />
+		<!-- default to Seattle if there's no localStorage -->
+		<input type="hidden" id="defaultzipcode" value="98134" />
 		<div id="header" class="header">
 			<div id="headercont" class="header-content">
 				<div class="header-logo">
@@ -84,7 +69,6 @@
 				<div class="footer-content-right">
 					<span>
 						Powered by <a href="http://dev.socrata.com/" class="cldclr" target="_blank">Socrata</a>
-						<span id="numreqs" style="color:#CCC"></span>
 					</span>
 				</div>
 			</div>
