@@ -9,39 +9,50 @@ function getChart()
 }
 
 
-function sliderUpdateChart()
+function sliderUpdateChart(mm)
 {
+	var minmax = mm || {};
 	var charttype = FUSION.lib.isBlank(FUSION.get.node("charttype").value) ? "pie" : FUSION.get.node("charttype").value;
 	switch(charttype) {
 		case "pie":
-			getPieChart();
+			getPieChart(minmax);
 			break;
 		case "column":
 			getColumnChart();
 			break;
 		case "bar":
-			getBarChart();
+			getBarChart(minmax);
 			break;
 		default:
-			getPieChart();
+			getPieChart(minmax);
 	}
 }
 
 
-function getPieChart()
+function compareIncidentTime(s, e, i)
 {
-	var param = FUSION.get.node("chartparams").value;
-	var partxt = FUSION.get.selectedText("chartparams");
-	var datestr = FUSION.get.node("daterangespan").innerHTML;
-	var datearr = datestr.split(" - ");
-	var start = datearr[0];
-	var end = datearr[1];
+	var start	 = moment(s);
+	var end 	 = moment(e);
+	var incident = moment(i);
+	var btwn	 = (incident >= start && incident <= end) ? true : false;
+	return btwn;
+}
+
+
+function getPieChart(mm)
+{
+	var param	= FUSION.get.node("chartparams").value;
+	var partxt	= FUSION.get.selectedText("chartparams");
+	var start	= "";
+	var end 	= "";
 
 	var lsdata = localStorage.getItem("SODAquery");
 	var sodata = {};
 	var chdata = [];
 	try {
-		sodata = JSON.parse(lsdata);
+		sodata  = JSON.parse(lsdata);
+		start	= mm.hasOwnProperty("min") ? mm['min'] : sodata['start_date'];
+		end 	= mm.hasOwnProperty("max") ? mm['max'] : sodata['end_date'];
 	}
 	catch(err){
 		FUSION.error.logError(err);
@@ -59,14 +70,17 @@ function getPieChart()
 			if(tmp.hasOwnProperty(param))
 			{
 				pval = tmp[param];
-				var check = $.grep(chdata, function(e) { return e.name == pval });
-				if(check.length == 0)
+				if(compareIncidentTime(start, end, tmp['event_clearance_date']))
 				{
-					chdata.push({ name: pval, y: 1 });
-				}
-				else
-				{
-					check[0].y++;
+					var check = $.grep(chdata, function(e) { return e.name == pval });
+					if(check.length == 0)
+					{
+						chdata.push({ name: pval, y: 1 });
+					}
+					else
+					{
+						check[0].y++;
+					}
 				}
 			}
 		}
@@ -79,7 +93,7 @@ function getPieChart()
 				type: 'pie'
 			},
 			title: {
-				text: "Crimes Reported Around CenturyLink Field, Grouped By " + partxt
+				text: "Crimes Reported Around CenturyLink Field, Grouped By " + partxt + "(" + chdata.length + ")"
 			},
 			tooltip: {
 				pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
@@ -107,7 +121,7 @@ function getPieChart()
 }
 
 
-function getBarChart()
+function getBarChart(mm)
 {
 	var param = FUSION.get.node("chartparams").value;
 	var partxt = FUSION.get.selectedText("chartparams");
@@ -134,14 +148,17 @@ function getBarChart()
 			if(tmp.hasOwnProperty(param))
 			{
 				pval = tmp[param];
-				var check = $.grep(chdata, function(e) { return e.name == pval });
-				if(check.length == 0)
+				if(compareIncidentTime(start, end, tmp['event_clearance_date']))
 				{
-					chdata.push({ name: pval, data: [1] });
-				}
-				else
-				{
-					check[0].data[0]++;
+					var check = $.grep(chdata, function(e) { return e.name == pval });
+					if(check.length == 0)
+					{
+						chdata.push({ name: pval, data: [1] });
+					}
+					else
+					{
+						check[0].data[0]++;
+					}
 				}
 			}
 		}

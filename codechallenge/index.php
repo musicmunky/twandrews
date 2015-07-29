@@ -21,6 +21,7 @@
 		<script language="javascript" type="text/javascript" src="javascript/jquery-1.11.3.min.js"></script>
 		<script language="javascript" type="text/javascript" src="javascript/jquery-ui.min.js"></script>
 		<script language="javascript" type="text/javascript" src="javascript/fusionlib.js"></script>
+		<script language="javascript" type="text/javascript" src="javascript/moment.min.js"></script>
 		<script language="javascript" type="text/javascript" src="https://www.google.com/jsapi"></script>
 		<script language="javascript" type="text/javascript" src="http://code.highcharts.com/highcharts.js"></script>
 		<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAItsJVet4OiBn43s-X40CmFFKTbGEzcUY"></script>

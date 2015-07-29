@@ -33,7 +33,6 @@ $( document ).ready(function() {
 		minDate: "-365"
 	});
 
-
 	var today   = new Date();
 	var maxDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
 	var minDate = new Date(today.getFullYear() - 1, today.getMonth(), today.getDate());
@@ -52,7 +51,7 @@ $( document ).ready(function() {
 			var minDate = new Date(ui.values[0] * 86400000);
 			var maxDate = new Date(ui.values[1] * 86400000);
 			clearTimeout(slidetimeout);
-			slidetimeout = setTimeout(function(){ sliderUpdateChart(); }, 2000);
+			slidetimeout = setTimeout(function(){ sliderUpdateChart({"min":minDate, "max":maxDate}); }, 2000);
 			setDateRangeDisplay(minDate, maxDate);
 		}
     });
@@ -150,6 +149,27 @@ function processSearchResults(h)
 	}
 
 	localStorage.setItem("SODAquery", JSON.stringify(hash));
+
+	var startary = hash['start_date'].split("T");
+	var endary   = hash['end_date'].split("T");
+
+
+	var startels = startary[0].split("-");
+	var endels   = endary[0].split("-");
+
+	var minDate = new Date(startels[0], parseInt(startels[1])-1, startels[2]);
+	var maxDate = new Date(endels[0], parseInt(endels[1])-1, endels[2]);
+	setDateRangeDisplay(minDate, maxDate);
+
+	var min = Math.floor(minDate.getTime() / 86400000);
+	var max = Math.floor(maxDate.getTime() / 86400000);
+
+	$('#dateslider').slider({
+		range: true,
+        max: max,
+		min: min,
+		values: [ min, max ],
+    });
 
 	getChart();
 

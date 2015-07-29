@@ -109,9 +109,12 @@
 					$loc_type = "incident_location";
 
 					$today     = date("Y-d-m");
-					$enddate   = isset($P['enddate']) ? $P['enddate'] . "T23:59:59" : $today . "T23:59:59";
+					$enddate   = isset($P['enddate']) ? $P['enddate'] : $today;
 					$tmpstart  = strtotime($today . " -1 year");
-					$startdate = isset($P['startdate']) ? $P['startdate'] . "T23:59:59" : date("Y-d-m", $tmpstart) . "T23:59:59";
+					$startdate = isset($P['startdate']) ? $P['startdate'] : date("Y-d-m", $tmpstart);
+
+					$startdate .= "T00:00:00";
+					$enddate   .= "T23:59:59";
 					$datestr   = " and event_clearance_date > '" . $startdate . "' and event_clearance_date < '" . $enddate . "'";
 
 					$soqlQuery->where("within_circle(" .
@@ -126,9 +129,11 @@
 
 					$results = $sodaDataset->getDataset($soqlQuery);
 					$content['response_content'] = $results;
-					$content['response_count'] = count($results);
-					$content['latitude_center'] = $latitude;
+					$content['response_count']   = count($results);
+					$content['latitude_center']  = $latitude;
 					$content['longitude_center'] = $longitude;
+					$content['start_date']       = $startdate;
+					$content['end_date']         = $enddate;
 
 					$status = "success";
 
