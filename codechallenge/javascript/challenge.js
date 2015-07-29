@@ -33,8 +33,13 @@ $( document ).ready(function() {
 		minDate: "-365"
 	});
 
+	try {
+		localStorage.removeItem("SODAquery");
+	}
+	catch(err) {
+		FUSION.error.logError(err, "Unable to remove localStorage item: ");
+	}
 	clearSearchForm();
-	//runSearch();
 
 /*
 	$('#container').highcharts({
@@ -98,7 +103,6 @@ function showDisplay(t)
 			"background-color": "#FFF",
 			"border-right": "none",
 			"border-left": "none",
-// 			"width": "25%",
 		});
 		id = $(this).attr("id");
 		ary = id.split("-");
@@ -106,33 +110,19 @@ function showDisplay(t)
 	});
 
 	$(t).css({
-// 			"width": "calc(25% - 2px)",
 			"background-color": "#EEE",
 			"border-right": "1px solid #DDD",
 			"border-left": "1px solid #DDD",
 	});
 	ary = $(t).attr("id").split("-");
 	var divid = ary[0];
-	/*
-	switch(divid) {
-		case "highcharts":
-			FUSION.lib.alert("<p>Error completing request: " + divid + "</p>");
-			break;
-		case "googlemaps":
-			FUSION.lib.alert("<p>Call to server aborted: " + divid + "</p>");
-			break;
-		default:
-			FUSION.error.logError("Invalid option selected", "Page Error");
-	}*/
 	FUSION.get.node(divid + "-div").style.display = "block";
 }
 
 
 function runSearch()
 {
-
 	var str = "800 Occidental Ave S, Seattle, WA 98134"; //default address provided by Code Challenge
-
 
 	var max = FUSION.get.node("maxresults").value ? FUSION.get.node("maxresults").value : 1000;
 	max = parseInt(max) > 50000 ? 50000 : max;
@@ -172,12 +162,21 @@ function processSearchResults(h)
 	var hash = h || {};
 	var content = hash['response_content'];
 
+	try {
+		localStorage.removeItem("SODAquery");
+	}
+	catch(err) {
+		FUSION.error.logError(err, "Unable to remove localStorage item: ");
+	}
+
+	localStorage.setItem("SODAquery", JSON.stringify(hash));
+
 	var mapOptions = {
 		zoom: 13,
 		center: new google.maps.LatLng(hash['latitude_center'], hash['longitude_center'])
 	};
 
-	var map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
+	var map = new google.maps.Map(FUSION.get.node("googlemaps-canvas"), mapOptions);
 
 	for(var i = 0; i < hash['response_count']; i++)
 	{
