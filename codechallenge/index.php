@@ -55,7 +55,7 @@
 		<div id="mainwrapper" class="mainwrapper">
 			<div class="oldcitywrapper">
 				<div id="oldcitydiv" class="w100fl h100fl">
-					<div id="apisettings-tab" class="citydiv" style="background-color:#EEE;border-right:1px solid #DDD;border-left:1px solid #DDD;">
+					<div id="apisettings-tab" class="citydiv" style="background-color:#EEE;">
 						Settings
 					</div>
 					<div id="highcharts-tab" class="citydiv">
@@ -75,7 +75,7 @@
 				<h3>Search Settings</h3>
 				<div class="settingsrow">
 					<span class="fl settingsspan">Max Results: </span>
-					<input type="text" id="maxresults" value="" class="searchbox searchinput" onkeyup="FUSION.lib.noAlpha(this)" />
+					<input type="text" id="maxresults" value="" class="searchbox searchinput" onkeyup="FUSION.lib.noAlpha(this)" placeholder="Default is 1000, max is 50000" />
 				</div>
 				<div class="settingsrow">
 					<span class="fl settingsspan">Range: </span>
@@ -136,9 +136,9 @@
 			</div>
 
 			<!-- GOOGLE MAPS DIV -->
-			<div id="googlemaps-div" class="w100fl" style="display:none;height:500px;">
+			<div id="googlemaps-div" class="w100fl" style="display:none;height:750px;width:100%;">
 				<h3>Incidents by Location</h3>
-				<div id="googlemaps-canvas" class="" style="width:100%;height:500px;float:left;"></div>
+				<div id="googlemaps-canvas" style="width:100%;height:700px;float:left;background-color:#F6F6F6;box-shadow:0px 0px 2px 0px #888;"></div>
 			</div>
 
 			<!-- ABOUT DIV -->

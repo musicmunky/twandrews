@@ -3,11 +3,6 @@
  * Moved to a separate file for readability/maintainability/...ility/etc
  */
 
-function getChart()
-{
-	sliderUpdateChart();
-}
-
 
 function sliderUpdateChart(mm)
 {
@@ -34,13 +29,14 @@ function sliderUpdateChart(mm)
 	}
 
 	var totals = parseInt(sodata['response_count']);
-
 	if(totals > 0)
 	{
 		var tmp = {};
 		var entry = {};
 		var pval = "";
 		var newtotal = 0;
+		clearMarkers();
+
 		for(var i = 0; i < totals; i++)
 		{
 			tmp = sodata['response_content'][i];
@@ -50,6 +46,13 @@ function sliderUpdateChart(mm)
 				if(compareIncidentTime(start, end, tmp['event_clearance_date']))
 				{
 					var check = $.grep(chdata, function(e) { return e.name == pval });
+					var marker = new google.maps.Marker({
+						position: new google.maps.LatLng(tmp.latitude, tmp.longitude),
+						map: map,
+						title: tmp.initial_type_group
+					});
+					markers.push(marker);
+
 					if(charttype == "pie"){
 						if(check.length == 0)
 						{
@@ -168,9 +171,7 @@ function getBarChart(obj)
 				overflow: 'justify'
 			}
 		},
-		tooltip: {
-			valueSuffix: ''
-		},
+		tooltip: {},
 		plotOptions: {
 			bar: {
 				dataLabels: {
@@ -218,14 +219,7 @@ function getColumnChart(obj)
 				text: 'Incidents Reported',
 			}
 		},
-		tooltip: {/*
-			headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
-			pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-			'<td style="padding:0"><b>{point.y:.1f} mm</b></td></tr>',
-			footerFormat: '</table>',
-			shared: true,
-			useHTML: true
-		*/},
+		tooltip: {},
 		plotOptions: {
 			column: {
 				pointPadding: 0.2,

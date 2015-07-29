@@ -19,52 +19,6 @@
 							"country"	=> "country",
 							"zipcode"	=> "postal_code"
 						);
-/*
-    street_address => indicates a precise street address.
-
-    route => indicates a named route (such as "US 101").
-
-	intersection => indicates a major intersection, usually of two major roads.
-
-	political => indicates a political entity. Usually, this type indicates a polygon of some civil administration.
-
-	country => indicates the national political entity, and is typically the highest order type returned by the Geocoder.
-
-	administrative_area_level_1 => indicates a first-order civil entity below the country level. Within the United States, these administrative levels are states. Not all nations exhibit these administrative levels.
-
-	administrative_area_level_2 => indicates a second-order civil entity below the country level. Within the United States, these administrative levels are counties. Not all nations exhibit these administrative levels.
-
-	administrative_area_level_3 => indicates a third-order civil entity below the country level. This type indicates a minor civil division. Not all nations exhibit these administrative levels.
-
-	administrative_area_level_4 => indicates a fourth-order civil entity below the country level. This type indicates a minor civil division. Not all nations exhibit these administrative levels.
-
-	administrative_area_level_5 => indicates a fifth-order civil entity below the country level. This type indicates a minor civil division. Not all nations exhibit these administrative levels.
-
-	colloquial_area => indicates a commonly-used alternative name for the entity.
-
-	locality => indicates an incorporated city or town political entity.
-
-	ward => indicates a specific type of Japanese locality, to facilitate distinction between multiple locality components within a Japanese address.
-
-	sublocality => indicates a first-order civil entity below a locality. For some locations may receive one of the additional types: sublocality_level_1 to sublocality_level_5. Each sublocality level is a civil entity. Larger numbers indicate a smaller geographic area.
-
-	neighborhood => indicates a named neighborhood
-
-	premise => indicates a named location, usually a building or collection of buildings with a common name
-
-	subpremise => indicates a first-order entity below a named location, usually a singular building within a collection of buildings with a common name
-
-	postal_code => indicates a postal code as used to address postal mail within the country.
-
-	natural_feature => indicates a prominent natural feature.
-
-	airport => indicates an airport.
-
-	park => indicates a named park.
-
-	point_of_interest => indicates a named point of interest. Typically, these "POI"s are prominent local entities that don't easily fit in another category, such as "Empire State Building" or "Statue of Liberty."
-
-*/
 
 		/**
 		* Create a new instance of the Geocode object
@@ -95,11 +49,21 @@
 			}
 		}
 
+
+		/**
+		* Private function to return the API key
+		*/
 		private function getApiKey()
 		{
 			return $this->apikey;
 		}
 
+
+		/**
+		* Private function to set the API key for the Geocode object
+		*
+		* @param API Key $key
+		*/
 		private function setApiKey($key)
 		{
 			$r = true;
@@ -112,11 +76,21 @@
 			return $r;
 		}
 
+
+		/**
+		* Private function to return the API url
+		*/
 		private function getApiUrl()
 		{
 			return $this->apiurl;
 		}
 
+
+		/**
+		* Private function to set the API url for the Geocode object
+		*
+		* @param API Key $url
+		*/
 		private function setApiUrl($url)
 		{
 			$r = true;
@@ -129,75 +103,155 @@
 			return $r;
 		}
 
+
+		/**
+		* Function to return the latitude information from the Geocode object
+		*
+		* @param optional Type String $type
+		*/
 		public function getLatitude($type = "string")
 		{
 			return $this->getLatLongInformation("lat", $type);
 		}
 
+
+		/**
+		* Function to return the longitude information from the Geocode object
+		*
+		* @param optional Type String $type
+		*/
 		public function getLongitude($type = "string")
 		{
 			return $this->getLatLongInformation("lng", $type);
 		}
 
+
+		/**
+		* Function to return the latitude and longitude information from the Geocode object
+		*
+		* @param optional Type String $type
+		*/
 		public function getLatLong($type = "1DArray")
 		{
 			return $this->getLatLongInformation("latlng", $type);
 		}
 
+
+		/**
+		* Function to return the formatted address from the Geocode object
+		*
+		* @param optional Type String $type
+		*/
 		public function getFormattedAddress($type = "string")
 		{
 			return $this->getPlaceInformation("formatted_address", $type);
 		}
 
+
+
+		/**
+		* Function to return the PlaceID from the Geocode object
+		*
+		* @param optional Type String $type
+		*/
 		public function getPlaceID($type = "string")
 		{
 			return $this->getPlaceInformation("place_id", $type);
 		}
 
+
+		/**
+		* Function to return the Suburb information from the Geocode object
+		*
+		* @param optional Type String $type
+		*/
 		public function getSuburb($type = "string")
 		{
 			return $this->getAddressComponents("suburb", $type);
 		}
 
+
+		/**
+		* Function to return the City information from the Geocode object
+		*
+		* @param optional Type String $type
+		*/
 		public function getCity($type = "string")
 		{
 			return $this->getAddressComponents("city", $type);
 		}
 
+
+		/**
+		* Function to return the State information from the Geocode object
+		*
+		* @param optional Type String $type
+		*/
 		public function getState($type = "string")
 		{
 			return $this->getAddressComponents("state", $type);
 		}
 
+
+		/**
+		* Function to return the Country information from the Geocode object
+		*
+		* @param optional Type String $type
+		*/
 		public function getCountry($type = "string")
 		{
 			return $this->getAddressComponents("country", $type);
 		}
 
+
+		/**
+		* Function to return the Zipcode information from the Geocode object
+		*
+		* @param optional Type String $type
+		*/
 		public function getZipCode($type = "string")
 		{
 			return $this->getAddressComponents("zipcode", $type);
 		}
 
+
+		/**
+		* Function to return the number of results returned by the Geocode object
+		*/
 		public function getResultCount()
 		{
 			return $this->rescnt;
 		}
 
+
+		/**
+		* Function to get the status the Geocode object
+		*/
 		public function getStatus()
 		{
 			return $this->status;
 		}
 
+
+		/**
+		* Function to return all of the information included in the Geocode object
+		*/
 		public function getGeoData()
 		{
 			return $this->geodat;
 		}
 
+
+		/**
+		* Function to return the latitude information from the Geocode object
+		*
+		* @param Search String $srch
+		*/
 		public function loadGeoData($srch)
 		{
 			try
 			{
+				//make sure we have the api url and key...
 				$url = $this->getApiUrl();
 				$key = $this->getApiKey();
 				if($srch == "")
@@ -210,11 +264,15 @@
 					throw new Exception("Invalid parameters set for Geocode object - please check value of Key and Url");
 				}
 
+				//format the url for the request
 				$search   = urlencode($srch);
 				$requrl   = $url . "address=" . $search . "&key=" . $key;
+
+				//send the request and format the results
 				$content  = file_get_contents($requrl);
 				$rescon   = json_decode($content, true);
 
+				//make sure request completed successfully
 				if(!isset($rescon['status']) || $rescon['status'] != "OK")
 				{
 					throw new Exception("Bad result from geocode server - please check parameters and try again");
@@ -232,6 +290,13 @@
 			}
 		}
 
+
+		/**
+		* Private function to handle requests for the latitude and longitude information from the Geocode object
+		*
+		* @param Request Type $k
+		* @param Requested Return Type $type
+		*/
 		private function getLatLongInformation($k, $type)
 		{
 			$rval = array();
@@ -268,6 +333,13 @@
 			return $rval;
 		}
 
+
+		/**
+		* Private function to handle requests for the Place information from the Geocode object
+		*
+		* @param Request Type $k
+		* @param Requested Return Type $type
+		*/
 		private function getPlaceInformation($k, $type)
 		{
 			$rval = array();
@@ -289,6 +361,13 @@
 			return $rval;
 		}
 
+
+		/**
+		* Private function to handle requests for the Address Components from the Geocode object
+		*
+		* @param Request Type $k
+		* @param Requested Return Type $type
+		*/
 		private function getAddressComponents($k, $type)
 		{
 			$rval = array();

@@ -8,6 +8,7 @@ $( document ).ready(function() {
 		document.body.style.fontFamily = "'Trebuchet MS', Helvetica, sans-serif";
 	}
 
+	//setting up the onclick functionality
 	jQuery(".citydiv").click(function(){
 		showDisplay(this);
 	});
@@ -16,6 +17,7 @@ $( document ).ready(function() {
 		runSearch();
 	});
 
+	//creating the jquery datepickers
 	$( "#startdate" ).datepicker({
 		changeMonth: true,
 		changeYear: true,
@@ -33,6 +35,7 @@ $( document ).ready(function() {
 		minDate: "-365"
 	});
 
+	//setting up the slider used on the Highcharts sections
 	var today   = new Date();
 	var maxDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
 	var minDate = new Date(today.getFullYear() - 1, today.getMonth(), today.getDate());
@@ -56,18 +59,24 @@ $( document ).ready(function() {
 		}
     });
 
+	//simple wrapper function to set the "Date Range" span html
 	setDateRangeDisplay(minDate, maxDate);
 
+	//ATTEMPT to remove the localStorage object, will fail for older browsers, *should* work on IE9
 	try {
 		localStorage.removeItem("SODAquery");
 	}
 	catch(err) {
 		FUSION.error.logError(err, "Unable to remove localStorage item: ");
 	}
-	clearSearchForm();
 
+	//clear the form
+	clearSearchForm();
 });
 
+//global objects used by Google Maps to add/remove markers
+var map;
+var markers = [];
 
 function setDateRangeDisplay(min, max)
 {
@@ -77,33 +86,27 @@ function setDateRangeDisplay(min, max)
 }
 
 
+//functionality to handle displaying the correct divs and the "sticky tab" navigation
 function showDisplay(t)
 {
 	var id = "";
 	var div = {};
 	var ary = [];
 	$(".citydiv").each( function() {
-		$(this).css({
-			"background-color": "#FFF",
-			"border-right": "none",
-			"border-left": "none",
-		});
+		$(this).css({ "background-color": "#FFF" });
 		id = $(this).attr("id");
 		ary = id.split("-");
 		FUSION.get.node(ary[0] + "-div").style.display = "none";
 	});
 
-	$(t).css({
-			"background-color": "#EEE",
-			"border-right": "1px solid #DDD",
-			"border-left": "1px solid #DDD",
-	});
+	$(t).css({ "background-color": "#EEE" });
 	ary = $(t).attr("id").split("-");
 	var divid = ary[0];
 	FUSION.get.node(divid + "-div").style.display = "block";
 }
 
 
+//send the request to the server via AJAX
 function runSearch()
 {
 	var str = "800 Occidental Ave S, Seattle, WA 98134"; //default address provided by Code Challenge
@@ -136,11 +139,15 @@ function runSearch()
 }
 
 
+//Process the search results - this takes a hash returned by the AJAX call and sets
+//the data for the localStorage component, which is then used by Google Maps and
+//Highcharts for data display
 function processSearchResults(h)
 {
 	var hash = h || {};
 	var content = hash['response_content'];
 
+	//remove any existing items, just in case
 	try {
 		localStorage.removeItem("SODAquery");
 	}
@@ -148,12 +155,12 @@ function processSearchResults(h)
 		FUSION.error.logError(err, "Unable to remove localStorage item: ");
 	}
 
+	//create the localStorage item
 	localStorage.setItem("SODAquery", JSON.stringify(hash));
 
+	//because Javascript doesn't handle dates very well, gotta do some machinations here
 	var startary = hash['start_date'].split("T");
 	var endary   = hash['end_date'].split("T");
-
-
 	var startels = startary[0].split("-");
 	var endels   = endary[0].split("-");
 
@@ -164,6 +171,7 @@ function processSearchResults(h)
 	var min = Math.floor(minDate.getTime() / 86400000);
 	var max = Math.floor(maxDate.getTime() / 86400000);
 
+	//set the new max/min for the slider
 	$('#dateslider').slider({
 		range: true,
         max: max,
@@ -171,17 +179,20 @@ function processSearchResults(h)
 		values: [ min, max ],
     });
 
-	getChart();
+	//run the code for the chart
+	sliderUpdateChart();
 
+	//display the correct div
 	showDisplay(FUSION.get.node("highcharts-tab"));
 
+	//create the Google Map needed
 	var mapOptions = {
-		zoom: 13,
+		zoom: 14,
 		center: new google.maps.LatLng(hash['latitude_center'], hash['longitude_center']),
 		scaleControl: true
 	};
 
-	var map = new google.maps.Map(FUSION.get.node("googlemaps-canvas"), mapOptions);
+	map = new google.maps.Map(FUSION.get.node("googlemaps-canvas"), mapOptions);
 
 	for(var i = 0; i < hash['response_count']; i++)
 	{
@@ -190,10 +201,25 @@ function processSearchResults(h)
 			map: map,
 			title: content[i].event_clearance_group
 		});
+		markers.push(marker);
+	}
+}
+
+//a couple of simple functions to remove the markers from the google map
+function setAllMap(map)
+{
+	for (var i = 0; i < markers.length; i++) {
+		markers[i].setMap(map);
 	}
 }
 
 
+function clearMarkers()
+{
+	setAllMap(null);
+}
+
+//some wrapper functions below for basic functionality
 function clearSearchForm()
 {
 	FUSION.get.node("startdate").value = "";

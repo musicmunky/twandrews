@@ -29,8 +29,7 @@
 
 	date_default_timezone_set('America/New_York');
 
-	$webaddress = "http://twandrews.com/codechallenge";
-
+	//this handles all the requests being sent to the server
 	if(isset($REQ['method']) && !empty($REQ['method']))
 	{
 		$method = $REQ['method'];
@@ -50,6 +49,11 @@
 	}
 
 
+	/**
+	* Default function that returns to an AJAX call if the function requested is not found
+	*
+	* @param Method Name $m
+	*/
 	function noFunction($m)
 	{
 		$func = $m;
@@ -62,8 +66,16 @@
 	}
 
 
+	/**
+	* Retrieve the data requested from the Socrata dataset
+	* This function implements the phpsoda.phar library made available through GitHub by user allejo
+	*
+	* @param Request $P
+	* @param MySQLi $m
+	*/
 	function getSocrataInfo($P, $m)
 	{
+		//just a little data sanitation, move along...
 		$P = escapeArray($P, $m);
 
 		$status  = "";
@@ -72,17 +84,26 @@
 
 		try
 		{
-			$view_uid = "3k2p-39jp";
-			$root_url = "https://data.seattle.gov";
+			//set the connection variables for the API
+			$view_uid  = "3k2p-39jp";
+			$root_url  = "https://data.seattle.gov";
 			$app_token = "rO91a2ol0Bibnga9u74y0VFNc";
 
+			//get the lat/long data for the search string,
+			//in this case the string is hard-coded, but it can handle any search string that Google can handle
 			$ginfo = getGoogleInfo($P['searchstring'], $m);
-			$range = (isset($P['range'])) ? ($P['range'] * 1609.34) : 1609.34; //magic number, but it's specified in the requirements
 
+			//convert the range from miles to meters
+			$range = (isset($P['range'])) ? ($P['range'] * 1609.34) : 1609.34; //bleh...magic number, but it's specified in the requirements
+
+			//if the google request came back successfully...
 			if($ginfo['status'] == "OK")
 			{
 				$gcontent = $ginfo['content'];
 
+				//keeping this here JUST in case things get a little funky and google returns more than one result
+				//it's not difficult to handle this more gracefully, but given the nature of the project a simple
+				//page refresh should fix this
 				if($gcontent['result_count'] > 1)
 				{
 					$status = "Failure to return a single result";
@@ -96,7 +117,7 @@
 					$latitude  = $locations[$placeid]['lat'];
 					$longitude = $locations[$placeid]['lng'];
 
-
+					//creating the objects to retrieve the data from Socrata...
 					$sodaClient  = new SodaClient($root_url, $app_token);
 					$sodaDataset = new SodaDataset($sodaClient, $view_uid);
 					$soqlQuery   = new SoqlQuery();
@@ -108,6 +129,7 @@
 //					$loc_type = "location";
 					$loc_type = "incident_location";
 
+					//formatting the date/time parameters
 					$today     = date("Y-d-m");
 					$enddate   = isset($P['enddate']) ? $P['enddate'] : $today;
 					$tmpstart  = strtotime($today . " -1 year");
@@ -127,6 +149,7 @@
 						$soqlQuery->limit(intval($P['limit']));
 					}
 
+					//filling the array that will be sent back to the browser
 					$results = $sodaDataset->getDataset($soqlQuery);
 					$content['response_content'] = $results;
 					$content['response_count']   = count($results);
@@ -162,7 +185,7 @@
 		echo json_encode($result);
 	}
 
-
+/*
 	function getIncidentTypes($data)
 	{
 		$types = array();
@@ -180,35 +203,40 @@
 		}
 		return $types;
 	}
+*/
 
-
+	/**
+	* Uses the Google Geocode API to retrieve lat/long values (along with other data)
+	* for a given search string
+	*
+	* @param Search String $s
+	* @param MySQLi $m
+	*/
 	function getGoogleInfo($s, $m)
 	{
-		$tmp = escapeArray(array($s), $m);
-		$search = $tmp[0];
+		$tmp     = escapeArray(array($s), $m);
+		$search  = $tmp[0];
 		$status  = "";
 		$message = "";
 		$google	 = array();
 
+		//setting up the request to the Google API
 		$gc = new Geocode($m);
 		$gc->loadGeoData($search);
 
+		//verifying the request was successful
 		$status = $gc->getStatus();
 		$google['geo_status'] = $status;
 
+		//if so...
 		if($status == "OK")
 		{
+			//filling the array to return to the requesting function
 			$c = $gc->getResultCount();
 			$google['result_count'] = $c;
 
 			$lats = $gc->getLatitude("a");
 			$lngs = $gc->getLongitude("a");
-			$city = $gc->getCity("a");
-			$sbrb = $gc->getSuburb("a");
-			$stat = $gc->getState("a");
-			$zipc = $gc->getZipCode("a");
-			$ctry = $gc->getCountry("a");
-			$pids = $gc->getPlaceID("a");
 			$adds = $gc->getFormattedAddress("a");
 			for($i = 0; $i < $c; $i++)
 			{
@@ -216,13 +244,9 @@
 					"placeid"	=> $pids[$i],
 					"lat" 		=> $lats[$i],
 					"lng" 		=> $lngs[$i],
-					"suburb"	=> $sbrb[$i]['long_name'],
-					"city" 		=> $city[$i]['long_name'],
-					"state" 	=> $stat[$i]['short_name'],
-					"country" 	=> $ctry[$i]['short_name'],
-					"zip" 		=> $zipc[$i]['short_name'],
 					"address"	=> $adds[$i]
 				);
+				//filling a hash of locations based on their Google PlaceID
 				$google['locations'][$pids[$i]] = $tmp;
 			}
 		}
@@ -244,10 +268,15 @@
 	}
 
 
+	/**
+	* A recursive function called on the REQ object sent back by an AJAX call
+	* it accounts for nested arrays/hashes
+	*
+	* @param Request $req
+	* @param MySQLi $mysqli
+	*/
 	function escapeArray($req, $mysqli)
 	{
-		//recursive function called on the REQ object sent back by an AJAX call
-		//it accounts for nested arrays/hashes (these were being nulled out previously)
 		foreach($req as $key => $val)
 		{
 			if(gettype($val) == "array"){
