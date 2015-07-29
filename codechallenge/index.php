@@ -16,8 +16,10 @@
 		<link rel="shortcut icon" href="images/favicon.ico" />
 		<link rel='stylesheet' type="text/css" href='css/ccstyle.css'  media="screen" charset="utf-8">
 		<link rel='stylesheet' type="text/css" href='css/fusionlib.css' media="screen" charset="utf-8">
+		<link rel='stylesheet' type="text/css" href='css/jquery-ui.css' media="screen" charset="utf-8">
 		<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Lato">
 		<script language="javascript" type="text/javascript" src="javascript/jquery-1.11.3.min.js"></script>
+		<script language="javascript" type="text/javascript" src="javascript/jquery-ui.min.js"></script>
 		<script language="javascript" type="text/javascript" src="javascript/fusionlib.js"></script>
 		<script language="javascript" type="text/javascript" src="https://www.google.com/jsapi"></script>
 		<script language="javascript" type="text/javascript" src="javascript/challenge.js"></script>
@@ -62,14 +64,11 @@
 				</div>
 			</div>
 		</div>
-<!--	<div id='displayinfodiv' style='width:100%;height:500px;margin-top:60px;overflow-y:scroll;'>
-			<pre><?php //var_dump(json_decode($content, true)); ?></pre>
-		</div> -->
 		<div id="mainwrapper" class="mainwrapper">
 			<div class="oldcitywrapper">
 				<div id="oldcitydiv" class="w100fl h100fl">
-					<div id="apisettings-tab" class="citydiv">
-						Info and Settings
+					<div id="apisettings-tab" class="citydiv" style="background-color:#EEE;border-right:1px solid #DDD;border-left:1px solid #DDD;">
+						Settings
 					</div>
 					<div id="highcharts-tab" class="citydiv">
 						Incidents by Category
@@ -77,29 +76,63 @@
 					<div id="googlemaps-tab" class="citydiv">
 						Google Maps
 					</div>
-
-<!--
-					<div id="rangediv" class="w50fl h100fl" style="line-height:40px;">
-						<span class="fl" style="margin-left:10px;margin-right:10px;">Search Radius: </span>
-						<select id="searchbox" class="searchbox" onchange="runSearch(this.value)">
-							<option value="0.5">0.5 Miles</option>
-							<option value="1" selected>1 Mile</option>
-							<option value="5">5 Miles</option>
-							<option value="10">10 Miles</option>
-						</select>
+					<div id="about-tab" class="citydiv">
+						About
 					</div>
-					<div id="limitdiv" class="w50fl h100fl" style="line-height:40px;">
-						<span class="fl" style="margin-left:10px;margin-right:10px;">Max Results: </span>
-						<input type="text" id="maxresults" value="" class="searchbox" style="height:22px;border:1px solid #DDD;" onkeyup="FUSION.lib.noAlpha(this)" />
-					</div>
--->
 				</div>
 			</div>
 
-<!--			<div id="container" class="w100fl"></div>//-->
-			<div id="highcharts-div" class="w100fl" style="display:none;height:500px;">highcharts</div>
-			<div id="googlemaps-div" class="w100fl" style="display:none;height:500px;">google maps</div>
-			<div id="apisettings-div" class="w100fl" style="display:block;height:500px;">settings</div>
+			<div id="apisettings-div" class="w100fl" style="display:block;height:500px;">
+				<h3>Search Settings</h3>
+				<div class="settingsrow">
+					<span class="fl settingsspan">Max Results: </span>
+					<input type="text" id="maxresults" value="" class="searchbox searchinput" onkeyup="FUSION.lib.noAlpha(this)" />
+				</div>
+				<div class="settingsrow">
+					<span class="fl settingsspan">Range: </span>
+					<select id="range" class="searchbox" style="height:22px;">
+						<option value="">Select a Range...</option>
+						<option value="0.5">0.5 Miles</option>
+						<option value="1">1 Mile</option>
+						<option value="5">5 Miles</option>
+						<option value="10">10 Miles</option>
+					</select>
+				</div>
+				<div class="settingsrow">
+					<span class="fl settingsspan">Start Date: </span>
+					<input type="text" id="startdate" value="" class="searchbox searchinput" />
+				</div>
+				<div class="settingsrow">
+					<span class="fl settingsspan">End Date: </span>
+					<input type="text" id="enddate" value="" class="searchbox searchinput" />
+				</div>
+				<div class="settingsrow" style="text-align:center;width:100%;">
+					<input type="button" value="Submit Query" class="srchbtn" id="querybtn" />
+				</div>
+			</div>
+
+			<div id="highcharts-div" class="w100fl" style="display:none;height:500px;">
+				<h3>Incidents by Category</h3>
+			</div>
+			<div id="googlemaps-div" class="w100fl" style="display:none;height:500px;">
+				<h3>Incidents by Location</h3>
+			</div>
+
+			<div id="about-div" class="w100fl" style="display:none;height:500px;">
+				<h3>About This Project</h3>
+				<div class="settingsrow" style="width:100%;">
+					<p>
+						This page was created as part of a 24-hour Socrata Code Challenge.  It displays crime statistics for the city of Seattle, WA within a given radius of CenturyLink Field (default radius is 1 mile).
+					</p>
+					<p>
+						The data displayed are an attempt to show proper use of the SODA API, along with the Google Maps Javascript API and the Google Geocode API.  These data are not
+						to be used in any production environment or without proper attribution.
+					</p>
+					<p>
+						Please contact <a href="mailto:musicmunky@gmail.com">Timothy Andrews</a> for questions/comments.
+					</p>
+				</div>
+			</div>
 		</div>
 		<div class="footer">
 			<div class="innerfooter tac">

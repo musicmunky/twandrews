@@ -12,10 +12,30 @@ $( document ).ready(function() {
 		showDisplay(this);
 	});
 
-	var range  = 1; //range in miles
+	jQuery("#querybtn").click(function(){
+		runSearch();
+	});
 
-	//FUSION.get.node("footerlocation").innerHTML = locstr;
-	//runSearch(range);
+	$( "#startdate" ).datepicker({
+		changeMonth: true,
+		changeYear: true,
+		dateFormat: "yy-mm-dd",
+		showButtonPanel: true,
+		maxDate: "0",
+		minDate: "-365"
+	});
+	$( "#enddate" ).datepicker({
+		changeMonth: true,
+		changeYear: true,
+		dateFormat: "yy-mm-dd",
+		showButtonPanel: true,
+		maxDate: "0",
+		minDate: "-365"
+	});
+
+	clearSearchForm();
+	//runSearch();
+
 /*
 	$('#container').highcharts({
         title: {
@@ -65,9 +85,6 @@ $( document ).ready(function() {
     });
 */
 
-
-
-
 });
 
 
@@ -81,7 +98,7 @@ function showDisplay(t)
 			"background-color": "#FFF",
 			"border-right": "none",
 			"border-left": "none",
-			"width": "25%",
+// 			"width": "25%",
 		});
 		id = $(this).attr("id");
 		ary = id.split("-");
@@ -89,7 +106,7 @@ function showDisplay(t)
 	});
 
 	$(t).css({
-			"width": "calc(25% - 2px)",
+// 			"width": "calc(25% - 2px)",
 			"background-color": "#EEE",
 			"border-right": "1px solid #DDD",
 			"border-left": "1px solid #DDD",
@@ -111,21 +128,23 @@ function showDisplay(t)
 }
 
 
-function runSearch(r)
+function runSearch()
 {
-	var rng = r || "";
+
 	var str = "800 Occidental Ave S, Seattle, WA 98134"; //default address provided by Code Challenge
 
-	if(FUSION.lib.isBlank(rng)){
-		var atxt  = "<p style='margin:15px 5px 5px;text-align:center;font-size:16px;'>";
-			atxt += "Invalid range - please refresh the page and try again";
-			atxt += "</p>";
-		FUSION.lib.alert(atxt);
-		return false;
-	}
 
 	var max = FUSION.get.node("maxresults").value ? FUSION.get.node("maxresults").value : 1000;
 	max = parseInt(max) > 50000 ? 50000 : max;
+
+	var rng = 1;
+	if(FUSION.get.node("range").value)
+	{
+		rng = FUSION.get.node("range").value;
+	}
+
+	var start = FUSION.get.node("startdate").value ? FUSION.get.node("startdate").value : getDefaultDate();
+	var end   = FUSION.get.node("enddate").value ? FUSION.get.node("enddate").value : getDefaultDate();
 
 	str = str.replace(/\s/ig, "+");
 	var info = {
@@ -137,6 +156,8 @@ function runSearch(r)
 			"searchstring": str,
 			"range":		rng,
 			"limit":		max,
+			"startdate":	start,
+			"enddate":		end,
 			"timeout":		20000
 
 		},
@@ -166,6 +187,34 @@ function processSearchResults(h)
 			title: content[i].event_clearance_group
 		});
 	}
+}
 
+
+function clearSearchForm()
+{
+	FUSION.get.node("startdate").value = "";
+	FUSION.get.node("enddate").value = "";
+	FUSION.get.node("maxresults").value = "";
+	FUSION.get.node("range").selectedIndex = 0;
+}
+
+
+function getDefaultDate()
+{
+	var today = new Date();
+	var dd = today.getDate();
+	var mm = today.getMonth() + 1;
+	var yyyy = today.getFullYear();
+
+	if(dd < 10) {
+		dd = FUSION.lib.padZero(dd, 2);
+	}
+
+	if(mm < 10) {
+		mm = FUSION.lib.padZero(mm, 2);
+	}
+
+	today = yyyy + "-" + mm + "-" + dd;
+	return today;
 }
 
