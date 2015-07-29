@@ -173,7 +173,8 @@ function processSearchResults(h)
 
 	var mapOptions = {
 		zoom: 13,
-		center: new google.maps.LatLng(hash['latitude_center'], hash['longitude_center'])
+		center: new google.maps.LatLng(hash['latitude_center'], hash['longitude_center']),
+		scaleControl: true
 	};
 
 	var map = new google.maps.Map(FUSION.get.node("googlemaps-canvas"), mapOptions);

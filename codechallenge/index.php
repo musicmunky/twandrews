@@ -116,7 +116,7 @@
 			</div>
 			<div id="googlemaps-div" class="w100fl" style="display:none;height:500px;">
 				<h3>Incidents by Location</h3>
-				<div id="googlemaps-canvas" class="settingsrow" style="width:100%;"></div>
+				<div id="googlemaps-canvas" class="" style="width:100%;height:500px;/*line-height:24px;*/float:left;"></div>
 			</div>
 
 			<div id="about-div" class="w100fl" style="display:none;height:500px;">
