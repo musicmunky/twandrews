@@ -321,8 +321,8 @@ a {
 	color:#222;
 	width:200px;
 	text-align:left;
-	border:1px solid #DDD;
-	height:22px;
+/* 	border:1px solid #DDD; */
+/* 	height:22px; */
 	padding-left:5px;
 }
 
@@ -404,12 +404,12 @@ a {
 
 #srchcont {
 	text-align:right;
-	font-size:16px;
-	line-height:4em;
+	font-size:24px;
+	line-height:2.5em;
 }
 
 #searchform {
-	width:260px;
+	width:225px;
 }
 
 #srchicn {
@@ -600,7 +600,7 @@ a {
 	float:right;
 	height:100%;
 	padding-right:50px;
-	width:320px;
+	width:380px;
 }
 
 .footer-content-left {

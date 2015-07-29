@@ -19,7 +19,13 @@
 	define('INCLUDE_CHECK',true);
 	require_once 'connect.php';
 	require 'geocode.php';
-	require 'socrata.php';
+
+	require "phpsoda.phar";
+	use allejo\Socrata\SodaClient;
+	use allejo\Socrata\SodaDataset;
+	use allejo\Socrata\SoqlQuery;
+
+//	require 'socrata.php';
 
 	date_default_timezone_set('America/New_York');
 
@@ -71,12 +77,11 @@
 			$app_token = "rO91a2ol0Bibnga9u74y0VFNc";
 
 			$ginfo = getGoogleInfo($P['searchstring'], $m);
-			$range = $P['range'] * 1609.64; //convert miles to meters
+			$range = 1609.64; //magic number, but it's specified in the requirements
 
 			if($ginfo['status'] == "OK")
 			{
 				$gcontent = $ginfo['content'];
-				$content['result_count'] = $gcontent['result_count'];
 
 				if($gcontent['result_count'] > 1)
 				{
@@ -91,15 +96,55 @@
 					$latitude  = $locations[$placeid]['lat'];
 					$longitude = $locations[$placeid]['lng'];
 
-					if($latitude != NULL && $longitude != NULL && $range != NULL)
-					{
-						// Create a new unauthenticated client
-						$socrata = new Socrata($root_url, $app_token);
 
-						$params = array("\$where" => "within_circle(location, $latitude, $longitude, $range)");
+					$sodaClient  = new SodaClient($root_url, $app_token);
+					$sodaDataset = new SodaDataset($sodaClient, $view_uid);
+					$soqlQuery   = new SoqlQuery();
 
-						$content['response'] = $socrata->get("/resource/$view_uid.json", $params);
+					//for whatever reason the "location" string returns an error when the query is attempted,
+					//but "incident_location" works correctly, even thought it *should* be deprecated
+					//may research further if time allows
+
+//					$loc_type = "location";
+					$loc_type = "incident_location";
+
+					$datestr = " and event_clearance_date > '2015-01-27T00:00:00' and event_clearance_date < '2015-07-27T23:59:59'";
+					$soqlQuery->where("within_circle($loc_type, $latitude, $longitude, $range)" . $datestr);
+					if(isset($P['limit'])){
+						$soqlQuery->limit(intval($P['limit']));
 					}
+					$results = $sodaDataset->getDataset($soqlQuery);
+					$content['response_content'] = $results;
+					$content['response_count'] = count($results);
+					$content['latitude_center'] = $latitude;
+					$content['longitude_center'] = $longitude;
+					$content['initial_types'] = getIncidentTypes($results);
+					$status = "success";
+
+// 					$metadata = $sodaDataset->getMetadata();
+// 					$content['response_metadata'] = $metadata;
+
+/*
+					// Create a new unauthenticated client
+					$socrata = new Socrata($root_url, $app_token);
+
+					//send the query to the server
+					$datestr = " and event_clearance_date > '2015-01-27T00:00:00' and event_clearance_date < '2015-07-27T23:59:59'";
+					$params  = array("\$where" => "within_circle($loc_type, $latitude, $longitude, $range)" . $datestr, "\$limit" => 2000);
+					$response = $socrata->get("/resource/$view_uid.json", $params);
+
+					$content['response_content'] = $response['RESPONSE_CONTENT'];
+					$content['response_code'] 	 = $response['RESPONSE_CODE'];
+					if($response['RESPONSE_CODE'] == 200)
+					{
+						$content['response_count'] = count($response['RESPONSE_CONTENT']);
+						$status = "success";
+					}
+					else
+					{
+						$status = "Unable to complete request to data server";
+					}
+*/
 				}
 			}
 			else
@@ -123,6 +168,26 @@
 	}
 
 
+	function getIncidentTypes($data)
+	{
+		$types = array();
+		for($i = 0; $i < count($data); $i++)
+		{
+			$itg = $data[$i]['initial_type_group'];
+// 			if(isset($types[$itg]))
+			if(array_key_exists($itg, $types))
+			{
+				$types[$itg]++;
+			}
+			else
+			{
+				$types[$itg] = 1;
+			}
+		}
+		return $types;
+	}
+
+
 	function getGoogleInfo($s, $m)
 	{
 		$tmp = escapeArray(array($s), $m);
@@ -131,7 +196,7 @@
 		$message = "";
 		$google	 = array();
 
-		$gc = new Geocode(true);
+		$gc = new Geocode($m);
 		$gc->loadGeoData($search);
 
 		$status = $gc->getStatus();

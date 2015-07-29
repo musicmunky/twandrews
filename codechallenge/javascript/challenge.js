@@ -8,35 +8,124 @@ $( document ).ready(function() {
 		document.body.style.fontFamily = "'Trebuchet MS', Helvetica, sans-serif";
 	}
 
-	var locstr = "800 Occidental Ave S, Seattle, WA 98134"; //default address provided by Code Challenge
+	jQuery(".citydiv").click(function(){
+		showDisplay(this);
+	});
+
 	var range  = 1; //range in miles
 
-	FUSION.get.node("footerlocation").innerHTML = locstr;
-	runSearch(locstr, range);
+	//FUSION.get.node("footerlocation").innerHTML = locstr;
+	//runSearch(range);
+/*
+	$('#container').highcharts({
+        title: {
+            text: 'Monthly Average Temperature',
+            x: -20 //center
+        },
+        subtitle: {
+            text: 'Source: WorldClimate.com',
+            x: -20
+        },
+        xAxis: {
+            categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        },
+        yAxis: {
+            title: {
+                text: 'Temperature (°C)'
+            },
+            plotLines: [{
+                value: 0,
+                width: 1,
+                color: '#808080'
+            }]
+        },
+        tooltip: {
+            valueSuffix: '°C'
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'middle',
+            borderWidth: 0
+        },
+        series: [{
+            name: 'Tokyo',
+            data: [7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2, 26.5, 23.3, 18.3, 13.9, 9.6]
+        }, {
+            name: 'New York',
+            data: [-0.2, 0.8, 5.7, 11.3, 17.0, 22.0, 24.8, 24.1, 20.1, 14.1, 8.6, 2.5]
+        }, {
+            name: 'Berlin',
+            data: [-0.9, 0.6, 3.5, 8.4, 13.5, 17.0, 18.6, 17.9, 14.3, 9.0, 3.9, 1.0]
+        }, {
+            name: 'London',
+            data: [3.9, 4.2, 5.7, 8.5, 11.9, 15.2, 17.0, 16.6, 14.2, 10.3, 6.6, 4.8]
+        }]
+    });
+*/
+
+
+
 
 });
 
 
-function runSearch(s, r)
+function showDisplay(t)
 {
-	var str = s || "";
-	var rng = r || "";
+	var id = "";
+	var div = {};
+	var ary = [];
+	$(".citydiv").each( function() {
+		$(this).css({
+			"background-color": "#FFF",
+			"border-right": "none",
+			"border-left": "none",
+			"width": "25%",
+		});
+		id = $(this).attr("id");
+		ary = id.split("-");
+		FUSION.get.node(ary[0] + "-div").style.display = "none";
+	});
 
-	if(FUSION.lib.isBlank(str)){
-		var atxt  = "<p style='margin:15px 5px 5px;text-align:center;font-size:16px;font-weight:bold;color:#D00;'>";
-			atxt += "Invalid location string - please refresh the page and try again";
-			atxt += "</p>";
-		FUSION.lib.alert(atxt);
-		return false;
-	}
+	$(t).css({
+			"width": "calc(25% - 2px)",
+			"background-color": "#EEE",
+			"border-right": "1px solid #DDD",
+			"border-left": "1px solid #DDD",
+	});
+	ary = $(t).attr("id").split("-");
+	var divid = ary[0];
+	/*
+	switch(divid) {
+		case "highcharts":
+			FUSION.lib.alert("<p>Error completing request: " + divid + "</p>");
+			break;
+		case "googlemaps":
+			FUSION.lib.alert("<p>Call to server aborted: " + divid + "</p>");
+			break;
+		default:
+			FUSION.error.logError("Invalid option selected", "Page Error");
+	}*/
+	FUSION.get.node(divid + "-div").style.display = "block";
+}
+
+
+function runSearch(r)
+{
+	var rng = r || "";
+	var str = "800 Occidental Ave S, Seattle, WA 98134"; //default address provided by Code Challenge
 
 	if(FUSION.lib.isBlank(rng)){
-		var atxt  = "<p style='margin:15px 5px 5px;text-align:center;font-size:16px;font-weight:bold;color:#D00;'>";
+		var atxt  = "<p style='margin:15px 5px 5px;text-align:center;font-size:16px;'>";
 			atxt += "Invalid range - please refresh the page and try again";
 			atxt += "</p>";
 		FUSION.lib.alert(atxt);
 		return false;
 	}
+
+	var max = FUSION.get.node("maxresults").value ? FUSION.get.node("maxresults").value : 1000;
+	max = parseInt(max) > 50000 ? 50000 : max;
 
 	str = str.replace(/\s/ig, "+");
 	var info = {
@@ -46,16 +135,37 @@ function runSearch(s, r)
 			"method": 		"getSocrataInfo",
 			"libcheck": 	true,
 			"searchstring": str,
-			"range":		rng
+			"range":		rng,
+			"limit":		max,
+			"timeout":		20000
+
 		},
-		"func": processCrimeSearch
+		"func": processSearchResults
 	};
 	FUSION.lib.ajaxCall(info);
 }
 
 
-function processCrimeSearch(h)
+function processSearchResults(h)
 {
 	var hash = h || {};
+	var content = hash['response_content'];
+
+	var mapOptions = {
+		zoom: 13,
+		center: new google.maps.LatLng(hash['latitude_center'], hash['longitude_center'])
+	};
+
+	var map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
+
+	for(var i = 0; i < hash['response_count']; i++)
+	{
+		var marker = new google.maps.Marker({
+			position: new google.maps.LatLng(content[i].latitude, content[i].longitude),
+			map: map,
+			title: content[i].event_clearance_group
+		});
+	}
+
 }
 

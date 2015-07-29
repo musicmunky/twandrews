@@ -74,7 +74,6 @@
 		function __construct($mysqli)
 		{
 			try {
-				$mysqli->select_db("andrewsdb");
 				$apiqry = $mysqli->prepare("SELECT APIKEY, URL FROM weatherapikeys WHERE SERVICE='google';");
 				$apiqry->execute();
 
@@ -85,7 +84,7 @@
 				else
 				{
 					$result = $apiqry->get_result();
-					$rfetch	= $result->fetch_assoc();
+					$apinfo	= $result->fetch_assoc();
 					$this->setApiKey($apinfo['APIKEY']);
 					$this->setApiUrl($apinfo['URL']);
 				}

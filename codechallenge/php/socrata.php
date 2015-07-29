@@ -68,16 +68,25 @@
 		// Convenience function for GET calls
 		public function get($path, $params = array()) {
 
+			$curl_response = array();
+
 			$handle = $this->create_curl_handle($path, $params);
 
-			$response = curl_exec($handle);
+			$curl_exec = curl_exec($handle);
 			$code = curl_getinfo($handle, CURLINFO_HTTP_CODE);
-			if($code != "200") {
-				echo "Error \"$code\" from server: $response";
-				die();
-			}
 
-			return json_decode($response, true);
+
+//			if($code != "200") {
+// 				echo "Error \"$code\" from server: $curl_exec";
+//				die();
+// 			}
+//			else
+//			{
+				$curl_response['RESPONSE_CONTENT'] = json_decode($curl_exec, true);
+				$curl_response['RESPONSE_CODE'] = $code;
+//			}
+
+			return $curl_response;
 		}
 
 		// Convenience function for Posts

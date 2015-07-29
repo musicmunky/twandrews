@@ -1,4 +1,3 @@
-
 /**
  *	FUSION javascipt library
  *
@@ -840,7 +839,12 @@ FUSION.lib = {
 	//prevents a users from typing anything but numer characters in a text field
 	noAlpha: function(th)
 	{
-		th.value = th.value.replace(/[^\d]+/,"");
+		try{
+			th.value = th.value.replace(/[^\d]+/,"");
+		}
+		catch(err){
+			FUSION.error.logError(err);
+		}
 	},
 
 	//check if the given object is a DOM node
