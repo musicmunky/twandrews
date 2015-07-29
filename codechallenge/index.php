@@ -120,7 +120,7 @@
 				<div id="hc-controls" style="width:100%;line-height:40px;height:120px;">
 					<div style="width:50%;float:left;">
 						<span class="fl settingsspan" style="width:100px;">Chart Type: </span>
-						<select id="charttype" class="searchbox" style="height:22px;margin-top:0px;width:150px;">
+						<select id="charttype" class="searchbox" onchange="sliderUpdateChart()" style="height:22px;margin-top:0px;width:150px;">
 							<option value="">Select a Type...</option>
 							<option value="pie">Pie</option>
 							<option value="column">Column</option>
