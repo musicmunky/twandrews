@@ -30,6 +30,11 @@ p {
 	line-height:24px;
 }
 
+.highcharts-container {
+	width:100% !important;
+/* 	height:100% !important; */
+}
+
 .fl {
 	float:left;
 }

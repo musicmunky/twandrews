@@ -173,6 +173,8 @@ function processSearchResults(h)
 
 	getChart();
 
+	showDisplay(FUSION.get.node("highcharts-tab"));
+
 	var mapOptions = {
 		zoom: 13,
 		center: new google.maps.LatLng(hash['latitude_center'], hash['longitude_center']),

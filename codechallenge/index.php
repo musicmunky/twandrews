@@ -24,25 +24,11 @@
 		<script language="javascript" type="text/javascript" src="javascript/moment.min.js"></script>
 		<script language="javascript" type="text/javascript" src="https://www.google.com/jsapi"></script>
 		<script language="javascript" type="text/javascript" src="http://code.highcharts.com/highcharts.js"></script>
-		<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAItsJVet4OiBn43s-X40CmFFKTbGEzcUY"></script>
+		<script language="javascript" type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAItsJVet4OiBn43s-X40CmFFKTbGEzcUY"></script>
 		<script language="javascript" type="text/javascript" src="javascript/challenge.js"></script>
 		<script language="javascript" type="text/javascript" src="javascript/hcjs.js"></script>
-		<script type="text/javascript">
-			/*
-			function initialize() {
-				var mapOptions = {
-					center: { lat: 47.5951456, lng: -122.331601},
-					zoom: 15
-				};
-				var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
-			}
-			google.maps.event.addDomListener(window, 'load', initialize);
-			*/
-		</script>
 	</head>
 	<body>
-		<!-- default to Seattle if there's no localStorage -->
-		<input type="hidden" id="defaultzipcode" value="98134" />
 		<div id="header" class="header">
 			<div id="headercont" class="header-content">
 				<div class="header-logo">
@@ -103,11 +89,11 @@
 				</div>
 				<div class="settingsrow">
 					<span class="fl settingsspan">Start Date: </span>
-					<input type="text" id="startdate" value="" class="searchbox searchinput" />
+					<input type="text" style="color:#333;line-height:22px;" id="startdate" value="" class="searchbox searchinput" />
 				</div>
 				<div class="settingsrow">
 					<span class="fl settingsspan">End Date: </span>
-					<input type="text" id="enddate" value="" class="searchbox searchinput" />
+					<input type="text" style="color:#333;line-height:22px;" id="enddate" value="" class="searchbox searchinput" />
 				</div>
 				<div class="settingsrow" style="text-align:center;width:100%;">
 					<input type="button" value="Submit Query" class="srchbtn" id="querybtn" />
@@ -146,7 +132,7 @@
 						<div id="dateslider" style="width:calc(100% - 30px);float:left;margin-left:15px;"></div>
 					</div>
 				</div>
-				<div id="hc-container" style="width:100%;height:500px;float:left;"></div>
+				<div id="hc-container" class="highcharts-container" style="/*width:100%;*/height:650px;"></div>
 			</div>
 
 			<!-- GOOGLE MAPS DIV -->
@@ -160,11 +146,12 @@
 				<h3>About This Project</h3>
 				<div class="settingsrow" style="width:100%;">
 					<p>
-						This page was created as part of a 24-hour Socrata Code Challenge.  It displays crime statistics for the city of Seattle, WA within a given radius of CenturyLink Field (default radius is 1 mile).
+						This page was created as part of a 24-hour Socrata Code Challenge.
+						It displays crime statistics for the city of Seattle, WA within a given radius of CenturyLink Field (default radius is 1 mile).
 					</p>
 					<p>
-						The data displayed are an attempt to show proper use of the SODA API, along with the Google Maps Javascript API and the Google Geocode API.  These data are not
-						to be used in any production environment or without proper attribution.
+						The data displayed are an attempt to show proper use of the SODA API, along with the Google Maps Javascript API and the Google Geocode API.
+						These data are not to be used in any production environment or without proper attribution.
 					</p>
 					<p>
 						Please contact <a href="mailto:musicmunky@gmail.com">Timothy Andrews</a> for questions/comments.
