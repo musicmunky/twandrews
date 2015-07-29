@@ -53,8 +53,12 @@ $( document ).ready(function() {
         slide: function(event, ui) {
 			var minDate = new Date(ui.values[0] * 86400000);
 			var maxDate = new Date(ui.values[1] * 86400000);
+			//clearing and setting the timeout for the slider
+			//this is put in place so there is a brief delay after the user stops moving
+			//the slider to avoid spamming the server with requests
+			//...not the most elegant solution, I know, but it *does* work.
 			clearTimeout(slidetimeout);
-			slidetimeout = setTimeout(function(){ sliderUpdateChart({"min":minDate, "max":maxDate}); }, 2000);
+			slidetimeout = setTimeout(function(){ sliderUpdateChart({"min":minDate, "max":maxDate}); }, 1000);
 			setDateRangeDisplay(minDate, maxDate);
 		}
     });

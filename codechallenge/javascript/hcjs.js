@@ -11,6 +11,10 @@ function sliderUpdateChart(mm)
 
 	var param  = FUSION.get.node("chartparams").value;
 	var partxt = FUSION.get.selectedText("chartparams");
+	if(partxt == "Select a Parameter...")
+	{
+		partxt = "Call Type";
+	}
 	var start	= "";
 	var end 	= "";
 
