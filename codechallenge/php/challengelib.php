@@ -77,7 +77,7 @@
 			$app_token = "rO91a2ol0Bibnga9u74y0VFNc";
 
 			$ginfo = getGoogleInfo($P['searchstring'], $m);
-			$range = 1609.64; //magic number, but it's specified in the requirements
+			$range = (isset($P['range'])) ? ($P['range'] * 1609.34) : 1609.34; //magic number, but it's specified in the requirements
 
 			if($ginfo['status'] == "OK")
 			{
@@ -108,43 +108,33 @@
 //					$loc_type = "location";
 					$loc_type = "incident_location";
 
-					$datestr = " and event_clearance_date > '2015-01-27T00:00:00' and event_clearance_date < '2015-07-27T23:59:59'";
-					$soqlQuery->where("within_circle($loc_type, $latitude, $longitude, $range)" . $datestr);
-					if(isset($P['limit'])){
+					$today     = date("Y-d-m");
+					$enddate   = isset($P['enddate']) ? $P['enddate'] . "T23:59:59" : $today . "T23:59:59";
+					$tmpstart  = strtotime($today . " -1 year");
+					$startdate = isset($P['startdate']) ? $P['startdate'] . "T23:59:59" : date("Y-d-m", $tmpstart) . "T23:59:59";
+					$datestr   = " and event_clearance_date > '" . $startdate . "' and event_clearance_date < '" . $enddate . "'";
+
+					$soqlQuery->where("within_circle(" .
+									  		$loc_type . ", " .
+									  		$latitude . ", " .
+									  		$longitude . ", " .
+									  		$range . ")" . $datestr);
+					if(isset($P['limit']))
+					{
 						$soqlQuery->limit(intval($P['limit']));
 					}
+
 					$results = $sodaDataset->getDataset($soqlQuery);
 					$content['response_content'] = $results;
 					$content['response_count'] = count($results);
 					$content['latitude_center'] = $latitude;
 					$content['longitude_center'] = $longitude;
-					$content['initial_types'] = getIncidentTypes($results);
+
 					$status = "success";
 
+// 					$content['initial_types'] = getIncidentTypes($results);
 // 					$metadata = $sodaDataset->getMetadata();
 // 					$content['response_metadata'] = $metadata;
-
-/*
-					// Create a new unauthenticated client
-					$socrata = new Socrata($root_url, $app_token);
-
-					//send the query to the server
-					$datestr = " and event_clearance_date > '2015-01-27T00:00:00' and event_clearance_date < '2015-07-27T23:59:59'";
-					$params  = array("\$where" => "within_circle($loc_type, $latitude, $longitude, $range)" . $datestr, "\$limit" => 2000);
-					$response = $socrata->get("/resource/$view_uid.json", $params);
-
-					$content['response_content'] = $response['RESPONSE_CONTENT'];
-					$content['response_code'] 	 = $response['RESPONSE_CODE'];
-					if($response['RESPONSE_CODE'] == 200)
-					{
-						$content['response_count'] = count($response['RESPONSE_CONTENT']);
-						$status = "success";
-					}
-					else
-					{
-						$status = "Unable to complete request to data server";
-					}
-*/
 				}
 			}
 			else

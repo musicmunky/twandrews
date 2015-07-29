@@ -22,9 +22,10 @@
 		<script language="javascript" type="text/javascript" src="javascript/jquery-ui.min.js"></script>
 		<script language="javascript" type="text/javascript" src="javascript/fusionlib.js"></script>
 		<script language="javascript" type="text/javascript" src="https://www.google.com/jsapi"></script>
-		<script language="javascript" type="text/javascript" src="javascript/challenge.js"></script>
 		<script language="javascript" type="text/javascript" src="http://code.highcharts.com/highcharts.js"></script>
 		<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAItsJVet4OiBn43s-X40CmFFKTbGEzcUY"></script>
+		<script language="javascript" type="text/javascript" src="javascript/challenge.js"></script>
+		<script language="javascript" type="text/javascript" src="javascript/hcjs.js"></script>
 		<script type="text/javascript">
 			/*
 			function initialize() {
@@ -82,6 +83,7 @@
 				</div>
 			</div>
 
+			<!-- SETTINGS DIV -->
 			<div id="apisettings-div" class="w100fl" style="display:block;height:500px;">
 				<h3>Search Settings</h3>
 				<div class="settingsrow">
@@ -111,14 +113,48 @@
 				</div>
 			</div>
 
+			<!-- HIGHCHARTS DIV -->
 			<div id="highcharts-div" class="w100fl" style="display:none;height:500px;">
 				<h3>Incidents by Category</h3>
-			</div>
-			<div id="googlemaps-div" class="w100fl" style="display:none;height:500px;">
-				<h3>Incidents by Location</h3>
-				<div id="googlemaps-canvas" class="" style="width:100%;height:500px;/*line-height:24px;*/float:left;"></div>
+				<div id="hc-controls" style="width:100%;line-height:40px;height:120px;">
+					<div style="width:50%;float:left;">
+						<span class="fl settingsspan" style="width:100px;">Chart Type: </span>
+						<select id="charttype" class="searchbox" style="height:22px;margin-top:0px;width:150px;">
+							<option value="">Select a Type...</option>
+							<option value="pie">Pie</option>
+							<option value="column">Column</option>
+							<option value="bar">Bar</option>
+						</select>
+					</div>
+					<div style="width:50%;float:left;">
+						<span class="fl settingsspan" style="width:150px;">Display Parameter: </span>
+						<select id="chartparams" class="searchbox" style="height:22px;margin-top:0px;width:200px;">
+							<option value="">Select a Parameter...</option>
+							<option value="initial_type_group">Call Type</option>
+							<option value="district_sector">District Sector</option>
+							<option value="zone_beat">Zone</option>
+							<option value="hundred_block_location">General Location</option>
+							<option value="event_clearance_description">Description</option>
+						</select>
+					</div>
+
+					<div style="width:100%;float:left;">
+						<span class="fl settingsspan" style="width:100%;">Date Range: <span id="daterangespan" style="margin-left:20px;"></span></span>
+					</div>
+					<div style="width:100%;float:left;">
+						<div id="dateslider" style="width:calc(100% - 30px);float:left;margin-left:15px;"></div>
+					</div>
+				</div>
+				<div id="hc-container" style="width:100%;height:500px;float:left;"></div>
 			</div>
 
+			<!-- GOOGLE MAPS DIV -->
+			<div id="googlemaps-div" class="w100fl" style="display:none;height:500px;">
+				<h3>Incidents by Location</h3>
+				<div id="googlemaps-canvas" class="" style="width:100%;height:500px;float:left;"></div>
+			</div>
+
+			<!-- ABOUT DIV -->
 			<div id="about-div" class="w100fl" style="display:none;height:500px;">
 				<h3>About This Project</h3>
 				<div class="settingsrow" style="width:100%;">
