@@ -115,10 +115,10 @@
 					$datestr   = " and event_clearance_date > '" . $startdate . "' and event_clearance_date < '" . $enddate . "'";
 
 					$soqlQuery->where("within_circle(" .
-									  		$loc_type . ", " .
-									  		$latitude . ", " .
-									  		$longitude . ", " .
-									  		$range . ")" . $datestr);
+										$loc_type . ", " .
+										$latitude . ", " .
+										$longitude . ", " .
+										$range . ")" . $datestr);
 					if(isset($P['limit']))
 					{
 						$soqlQuery->limit(intval($P['limit']));
@@ -164,7 +164,6 @@
 		for($i = 0; $i < count($data); $i++)
 		{
 			$itg = $data[$i]['initial_type_group'];
-// 			if(isset($types[$itg]))
 			if(array_key_exists($itg, $types))
 			{
 				$types[$itg]++;

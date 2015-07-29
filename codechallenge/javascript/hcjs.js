@@ -12,71 +12,194 @@ function getChart()
 function sliderUpdateChart()
 {
 	var charttype = FUSION.lib.isBlank(FUSION.get.node("charttype").value) ? "pie" : FUSION.get.node("charttype").value;
-	var lsinfo = localStorage.getItem("SODAquery");
-
-
-
+	switch(charttype) {
+		case "pie":
+			getPieChart();
+			break;
+		case "column":
+			getColumnChart();
+			break;
+		case "bar":
+			getBarChart();
+			break;
+		default:
+			getPieChart();
+	}
 }
 
 
 function getPieChart()
 {
-	$('#hc-container').highcharts({
-        chart: {
-            plotBackgroundColor: null,
-            plotBorderWidth: null,
-            plotShadow: false,
-            type: 'pie'
-        },
-        title: {
-            text: 'Browser market shares January, 2015 to May, 2015'
-        },
-        tooltip: {
-            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
-        },
-        plotOptions: {
-            pie: {
-                allowPointSelect: true,
-                cursor: 'pointer',
-                dataLabels: {
-                    enabled: true,
-                    format: '<b>{point.name}</b>: {point.percentage:.1f} %',
-                    style: {
-                        color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
-                    }
-                }
-            }
-        },
-        series: [{
-            name: "Brands",
-            colorByPoint: true,
-            data: [{
-                name: "Microsoft Internet Explorer",
-                y: 56.33
-            }, {
-                name: "Chrome",
-                y: 24.03,
-                sliced: true,
-                selected: true
-            }, {
-                name: "Firefox",
-                y: 10.38
-            }, {
-                name: "Safari",
-                y: 4.77
-            }, {
-                name: "Opera",
-                y: 0.91
-            }, {
-                name: "Proprietary or Undetectable",
-                y: 0.2
-            }]
-        }]
-    });
+	var param = FUSION.get.node("chartparams").value;
+	var partxt = FUSION.get.selectedText("chartparams");
+	var datestr = FUSION.get.node("daterangespan").innerHTML;
+	var datearr = datestr.split(" - ");
+	var start = datearr[0];
+	var end = datearr[1];
+
+	var lsdata = localStorage.getItem("SODAquery");
+	var sodata = {};
+	var chdata = [];
+	try {
+		sodata = JSON.parse(lsdata);
+	}
+	catch(err){
+		FUSION.error.logError(err);
+	}
+
+	var totals = parseInt(sodata['response_count']);
+	if(totals > 0)
+	{
+		var tmp = {};
+		var entry = {};
+		var pval = "";
+		for(var i = 0; i < totals; i++)
+		{
+			tmp = sodata['response_content'][i];
+			if(tmp.hasOwnProperty(param))
+			{
+				pval = tmp[param];
+				var check = $.grep(chdata, function(e) { return e.name == pval });
+				if(check.length == 0)
+				{
+					chdata.push({ name: pval, y: 1 });
+				}
+				else
+				{
+					check[0].y++;
+				}
+			}
+		}
+
+		$('#hc-container').highcharts({
+			chart: {
+				plotBackgroundColor: null,
+				plotBorderWidth: null,
+				plotShadow: false,
+				type: 'pie'
+			},
+			title: {
+				text: "Crimes Reported Around CenturyLink Field, Grouped By " + partxt
+			},
+			tooltip: {
+				pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+			},
+			plotOptions: {
+				pie: {
+					allowPointSelect: true,
+					cursor: 'pointer',
+					dataLabels: {
+						enabled: true,
+						format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+						style: {
+							color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+						}
+					}
+				}
+			},
+			series: [{
+				name: "Reported Crimes",
+				colorByPoint: true,
+				data: chdata
+			}]
+		});
+	}
 }
 
 
 function getBarChart()
+{
+	var param = FUSION.get.node("chartparams").value;
+	var partxt = FUSION.get.selectedText("chartparams");
+
+	var lsdata = localStorage.getItem("SODAquery");
+	var sodata = {};
+	var chdata = [];
+	try {
+		sodata = JSON.parse(lsdata);
+	}
+	catch(err){
+		FUSION.error.logError(err);
+	}
+
+	var totals = parseInt(sodata['response_count']);
+	if(totals > 0)
+	{
+		var tmp = {};
+		var entry = {};
+		var pval = "";
+		for(var i = 0; i < totals; i++)
+		{
+			tmp = sodata['response_content'][i];
+			if(tmp.hasOwnProperty(param))
+			{
+				pval = tmp[param];
+				var check = $.grep(chdata, function(e) { return e.name == pval });
+				if(check.length == 0)
+				{
+					chdata.push({ name: pval, data: [1] });
+				}
+				else
+				{
+					check[0].data[0]++;
+				}
+			}
+		}
+
+		$('#hc-container').highcharts({
+			chart: {
+				type: 'bar'
+			},
+			title: {
+				text: "Crimes Reported Around CenturyLink Field, Grouped By " + partxt
+			},
+			xAxis: {
+				categories: [partxt],
+				title: {
+					text: null
+				}
+			},
+			yAxis: {
+				min: 0,
+				title: {
+					text: 'Incidents Reported',
+					align: 'high'
+				},
+				labels: {
+					overflow: 'justify'
+				}
+			},
+			tooltip: {
+				valueSuffix: ''
+			},
+			plotOptions: {
+				bar: {
+					dataLabels: {
+						enabled: true
+					}
+				}
+			},
+			legend: {
+				layout: 'vertical',
+				align: 'right',
+				verticalAlign: 'top',
+				x: -10,
+				y: 80,
+				floating: false,
+				borderWidth: 1,
+				backgroundColor: ((Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'),
+				shadow: false
+			},
+			credits: {
+				enabled: false
+			},
+			series: chdata
+		});
+	}
+}
+
+
+function getColumnChart()
 {
 	$('#hc-container').highcharts({
         chart: {

@@ -114,7 +114,7 @@
 			</div>
 
 			<!-- HIGHCHARTS DIV -->
-			<div id="highcharts-div" class="w100fl" style="display:none;height:500px;">
+			<div id="highcharts-div" class="w100fl" style="display:none;height:750px;">
 				<h3>Incidents by Category</h3>
 				<div id="hc-controls" style="width:100%;line-height:40px;height:120px;">
 					<div style="width:50%;float:left;">
@@ -128,8 +128,8 @@
 					</div>
 					<div style="width:50%;float:left;">
 						<span class="fl settingsspan" style="width:150px;">Display Parameter: </span>
-						<select id="chartparams" class="searchbox" style="height:22px;margin-top:0px;width:200px;">
-							<option value="">Select a Parameter...</option>
+						<select id="chartparams" class="searchbox" onchange="sliderUpdateChart()" style="height:22px;margin-top:0px;width:200px;">
+							<option value="initial_type_group">Select a Parameter...</option>
 							<option value="initial_type_group">Call Type</option>
 							<option value="district_sector">District Sector</option>
 							<option value="zone_beat">Zone</option>
