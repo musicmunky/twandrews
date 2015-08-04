@@ -621,7 +621,7 @@ FUSION.lib = {
 						FUSION.error.showError("The call to the server failed", "AJAX Error");
 				}
 			},
-			timeout: tmot
+			//timeout: tmot
 		});
 		return false;
 	},

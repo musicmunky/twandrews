@@ -216,7 +216,6 @@
 					if($rfa['PAGESTAT'] != $pstat)// && $rfw['PAGESTAT'] != "" && $pstat != "")
 					{
 						$prevstt = $rfa['PAGESTAT'];
-//						$prevstt = "FOOBAR";
 					}
 					$oldtype->close();
 

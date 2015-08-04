@@ -193,19 +193,22 @@ function createLi(hash)
 	var stt = h['pstat'];
 
 	var newli = FUSION.lib.createHtmlElement({"type":"li","attributes":{"id":"li_" + iid, "class":"linav"}});
-	var plink = FUSION.lib.createHtmlElement({"type":"a","attributes":{
-															"id":"link_" + iid,
-															"target":"_blank",
-															"href":lnk},
+	var plink = FUSION.lib.createHtmlElement({"type":"a",
+											  "attributes":{
+												"id":"link_" + iid,
+												"target":"_blank",
+												"href":lnk},
 												"text":nam});
-	var elink = FUSION.lib.createHtmlElement({"type":"a","attributes":{
-															"title":"Edit " + nam,
-															"class":"editlnk glyphicon glyphicon-pencil",
-															"id":"editlnk_" + iid}});
-	var rlink = FUSION.lib.createHtmlElement({"type":"a","attributes":{
-															"title":"Remove " + nam,
-															"class":"remlnk glyphicon glyphicon-remove",
-															"id":"remlnk_" + iid}});
+	var elink = FUSION.lib.createHtmlElement({"type":"a",
+											  "attributes":{
+												"title":"Edit " + nam,
+												"class":"editlnk glyphicon glyphicon-pencil",
+												"id":"editlnk_" + iid}});
+	var rlink = FUSION.lib.createHtmlElement({"type":"a",
+											  "attributes":{
+												"title":"Remove " + nam,
+												"class":"remlnk glyphicon glyphicon-remove",
+												"id":"remlnk_" + iid}});
 	if(typ == "project")
 	{
 		var cls = "";
