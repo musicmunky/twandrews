@@ -207,6 +207,7 @@ function processSearchResults(h)
 		});
 		markers.push(marker);
 	}
+
 }
 
 //a couple of simple functions to remove the markers from the google map
