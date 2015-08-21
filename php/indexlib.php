@@ -17,7 +17,7 @@
 	}
 
 	define('INCLUDE_CHECK',true);
-	require_once $_SERVER['DOCUMENT_ROOT'] . 'php/indexconnect.php';
+	require_once $_SERVER['DOCUMENT_ROOT'] . '/php/indexconnect.php';
 
 	date_default_timezone_set('America/New_York');
 

@@ -21,6 +21,10 @@
 	$prdtext = "";
 	$devtext = "";
 
+	$compshtml  = "";
+	$dvlpmhtml  = "";
+	$toolshtml	= "";
+
 	if(!isset($_SESSION['username']) || !isset($_SESSION['userid']))
 	{
 		header('Location: login.php');
@@ -29,9 +33,6 @@
 	{
 		$mysqli->select_db("andrewsdb");
 
-		$compshtml  = "";
-		$dvlpmhtml  = "";
-		$toolshtml	= "";
 		$projs		= $mysqli->query("SELECT * FROM projectpages
 									  WHERE PAGETYPE='project'
 									  ORDER BY PAGESTAT ASC, ID ASC;");
