@@ -35,6 +35,19 @@ ul {
 	vertical-align:middle;
 	margin-top:-5px;
 }
+
+.titlespan {
+	box-shadow: 0 5px 1px -5px #666;
+	width:100%;
+	float:left;
+	display:block;
+	font-size:36px;
+	text-align:center;
+	color:#666;
+	font-weight:bold;
+	margin-bottom:10px;
+}
+
 .nswarning { color:#dd9a3b; }
 .nsokay { color:#5CB85C; }
 .mainwrapper {
@@ -44,7 +57,7 @@ ul {
 	height: 100%;
 	margin-left: auto;
 	margin-right: auto;
-	min-height: 700px;
+	min-height: 835px;
 	padding-left: 10px;
 	padding-right: 10px;
 	width: 1000px;

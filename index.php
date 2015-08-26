@@ -103,7 +103,8 @@
 	<body>
 		<div class="mainwrapper">
 			<div class="maindiv">
-				<div style="width:100%;margin-top:50px;">
+				<div style="width:100%;margin-top:25px;">
+					<span class="titlespan">MyDevelopment Projects</span>
 					<div id="projectdiv" class="pagecolumn">
 						<div class="colheader">
 							Please choose a project:
