@@ -78,7 +78,7 @@
 			if($loadfromdb)
 			{
 				try {
-					$apinfo = mysql_fetch_assoc(mysql_query("SELECT APIKEY, URL FROM weatherapikeys WHERE SERVICE='google';"));
+					$apinfo = mysql_fetch_assoc(mysql_query("SELECT APIKEY, URL FROM apikeys WHERE SERVICE='google';"));
 					$apikey = $apinfo['APIKEY'];
 					$apiurl = $apinfo['URL'];
 				}
