@@ -1,7 +1,9 @@
 <?php
 
-	define('LIBRARY_CHECK',true);
-	require 'golf/php/golflib.php';
+// 	phpinfo();
+
+// 	define('LIBRARY_CHECK',true);
+// 	require 'golf/php/golflib.php';
 /*
 	date_default_timezone_set('America/New_York');
 	$p1  = array(
@@ -220,7 +222,7 @@
 										DAYTYPE INT(10) NOT NULL);");
 */
 ?>
-
+<!--
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11-strict.dtd">
 <html>
 	<head>
@@ -229,7 +231,6 @@
 		<link rel='stylesheet' href='css/style.css' type="text/css" media="screen" charset="utf-8">
 		<link rel='stylesheet' href='css/fusionlib.css' type="text/css" media="screen" charset="utf-8">
 		<link rel='stylesheet' href='css/jquery-ui.min.css' type="text/css" media="screen" charset="utf-8">
-		<!-- <link rel='stylesheet' href='css/jquery-ui-1.10.4.custom.min.css' type="text/css" media="screen" charset="utf-8">-->
 		<script language="javascript" type="text/javascript" src="javascript/jquery-1.11.0.min.js"></script>
 		<script type="text/javascript" src="javascript/jquery-ui-1.10.4.custom.min.js"></script>
 		<script language="javascript" type="text/javascript" src="javascript/moment.min.js"></script>
@@ -291,3 +292,4 @@
 		</div>
 	</body>
 </html>
+-->
