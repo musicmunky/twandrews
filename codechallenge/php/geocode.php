@@ -28,7 +28,7 @@
 		function __construct($mysqli)
 		{
 			try {
-				$apiqry = $mysqli->prepare("SELECT APIKEY, URL FROM weatherapikeys WHERE SERVICE='google';");
+				$apiqry = $mysqli->prepare("SELECT APIKEY, URL FROM apikeys WHERE SERVICE='google';");
 				$apiqry->execute();
 
 				if($apiqry->errno != 0)
