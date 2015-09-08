@@ -65,7 +65,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11-strict.dtd">
 <html>
 	<head>
-		<title>The Andrews Calendar</title>
+		<title>MyDevelopment Login</title>
 		<meta charset='utf-8' />
 		<link rel="icon" type="image/png" href="images/calicon.png" />
 		<link rel='stylesheet' href='css/style.css' />

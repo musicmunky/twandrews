@@ -107,7 +107,7 @@
 					<span class="titlespan">MyDevelopment Projects</span>
 					<div id="projectdiv" class="pagecolumn">
 						<div class="colheader">
-							Please choose a project:
+							Please choose a Project:
 						</div>
 						<div class="lidiv">
 							<ul id="completeul" class="ulnav" style="margin-bottom:0px;"><?php echo $compshtml; ?></ul>
@@ -116,7 +116,7 @@
 					</div>
 					<div id="tooldiv" class="pagecolumn">
 						<div class="colheader">
-							Please select a tool:
+							Please select a Tool:
 						</div>
 						<div class="lidiv">
 							<ul id="toolul" class="ulnav"><?php echo $toolshtml; ?></ul>
