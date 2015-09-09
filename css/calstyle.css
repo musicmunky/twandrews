@@ -7,8 +7,9 @@ body,html {
 }
 
 th {
-	background-color: #FFFFCC;
-    border: 1px solid #000;
+/* 	background-color: #FFFFCC; */
+/*     border: 1px solid #000; */
+	background-color:#CDDEE7;
     font-weight: bold;
 }
 
@@ -313,7 +314,7 @@ a {
 }
 
 .monthFloat {
-	border: 1px solid;
+/* 	border: 1px solid; */
     float: left;
     margin: 7px;
     width: 250px;
@@ -323,37 +324,37 @@ a {
 }
 
 .calendar-header-day {
-	border: 1px solid #000;
+/* 	border: 1px solid #000; */
 	font-family: 'Open Sans', serif;
     font-size: 11px;
     font-weight: bold;
     text-align: center;
     width: 30px;
-	background-color: #CCFFCC;
+/* 	background-color: #CCFFCC; */
 }
 .calendar-day-off {
 	font-size:14px;
 	text-align: center;
-	border:1px solid #000;
+/* 	border:1px solid #000; */
 }
 .calendar-day-work {
 	font-size:14px;
 	font-weight: bold;
 	color: red;
 	text-align: center;
-	border: 1px solid #000;
+/* 	border: 1px solid #000; */
 }
 .calendar-day-kelly {
 	font-size:14px;
 	font-weight: bold;
 	color: blue;
 	text-align: center;
-	border: 1px solid #000;
+/* 	border: 1px solid #000; */
 }
 .calendar-table {
-	border: 1px solid;
+/* 	border: 1px solid; */
     border-collapse: collapse;
-	box-shadow: 0 2px 2px 0 #333;
+/* 	box-shadow: 0 2px 2px 0 #333; */
     height: 250px;
     width: 100%;
 }

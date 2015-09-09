@@ -733,7 +733,7 @@
 					$daystyl 	= "";
 					$onclick 	= "";
 					$spancls 	= "";
-					$holstyle	= "#EAEAEA";
+					$holstyle	= "#FFF";
 					$tdid 		= "";
 				}
 				//build the td for the day
