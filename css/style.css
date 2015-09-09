@@ -208,7 +208,9 @@ input[type=button]:hover, input[type=submit]:hover {
 
 .mainloginclass {
 	width: 350px;
-	margin: 200px auto 0 auto;
+	margin-left:auto;
+	margin-right:auto;
+	padding-top:200px;
 	text-align:center;
 }
 
