@@ -257,10 +257,10 @@
 					$monthhours += $tothours;
 				}
 
-				$stime  = date("h:i:s A", strtotime($stime));
-				$etime  = date("h:i:s A", strtotime($etime));
-				$sbtime = date("h:i:s A", strtotime($sbtime));
-				$ebtime = date("h:i:s A", strtotime($ebtime));
+				$stime  = date("H:i:s", strtotime($stime));
+				$etime  = date("H:i:s", strtotime($etime));
+				$sbtime = date("H:i:s", strtotime($sbtime));
+				$ebtime = date("H:i:s", strtotime($ebtime));
 				if($sbtime == $ebtime)
 				{
 					$sbtime = "";
@@ -305,7 +305,7 @@
 		$pp2color = ($pp2diff > 0) ? "redtext" : "blacktext";
 
 		$finalsidetablehtml = "
-			<tr class='tablerow' style='border:2px solid;'><td>Total:</td><td>" . $monthhours . "</td><td></td></tr>
+			<tr class='tablerow' style='border:2px solid;'><td>Total:</td><td id='monthtotal'>" . $monthhours . "</td><td></td></tr>
 			<tr class='tablerow' style='border-top:2px solid;'>
 				<td>PP1 Total:</td><td id='pp1total' class='" . $pp1color . "'>" . $pp1tot . "</td><td></td>
 			</tr>
@@ -558,10 +558,10 @@
 		$pto 		= (isset($dateinfo['PTO']) 			&& $dateinfo['PTO'] != "") 			? $dateinfo['PTO'] 			: 0;
 		$leave		= (isset($dateinfo['VACATION']) 	&& $dateinfo['VACATION'] != "") 	? $dateinfo['VACATION'] 	: 0;
 
-		$starttime 	= date("h:i:s A", strtotime($starttime));
-		$endtime 	= date("h:i:s A", strtotime($endtime));
-		$startbreak = date("h:i:s A", strtotime($startbreak));
-		$endbreak 	= date("h:i:s A", strtotime($endbreak));
+		$starttime 	= date("H:i:s", strtotime($starttime));
+		$endtime 	= date("H:i:s", strtotime($endtime));
+		$startbreak = date("H:i:s", strtotime($startbreak));
+		$endbreak 	= date("H:i:s", strtotime($endbreak));
 
 		if($startbreak == $endbreak)
 		{
@@ -781,58 +781,16 @@
 		$leave  = (isset($P['leave'])	&& $P['leave'] != "" && $P['leave'] > 0) ? $P['leave'] : 0;
 		$note 	= (isset($P['note'])) ? $P['note'] : "";
 
-		if(isset($P['starthour']))
+		if(isset($P['start']))
 		{
-			$shr = $P['starthour'];
-			if(isset($P['startampm']) && $P['startampm'] == "pm" && $shr != 12)
-			{
-				$shr = $P['starthour'] + 12;
-			}
-			elseif(isset($P['startampm']) && $P['startampm'] == "am" && $shr == 12)
-			{
-				$shr = "00";
-			}
-			$start = $date . " " . $shr . ":" . $P['startminute'] . ":" . "00";
-
-			$ehr = $P['endhour'];
-			if(isset($P['endampm']) && $P['endampm'] == "pm" && $ehr != 12)
-			{
-				$ehr = $P['endhour'] + 12;
-			}
-			elseif(isset($P['endampm']) && $P['endampm'] == "am" && $ehr == 12)
-			{
-				$ehr = "00";
-			}
-			$end = $date . " " . $ehr . ":" . $P['endminute'] . ":" . "00";
+			$start = $date . " " . $P['start'];
+			$end   = $date . " " . $P['end'];
 		}
 
-		if(isset($P['startbrhour']) && isset($P['endbrhour']))
+		if(isset($P['startbr']) && isset($P['endbr']))
 		{
-			$sbhr = $P['startbrhour'];
-			if(isset($P['startbrampm']) && $P['startbrampm'] == "pm" && $sbhr != 12)
-			{
-				$sbhr = $P['startbrhour'] + 12;
-			}
-			elseif(isset($P['startbrampm']) && $P['startbrampm'] == "am" && $sbhr == 12)
-			{
-				$sbhr = "00";
-			}
-
-			$sbmn = (isset($P['startbrminute']) && $P['startbrminute'] != "") ? $P['startbrminute'] : "00";
-			$sbreak = $date . " " . $sbhr . ":" . $sbmn . ":" . "00";
-
-			$ebhr = $P['endbrhour'];
-			if(isset($P['endbrampm']) && $P['endbrampm'] == "pm" && $ebhr != 12)
-			{
-				$ebhr = $P['endbrhour'] + 12;
-			}
-			elseif(isset($P['endbrampm']) && $P['endbrampm'] == "am" && $ebhr == 12)
-			{
-				$ebhr = "00";
-			}
-
-			$ebmn = (isset($P['endbrminute']) && $P['endbrminute'] != "") ? $P['endbrminute'] : "00";
-			$ebreak = $date . " " . $ebhr . ":" . $ebmn . ":" . "00";
+			$sbreak = $date . " " . $P['startbr'];
+			$ebreak = $date . " " . $P['endbr'];
 		}
 
 		if($sbreak == $ebreak)
@@ -913,10 +871,10 @@
 		{
 			$content['ID'] 		 = mysql_insert_id();
 			$content['date'] 	 = date("m/d/Y", strtotime($date));
-			$content['start'] 	 = ($start != "")  ? date("h:i:s A", strtotime($start))  : "";
-			$content['sbreak'] 	 = ($sbreak != "") ? date("h:i:s A", strtotime($sbreak)) : "";
-			$content['ebreak'] 	 = ($ebreak != "") ? date("h:i:s A", strtotime($ebreak)) : "";
-			$content['end'] 	 = ($end != "")? date("h:i:s A", strtotime($end)) : "";
+			$content['start'] 	 = ($start != "")  ? date("H:i:s", strtotime($start))  : "";
+			$content['sbreak'] 	 = ($sbreak != "") ? date("H:i:s", strtotime($sbreak)) : "";
+			$content['ebreak'] 	 = ($ebreak != "") ? date("H:i:s", strtotime($ebreak)) : "";
+			$content['end'] 	 = ($end != "")    ? date("H:i:s", strtotime($end)) : "";
 			$content['hours'] 	 = $hours;
 			$content['leave']	 = $leave;
 			$content['pto'] 	 = $pto;

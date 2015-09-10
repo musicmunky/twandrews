@@ -85,9 +85,12 @@
 		<link rel='stylesheet' href='css/timesheet.css' type="text/css" media="screen" charset="utf-8">
 		<link rel='stylesheet' href='css/fusionlib.css' type="text/css" media="screen" charset="utf-8">
 		<link rel='stylesheet' href='css/jquery-ui.min.css' type="text/css" media="screen" charset="utf-8">
+		<link rel='stylesheet' href='css/jquery.timepicker.css' type="text/css" media="screen" charset="utf-8">
 		<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans">
 		<script language="javascript" type="text/javascript" src="javascript/jquery-1.11.0.min.js"></script>
 		<script language="javascript" type="text/javascript" src="javascript/jquery-ui-1.10.4.custom.min.js"></script>
+		<script language="javascript" type="text/javascript" src="javascript/moment.js"></script>
+		<script language="javascript" type="text/javascript" src="javascript/jquery.timepicker.js"></script>
 		<script language="javascript" type="text/javascript" src="javascript/fusionlib.js"></script>
 		<script language="javascript" type="text/javascript" src="javascript/tsjs.js"></script>
 	</head>
@@ -210,27 +213,31 @@
 				<input type="hidden" id="dateid" value="" />
 				<div class="fielddivs" style="padding-top:15px;">
 					<div class="userdivs">Start: </div>
-					<select id="starthour"	 class="selflds"><?php echo $hrselect; ?></select><span>:</span>
-					<select id="startminute" class="selflds"><?php echo $mnselect; ?></select>
-					<select id="startampm"	 class="selflds"><?php echo $apselect; ?></select>
+					<input id="starttime" type="text" class="time ui-timepicker-input" data-time-format="H:i:s" style="width:170px" autocomplete="off">
+<!--					<select id="starthour"	 class="selflds"><?php //echo $hrselect; ?></select><span>:</span>//-->
+<!--					<select id="startminute" class="selflds"><?php //echo $mnselect; ?></select>//-->
+<!--					<select id="startampm"	 class="selflds"><?php //echo $apselect; ?></select>//-->
 				</div>
 				<div class="fielddivs">
 					<div class="userdivs">Begin Break: </div>
-					<select id="startbreakhour"		class="selflds"><?php echo $hrselect; ?></select><span>:</span>
-					<select id="startbreakminute"	class="selflds"><?php echo $mnselect; ?></select>
-					<select id="startbreakampm"		class="selflds"><?php echo $apselect; ?></select>
+					<input id="startbreaktime" type="text" class="time ui-timepicker-input" data-time-format="H:i:s" style="width:170px" autocomplete="off">
+<!--					<select id="startbreakhour"		class="selflds"><?php //echo $hrselect; ?></select><span>:</span>//-->
+<!--					<select id="startbreakminute"	class="selflds"><?php //echo $mnselect; ?></select>//-->
+<!--					<select id="startbreakampm"		class="selflds"><?php //echo $apselect; ?></select>//-->
 				</div>
 				<div class="fielddivs">
 					<div class="userdivs">End Break: </div>
-					<select id="endbreakhour"	class="selflds"><?php echo $hrselect; ?></select><span>:</span>
-					<select id="endbreakminute" class="selflds"><?php echo $mnselect; ?></select>
-					<select id="endbreakampm"	class="selflds"><?php echo $apselect; ?></select>
+					<input id="endbreaktime" type="text" class="time ui-timepicker-input" data-time-format="H:i:s" style="width:170px" autocomplete="off">
+<!--					<select id="endbreakhour"	class="selflds"><?php //echo $hrselect; ?></select><span>:</span>//-->
+<!--					<select id="endbreakminute" class="selflds"><?php //echo $mnselect; ?></select>//-->
+<!--					<select id="endbreakampm"	class="selflds"><?php //echo $apselect; ?></select>//-->
 				</div>
 				<div class="fielddivs">
 					<div class="userdivs">End: </div>
-					<select id="endhour"	class="selflds"><?php echo $hrselect; ?></select><span>:</span>
-					<select id="endminute"	class="selflds"><?php echo $mnselect; ?></select>
-					<select id="endampm"	class="selflds"><?php echo $apselect; ?></select>
+					<input id="endtime" type="text" class="time ui-timepicker-input" data-time-format="H:i:s" style="width:170px" autocomplete="off">
+<!--					<select id="endhour"	class="selflds"><?php //echo $hrselect; ?></select><span>:</span>//-->
+<!--					<select id="endminute"	class="selflds"><?php //echo $mnselect; ?></select>//-->
+<!--					<select id="endampm"	class="selflds"><?php //echo $apselect; ?></select>//-->
 				</div>
 				<div class="fielddivs">
 					<div class="userdivs">Holiday/PTO: </div>

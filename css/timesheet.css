@@ -53,6 +53,10 @@ table {
 	font-size:12px;
 }
 
+.tstpwrapper {
+	width:178px !important;
+}
+
 .mainwrapper {
 	width:1100px;
 	margin-left:auto;

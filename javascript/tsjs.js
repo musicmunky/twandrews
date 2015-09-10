@@ -3,7 +3,7 @@ $( document ).ready(function() {
 
 	$( "#newtimeform" ).dialog({
 		autoOpen: false,
-		height: 450,
+		height: 460,
 		width: 400,
 		modal: true,
 		close: function( event, ui ) { clearNewTimeForm(); }
@@ -13,6 +13,12 @@ $( document ).ready(function() {
 		jQuery(".container").toggleClass("container-open");
 		jQuery("#legud").toggleClass("menuopen menuclose");
 	});
+
+	// https://github.com/jonthornton/jquery-timepicker
+	$('#starttime').timepicker({ "step":15, "className":"tstpwrapper" });
+	$('#startbreaktime').timepicker({ "step":15, "className":"tstpwrapper" });
+	$('#endbreaktime').timepicker({ "step":15, "className":"tstpwrapper" });
+	$('#endtime').timepicker({ "step":15, "className":"tstpwrapper" });
 
 });
 
@@ -164,10 +170,7 @@ function showNewTimeForm(i)
 			var response = JSON.parse(result);
 			if(response['status'] == "success")
 			{
-				var fsp = [];
-				var ssp = [];
-				var ampm = "";
-				var dstr = FUSION.lib.padZero(m, 2) + "/" + FUSION.lib.padZero(d, 2) + "/" + y;
+				var dstr 	= FUSION.lib.padZero(m, 2) + "/" + FUSION.lib.padZero(d, 2) + "/" + y;
 
 				var start 	= response['content']['start'];
 				var end 	= response['content']['end'];
@@ -178,39 +181,19 @@ function showNewTimeForm(i)
 				var note 	= response['content']['note'];
 
 				if(start && !FUSION.lib.isBlank(start)) {
-					fsp = start.split(" ");
-					ssp = fsp[0].split(":");
-					ampm = fsp[1];
-					FUSION.set.selectedText("starthour", ssp[0]);
-					FUSION.set.selectedText("startminute", ssp[1]);
-					FUSION.set.selectedText("startampm", ampm);
+					FUSION.get.node("starttime").value = start;
 				}
 
 				if(begbr && !FUSION.lib.isBlank(begbr)) {
-					fsp = begbr.split(" ");
-					ssp = fsp[0].split(":");
-					ampm = fsp[1];
-					FUSION.set.selectedText("startbreakhour", ssp[0]);
-					FUSION.set.selectedText("startbreakminute", ssp[1]);
-					FUSION.set.selectedText("startbreakampm", ampm);
+					FUSION.get.node("startbreaktime").value = begbr;
 				}
 
 				if(endbr && !FUSION.lib.isBlank(endbr)) {
-					fsp = endbr.split(" ");
-					ssp = fsp[0].split(":");
-					ampm = fsp[1];
-					FUSION.set.selectedText("endbreakhour", ssp[0]);
-					FUSION.set.selectedText("endbreakminute", ssp[1]);
-					FUSION.set.selectedText("endbreakampm", ampm);
+					FUSION.get.node("endbreaktime").value = endbr;
 				}
 
 				if(end && !FUSION.lib.isBlank(end)) {
-					fsp = end.split(" ");
-					ssp = fsp[0].split(":");
-					ampm = fsp[1];
-					FUSION.set.selectedText("endhour", ssp[0]);
-					FUSION.set.selectedText("endminute", ssp[1]);
-					FUSION.set.selectedText("endampm", ampm);
+					FUSION.get.node("endtime").value = end;
 				}
 
 				if(pto && !FUSION.lib.isBlank(pto)) {
@@ -259,40 +242,21 @@ function addUpdateTimeEntry()
 		FUSION.lib.alert("Unable to determine date - please refresh the page");
 		return false;
 	}
+
 	var darray = id.split("_");
 	var mn = darray[1];
 	var dy = darray[2];
 	var yr = FUSION.get.selectedValue("year");
 	var userid = FUSION.get.node("userid").value;
 
-	var sthr 	= FUSION.get.selectedValue("starthour");
-	var stmn 	= FUSION.get.selectedValue("startminute");
-	var stap 	= FUSION.get.selectedValue("startampm");
-	var stbrhr 	= FUSION.get.selectedValue("startbreakhour");
-	var stbrmn 	= FUSION.get.selectedValue("startbreakminute");
-	var stbrap 	= FUSION.get.selectedValue("startbreakampm");
-	var enbrhr 	= FUSION.get.selectedValue("endbreakhour");
-	var enbrmn 	= FUSION.get.selectedValue("endbreakminute");
-	var enbrap 	= FUSION.get.selectedValue("endbreakampm");
-	var enhr 	= FUSION.get.selectedValue("endhour");
-	var enmn 	= FUSION.get.selectedValue("endminute");
-	var enap 	= FUSION.get.selectedValue("endampm");
+	var start 	= FUSION.get.node("starttime").value;
+	var startbr	= FUSION.get.node("startbreaktime").value;
+	var endbr	= FUSION.get.node("endbreaktime").value;
+	var end		= FUSION.get.node("endtime").value;
+
 	var pto 	= FUSION.get.node("pto").value;
 	var lev 	= FUSION.get.node("leave").value;
 	var note 	= FUSION.get.node("note").value;
-
-	var sisthr 	 = FUSION.get.node("starthour").selectedIndex;
-	var sistmn 	 = FUSION.get.node("startminute").selectedIndex;
-	var sistap 	 = FUSION.get.node("startampm").selectedIndex;
-	var sienhr 	 = FUSION.get.node("endhour").selectedIndex;
-	var sienmn 	 = FUSION.get.node("endminute").selectedIndex;
-	var sienap 	 = FUSION.get.node("endampm").selectedIndex;
-	var sistbrhr = FUSION.get.node("startbreakhour").selectedIndex;
-	var sistbrmn = FUSION.get.node("startbreakminute").selectedIndex;
-	var sistbrap = FUSION.get.node("startbreakampm").selectedIndex;
-	var sienbrhr = FUSION.get.node("endbreakhour").selectedIndex;
-	var sienbrmn = FUSION.get.node("endbreakminute").selectedIndex;
-	var sienbrap = FUSION.get.node("endbreakampm").selectedIndex;
 
 	var msg = "";
 	var brmsg = "";
@@ -307,72 +271,30 @@ function addUpdateTimeEntry()
 		msg = "<br>Leave hours can not be negative"
 		err++;
 	}
-	if(sistbrhr > 0 || sistbrmn > 0 || sistbrap > 0 || sienbrhr > 0 || sienbrmn > 0 || sienbrap > 0)
+
+	if(!FUSION.lib.isBlank(startbr) || !FUSION.lib.isBlank(endbr))
 	{
-		if(sistbrhr <= 0)
+		if(FUSION.lib.isBlank(start) || FUSION.lib.isBlank(end))
 		{
-			brmsg += "<br>Start Break Hour";
+ 			brmsg += "<br>Start and End Time";
 			err++;
 		}
-		if(sistbrmn <= 0)
+		if(FUSION.lib.isBlank(startbr) || FUSION.lib.isBlank(endbr))
 		{
-			brmsg += "<br>Start Break Minute";
-			err++;
+			brmsg += "<br>Start Break and End Break";
+			err++
 		}
-		if(sistbrap <= 0)
+	}
+
+	if(!FUSION.lib.isBlank(start) || !FUSION.lib.isBlank(end))
+	{
+		if(FUSION.lib.isBlank(start) || FUSION.lib.isBlank(end))
 		{
-			brmsg += "<br>Start Break AM or PM";
-			err++;
-		}
-		if(sienbrhr <= 0)
-		{
-			brmsg += "<br>End Break Hour";
-			err++;
-		}
-		if(sienbrmn <= 0)
-		{
-			brmsg += "<br>End Break Minute";
-			err++;
-		}
-		if(sienbrap <= 0)
-		{
-			brmsg += "<br>End Break AM or PM";
+ 			msg += "<br>Start and End Time";
 			err++;
 		}
 	}
-	if(sisthr > 0 || sistmn > 0 || sistap > 0 || sienhr > 0 || sienmn > 0 || sienap > 0 || err > 0)
-	{
-		if(sisthr <= 0)
-		{
-			msg += "<br>Start Hour";
-			err++;
-		}
-		if(sistmn <= 0)
-		{
-			msg += "<br>Start Minute";
-			err++;
-		}
-		if(sistap <= 0)
-		{
-			msg += "<br>Start AM or PM";
-			err++;
-		}
-		if(sienhr <= 0)
-		{
-			msg += "<br>End Hour";
-			err++;
-		}
-		if(sienmn <= 0)
-		{
-			msg += "<br>End Minute";
-			err++;
-		}
-		if(sienap <= 0)
-		{
-			msg += "<br>End AM or PM";
-			err++;
-		}
-	}
+
 	if(err > 0)
 	{
 		var dispmsg = "<span style='font-weight:bold;color:red;display:inline-block;margin-bottom:5px;'>";
@@ -386,47 +308,42 @@ function addUpdateTimeEntry()
 
 	var chktmerr = 0;
 	var chktmmsg = "";
-	if(sisthr > 0)
+
+	if(!FUSION.lib.isBlank(start))
 	{
-		//verify start is before end
-		var beghr = (stap == "pm" && sthr != 12) ? (sthr + 12) : sthr;
-		var endhr = (enap == "pm" && enhr != 12) ? (enhr + 12) : enhr;
-		var millibeg = Date.UTC(yr, mn, dy, beghr, stmn);
-		var milliend = Date.UTC(yr, mn, dy, endhr, enmn);
+		var dt = yr + "-" + FUSION.lib.padZero(mn, 2) + "-" + FUSION.lib.padZero(dy, 2);
+		var startdt  = new Date(dt + "T" + start);
+		var enddt    = new Date(dt + "T" + end);
+		var millibeg = startdt.getTime();
+		var milliend = enddt.getTime();
+
 		if(milliend <= millibeg)
 		{
 			chktmmsg += "<br>End time should be after start time";
 			chktmerr++;
 		}
-	}
-	if(sistbrhr > 0 && sisthr > 0)
-	{
-		//verify start is before start break
-		//verify start break is before end break
-		//verify end break is before end
-		var begbrhr = (stbrap == "pm" && stbrhr != 12) ? (stbrhr + 12) : stbrhr;
-		var endbrhr = (enbrap == "pm" && enbrhr != 12) ? (enbrhr + 12) : enbrhr;
-		var beghr = (stap == "pm" && sthr != 12) ? (sthr + 12) : sthr;
-		var endhr = (enap == "pm" && enhr != 12) ? (enhr + 12) : enhr;
-		var millibegbr = Date.UTC(yr, mn, dy, begbrhr, stbrmn);
-		var milliendbr = Date.UTC(yr, mn, dy, endbrhr, enbrmn);
-		var millibeg = Date.UTC(yr, mn, dy, beghr, stmn);
-		var milliend = Date.UTC(yr, mn, dy, endhr, enmn);
 
-		if(millibegbr <= millibeg)
+		if(!FUSION.lib.isBlank(startbr))
 		{
-			chktmmsg += "<br>Begin break time should be after start time";
-			chktmerr++;
-		}
-		if(milliendbr <= millibegbr)
-		{
-			chktmmsg += "<br>End break time should be after begin break time";
-			chktmerr++;
-		}
-		if(milliend <= milliendbr)
-		{
-			chktmmsg += "<br>End time should be after end break time";
-			chktmerr++;
+			var startbrdt  = new Date(dt + "T" + startbr);
+			var endbrdt    = new Date(dt + "T" + endbr);
+			var millibegbr = startbrdt.getTime();
+			var milliendbr = endbrdt.getTime();
+			if(millibegbr <= millibeg)
+			{
+				chktmmsg += "<br>Begin break time should be after start time";
+				chktmerr++;
+			}
+			if(milliendbr <= millibegbr)
+			{
+				chktmmsg += "<br>End break time should be after begin break time";
+				chktmerr++;
+			}
+			if(milliend <= milliendbr)
+			{
+				chktmmsg += "<br>End time should be after end break time";
+				chktmerr++;
+			}
 		}
 	}
 
@@ -450,18 +367,10 @@ function addUpdateTimeEntry()
 			"year": yr,
 			"dateid": id,
 			"libcheck": true,
-			"starthour": sthr,
-			"startminute": stmn,
-			"startampm": stap,
-			"startbrhour": stbrhr,
-			"startbrminute": stbrmn,
-			"startbrampm": stbrap,
-			"endbrhour": enbrhr,
-			"endbrminute": enbrmn,
-			"endbrampm": enbrap,
-			"endhour": enhr,
-			"endminute": enmn,
-			"endampm": enap,
+			"start": start,
+			"startbr": startbr,
+			"endbr": endbr,
+			"end": end,
 			"pto": pto,
 			"leave": lev,
 			"note": note
@@ -493,6 +402,9 @@ function editTimeResponse(h)
 			var pp1tottd = FUSION.get.node("pp1total");
 			var pp2tottd = FUSION.get.node("pp2total");
 			var ppdifftd = FUSION.get.node("ppdiff");
+			var mthtottd = FUSION.get.node("monthtotal");
+
+			mthtottd.innerHTML = hash['pp1total'] + hash['pp2total'];
 			pp1tottd.innerHTML = hash['pp1total'];
 			pp2tottd.innerHTML = hash['pp2total'];
 			ppdifftd.innerHTML = hash['ppdiff'];
