@@ -130,10 +130,10 @@
 		$firstday  	 = date("l", strtotime($firstdate));
 		$lastday 	 = date("l", strtotime($cyear . "-" . $nummonth . "-" . $currnumdays));
 
-		$pp1start 	= $cyear . "-" . $nummonth . "-01";
-		$pp1end 	= $cyear . "-" . $nummonth . "-15";
-		$pp2start 	= $cyear . "-" . $nummonth . "-16";
-		$pp2end 	= $cyear . "-" . $nummonth . "-" . $currnumdays;
+// 		$pp1start 	= $cyear . "-" . $nummonth . "-01";
+// 		$pp1end 	= $cyear . "-" . $nummonth . "-15";
+// 		$pp2start 	= $cyear . "-" . $nummonth . "-16";
+// 		$pp2end 	= $cyear . "-" . $nummonth . "-" . $currnumdays;
 
 		//number of days to add/remove at the beginning of the month, depending on which day the month starts
 		//if the month starts on a Thursday (like Jan 1, 2015), you'll add 3 days so that there are the correct
@@ -172,7 +172,18 @@
 		$sidetablehtml = "";
 		$monthhours = 0;
 
-		for($i = $daysback; $i <= $daysfrwd; $i++)
+// 		sprintf("%02d", $datearr[1]);
+
+		$begday = $prevnumdays + $daysback;
+		$begpp = ($daysback <= 0) ?
+			$prevyear . "-" . sprintf("%02d", $prevmonth) . "-" . sprintf("%02d", $begday) :
+				date("Y-m-d", strtotime("first Monday of " . $mname . " " . $cyear));
+
+		$endpp = date("Y-m-d", strtotime("last Friday of " . $mname . " " . $cyear));
+
+		$lastfriday = date("j", strtotime("last Friday of " . $mname . " " . $cyear));
+//		for($i = $daysback; $i <= $daysfrwd; $i++)
+		for($i = $daysback; $i <= $lastfriday; $i++)
 		{
 			$class = "tablerow";
 			$sideclass = "";
@@ -184,11 +195,14 @@
 			{
 				$day   = $prevnumdays + $i;
 				$date  = $prevmonth . "/" . $day . "/" . $prevyear;
-				$class = "redtablerow";
-				$did = 0;
-				$mid = 0;
-				$onclick = "";
-				$btnclass = "";
+// 				$class = "redtablerow";
+				$did = $day;
+				$mid = $prevmonth;
+// 				$did = 0;
+// 				$mid = 0;
+// 				$onclick = "";
+// 				$btnclass = "";
+				$addtime = true;
 			}
 			elseif($i > $currnumdays)
 			{
@@ -288,22 +302,27 @@
 					<td style='text-align:left;' id='note_" . $mid . "_" . $did . "'>" . $note . "</td></tr>";
 		}
 
-		$pp1exp  = getWorkingDays($pp1start, $pp1end) * 8;
-		$pp2exp  = getWorkingDays($pp2start, $pp2end) * 8;
+		$ppexp = getWorkingDays($begpp, $endpp) * 8;
+		$pptot = getPayPeriodTotal($begpp, $endpp, $userid);
 
-		$pp1tot = getPayPeriodTotal($pp1start, $pp1end, $userid);
-		$pp2tot = getPayPeriodTotal($pp2start, $pp2end, $userid);
+// 		$pp1exp  = getWorkingDays($pp1start, $pp1end) * 8;
+// 		$pp2exp  = getWorkingDays($pp2start, $pp2end) * 8;
 
-		$totexp  = $pp1exp + $pp2exp;
-		$pp1diff = $pp1exp - $pp1tot;
-		$pp2diff = $pp2exp - $pp2tot;
+// 		$pp1tot = getPayPeriodTotal($pp1start, $pp1end, $userid);
+// 		$pp2tot = getPayPeriodTotal($pp2start, $pp2end, $userid);
 
-		$totdiff = ($pp1tot + $pp2tot) - ($pp1exp + $pp2exp);
+// 		$totexp  = $pp1exp + $pp2exp;
+// 		$pp1diff = $pp1exp - $pp1tot;
+// 		$pp2diff = $pp2exp - $pp2tot;
 
-		$tdcolor  = ($totdiff < 0) ? "redtext" : "blacktext";
-		$pp1color = ($pp1diff > 0) ? "redtext" : "blacktext";
-		$pp2color = ($pp2diff > 0) ? "redtext" : "blacktext";
+// 		$totdiff = ($pp1tot + $pp2tot) - ($pp1exp + $pp2exp);
+		$ppdiff = $pptot - $ppexp;
 
+		$ppcolor  = ($ppdiff < 0)  ? "redtext" : "blacktext";
+// 		$tdcolor  = ($totdiff < 0) ? "redtext" : "blacktext";
+// 		$pp1color = ($pp1diff > 0) ? "redtext" : "blacktext";
+// 		$pp2color = ($pp2diff > 0) ? "redtext" : "blacktext";
+/*
 		$finalsidetablehtml = "
 			<tr class='tablerow' style='border:2px solid;'><td>Total:</td><td id='monthtotal'>" . $monthhours . "</td><td></td></tr>
 			<tr class='tablerow' style='border-top:2px solid;'>
@@ -321,6 +340,15 @@
 			<tr class='tablerow'><td>Total Req:</td><td id='totexp'>" . $totexp . "</td><td></td></tr>
 			<tr class='tablerow' style='border-bottom:2px solid;'>
 				<td>Difference:</td><td id='ppdiff' class='" . $tdcolor . "'>" . $totdiff . "</td><td></td>
+			</tr>
+			<tr><td>Begin:</td><td>" . $begpp . "</td><td></td></tr>
+			<tr><td>End:</td><td>" . $endpp . "</td><td></td></tr>";
+*/
+		$finalsidetablehtml = "
+			<tr class='tablerow' style='border:2px solid;'><td>Total:</td><td id='monthtotal'>" . $pptot . "</td><td></td></tr>
+			<tr class='tablerow'><td>Total Req:</td><td id='totexp'>" . $ppexp . "</td><td></td></tr>
+			<tr class='tablerow' style='border-bottom:2px solid;'>
+				<td>Difference:</td><td id='ppdiff' class='" . $ppcolor . "'>" . $ppdiff . "</td><td></td>
 			</tr>";
 
 		//$maintablehtml .= $ppstring;
@@ -341,6 +369,277 @@
 		else{
 			echo json_encode($result);
 		}
+	}
+
+
+	function addUpdateTimeEntry($P)
+	{
+		$P = escapeArray($P);
+
+		$userid  = $P['userid'];
+		$status  = "success";
+		$message = "Record successfully update";
+		$content = array();
+
+		$datearr  = explode("_", $P['dateid']);
+		$nummonth = $datearr[1];
+		$numday   = $datearr[2]; //keeping as number...just in case...
+
+		$currentmonth = $P['currmonth'];
+
+		$month 	= sprintf("%02d", $datearr[1]);
+		$day 	= sprintf("%02d", $datearr[2]);
+		$suffix = $datearr[1] . "_" . $datearr[2];
+		$year 	= $P['year'];
+
+		$date 	 = $year . "-" . $month . "-" . $day;
+		$wordday = date("l", strtotime($date));
+
+		$start  = "";
+		$end 	= "";
+		$sbreak = "";
+		$ebreak = "";
+
+		$pto 	= (isset($P['pto'])		&& $P['pto'] != "" 	 && $P['pto'] > 0) 	 ? $P['pto']   : 0;
+		$leave  = (isset($P['leave'])	&& $P['leave'] != "" && $P['leave'] > 0) ? $P['leave'] : 0;
+		$note 	= (isset($P['note'])) ? $P['note'] : "";
+
+		if(isset($P['start']))
+		{
+			$start = $date . " " . $P['start'];
+			$end   = $date . " " . $P['end'];
+		}
+
+		if(isset($P['startbr']) && isset($P['endbr']))
+		{
+			$sbreak = $date . " " . $P['startbr'];
+			$ebreak = $date . " " . $P['endbr'];
+		}
+
+		if($sbreak == $ebreak)
+		{
+			$sbreak = "";
+			$ebreak = "";
+		}
+
+		if($start == $end)
+		{
+			$start = "";
+			$end = "";
+		}
+
+		//CALCULATE HOURS
+		$hours = strtotime($end) - strtotime($start);
+		$break = 0;
+		if($sbreak != "" && $ebreak != "")
+		{
+			$break = strtotime($ebreak) - strtotime($sbreak);
+		}
+		$hours = ($hours - $break) / 3600;
+
+		//update old entry or add new??
+		$checkdate = mysql_fetch_assoc(mysql_query("SELECT ID FROM timesheet WHERE DATE='" . $date . "' AND USERID='" . $userid . "';"));
+
+		$mysqlresult = "";
+		if(isset($checkdate['ID']))
+		{
+			//update existing record
+			$mysqlresult = mysql_query("UPDATE timesheet SET
+											DATE='" . $date . "',
+											STARTTIME='" . $start . "',
+											BEGINBREAK='" . $sbreak . "',
+											ENDBREAK='" . $ebreak . "',
+											ENDTIME='" . $end . "',
+											HOURS='" . $hours . "',
+											PTO='" . $pto . "',
+											VACATION='" . $leave . "',
+											NOTE='" . $note . "'
+										WHERE ID='" . $checkdate['ID'] . "';");
+		}
+		else
+		{
+			//insert new record
+			$mysqlresult = mysql_query("
+								INSERT INTO timesheet (DATE, STARTTIME, BEGINBREAK, ENDBREAK, ENDTIME, HOURS, PTO, VACATION, NOTE, USERID)
+								VALUES ('" . $date . "', '" . $start . "', '" . $sbreak . "', '" . $ebreak . "',
+										'" . $end . "', '" . $hours . "', '" . $pto . "', " . $leave . ", '" . $note . "', '" . $userid . "');");
+		}
+
+		$begadddays = array(
+				"Sunday" 	=>  2, //don't print the Sunday row, start on a Monday (the 2nd)
+				"Monday" 	=>  1, //Monday is the first day of the month
+				"Tuesday" 	=>  0, //start the counter at 0, padding the previous Monday as a red row...
+				"Wednesday" => -1, //...and so on for the rest of the week
+				"Thursday" 	=> -2,
+				"Friday" 	=> -3,
+				"Saturday" 	=>  3  //unless the 1st is a Saturday, then leave out the
+								   //weekend rows and begin the following Monday
+		);
+
+		$firstdate 	 = $year . "-" . sprintf("%02d", $currentmonth) . "-01";
+		$mname 		 = date("F", strtotime($firstdate));
+		$firstday  	 = date("l", strtotime($firstdate));
+		$daysback	 = $begadddays[$firstday];
+
+		if($daysback < 1)
+		{
+			$prevmonth 	 = date("n", strtotime($mname . " " . $year . " -5 days"));
+			$prevyear 	 = ($currentmonth == 1) ? ($year - 1) : $year;
+			$prevnumdays = cal_days_in_month(CAL_GREGORIAN, $prevmonth, $prevyear);
+
+			$begday = $prevnumdays + $daysback;
+ 			$begpp  = $prevyear . "-" . sprintf("%02d", $prevmonth) . "-" . sprintf("%02d", $begday);
+		}
+		else
+		{
+			$begpp = date("Y-m-d", strtotime("first Monday of " . $mname . " " . $year));
+		}
+
+		$endpp = date("Y-m-d", strtotime("last Friday of " . $mname . " " . $year));
+
+		$ppexp = getWorkingDays($begpp, $endpp) * 8;
+		$pptot = getPayPeriodTotal($begpp, $endpp, $userid);
+
+		$ppdiff = $pptot - $ppexp;
+
+		$ppcolor  = ($ppdiff < 0)  ? "redtext" : "blacktext";
+
+
+// 		$pp1start 	= $year . "-" . $month . "-01";
+// 		$pp1end 	= $year . "-" . $month . "-15";
+// 		$pp2start 	= $year . "-" . $month . "-16";
+// 		$pp2end 	= $year . "-" . $month . "-" . $currnumdays;
+
+
+// 		$pp1exp = getWorkingDays($pp1start, $pp1end) * 8;
+// 		$pp2exp = getWorkingDays($pp2start, $pp2end) * 8;
+
+// 		$pp1tot = getPayPeriodTotal($pp1start, $pp1end, $userid);
+// 		$pp2tot = getPayPeriodTotal($pp2start, $pp2end, $userid);
+
+// 		$pp1diff = $pp1exp - $pp1tot;
+// 		$pp2diff = $pp2exp - $pp2tot;
+
+// 		$pptotal = $pp1tot + $pp2tot;
+// 		$ppexpct = $pp1exp + $pp2exp;
+// 		$ppdiff  = $pptotal - $ppexpct;
+
+// 		$tdcolor  = ($ppdiff  < 0) ? "redtext" : "blacktext";
+// 		$pp1color = ($pp1diff > 0) ? "redtext" : "blacktext";
+// 		$pp2color = ($pp2diff > 0) ? "redtext" : "blacktext";
+
+		if($mysqlresult)
+		{
+			$content['ID'] 		 = mysql_insert_id();
+			$content['date'] 	 = date("m/d/Y", strtotime($date));
+			$content['start'] 	 = ($start != "")  ? date("H:i:s", strtotime($start))  : "";
+			$content['sbreak'] 	 = ($sbreak != "") ? date("H:i:s", strtotime($sbreak)) : "";
+			$content['ebreak'] 	 = ($ebreak != "") ? date("H:i:s", strtotime($ebreak)) : "";
+			$content['end'] 	 = ($end != "")    ? date("H:i:s", strtotime($end)) : "";
+			$content['hours'] 	 = $hours;
+			$content['leave']	 = $leave;
+			$content['pto'] 	 = $pto;
+			$content['tothours'] = $hours + $pto + $leave;
+			$content['note'] 	 = $note;
+			$content['wordday']  = $wordday;
+			$content['suffix']	 = $suffix;
+			$content['pptotal']  = $pptot;
+			$content['ppdiff']   = $ppdiff;
+			$content['ppcol']	 = $ppcolor;
+
+// 			$content['ppbegin']  = $begpp;
+// 			$content['ppend']    = $endpp;
+// 			$content['firstdate'] = $firstdate;
+// 			$content['monthname'] = $mname;
+
+// 			$content['pp1total'] = ($pp1tot == 0) ? "" : $pp1tot;
+// 			$content['pp2total'] = ($pp2tot == 0) ? "" : $pp2tot;
+// 			$content['ppdiff']	 = $ppdiff;
+// 			$content['ppcol']	 = $tdcolor;
+// 			$content['pp1col']	 = $pp1color;
+// 			$content['pp2col']	 = $pp2color;
+		}
+		else
+		{
+			$status = "failure";
+			$message = "ERROR NUMBER: " . mysql_errno($mysqlresult) . ":\n" . mysql_error($mysqlresult);
+		}
+
+		$result = array(
+				"status" => $status,
+				"message" => $message,
+				"content" => $content
+		);
+		echo json_encode($result);
+	}
+
+
+	function getDateInfo($P)
+	{
+		$P = escapeArray($P);
+
+		$year = $P['year'];
+		$mnth = $P['month'];
+		$day  = $P['day'];
+		$uid  = $P['userid'];
+
+		$date = $mnth . "/" . $day . "/" . $year;
+		$dbdate = date("Y-m-d", strtotime($date));
+		$dateinfo = mysql_fetch_assoc(mysql_query("SELECT * FROM timesheet WHERE DATE='" . $dbdate . "' AND USERID=" . $uid . ";"));
+
+		$starttime 	= (isset($dateinfo['STARTTIME']) 	&& $dateinfo['STARTTIME'] != "")	? $dateinfo['STARTTIME'] 	: "";
+		$endtime 	= (isset($dateinfo['ENDTIME']) 		&& $dateinfo['ENDTIME'] != "") 		? $dateinfo['ENDTIME'] 		: "";
+		$startbreak = (isset($dateinfo['BEGINBREAK']) 	&& $dateinfo['BEGINBREAK'] != "") 	? $dateinfo['BEGINBREAK'] 	: "";
+		$endbreak 	= (isset($dateinfo['ENDBREAK']) 	&& $dateinfo['ENDBREAK'] != "") 	? $dateinfo['ENDBREAK'] 	: "";
+		$note 		= (isset($dateinfo['NOTE']) 		&& $dateinfo['NOTE'] != "") 		? $dateinfo['NOTE'] 		: "";
+		$pto 		= (isset($dateinfo['PTO']) 			&& $dateinfo['PTO'] != "") 			? $dateinfo['PTO'] 			: 0;
+		$leave		= (isset($dateinfo['VACATION']) 	&& $dateinfo['VACATION'] != "") 	? $dateinfo['VACATION'] 	: 0;
+
+		$starttime 	= date("H:i:s", strtotime($starttime));
+		$endtime 	= date("H:i:s", strtotime($endtime));
+		$startbreak = date("H:i:s", strtotime($startbreak));
+		$endbreak 	= date("H:i:s", strtotime($endbreak));
+
+		if($startbreak == $endbreak)
+		{
+			$startbreak = "";
+			$endbreak = "";
+		}
+		if($starttime == $endtime)
+		{
+			$starttime = "";
+			$endtime = "";
+		}
+
+		$result = array(
+				"status"  => "success",
+				"message" => "",
+				"content" => array(
+					"start" => $starttime,
+					"end"	=> $endtime,
+					"begbr" => $startbreak,
+					"endbr" => $endbreak,
+					"pto"	=> $pto,
+					"leave" => $leave,
+					"note"	=> $note
+				)
+		);
+		echo json_encode($result);
+	}
+
+
+	//need the following:
+	//pp start (date string), pp end (date string), userid
+	function getPayPeriodTotal($s, $e, $u)
+	{
+		$info = mysql_fetch_assoc(mysql_query(
+								"SELECT COALESCE(SUM(HOURS),0) AS HOURS, COALESCE(SUM(PTO),0) AS PTO,
+								COALESCE(SUM(VACATION),0) AS VACATION FROM timesheet
+								WHERE DATE >='" . $s . "' AND DATE <= '" . $e . "'
+									AND USERID='" . $u . "';"));
+
+		$total = $info['HOURS'] + $info['PTO'] + $info['VACATION'];
+		return $total;
 	}
 
 
@@ -537,60 +836,6 @@
 	}
 
 
-	function getDateInfo($P)
-	{
-		$P = escapeArray($P);
-
-		$year = $P['year'];
-		$mnth = $P['month'];
-		$day  = $P['day'];
-		$uid  = $P['userid'];
-
-		$date = $mnth . "/" . $day . "/" . $year;
-		$dbdate = date("Y-m-d", strtotime($date));
-		$dateinfo = mysql_fetch_assoc(mysql_query("SELECT * FROM timesheet WHERE DATE='" . $dbdate . "' AND USERID=" . $uid . ";"));
-
-		$starttime 	= (isset($dateinfo['STARTTIME']) 	&& $dateinfo['STARTTIME'] != "")	? $dateinfo['STARTTIME'] 	: "";
-		$endtime 	= (isset($dateinfo['ENDTIME']) 		&& $dateinfo['ENDTIME'] != "") 		? $dateinfo['ENDTIME'] 		: "";
-		$startbreak = (isset($dateinfo['BEGINBREAK']) 	&& $dateinfo['BEGINBREAK'] != "") 	? $dateinfo['BEGINBREAK'] 	: "";
-		$endbreak 	= (isset($dateinfo['ENDBREAK']) 	&& $dateinfo['ENDBREAK'] != "") 	? $dateinfo['ENDBREAK'] 	: "";
-		$note 		= (isset($dateinfo['NOTE']) 		&& $dateinfo['NOTE'] != "") 		? $dateinfo['NOTE'] 		: "";
-		$pto 		= (isset($dateinfo['PTO']) 			&& $dateinfo['PTO'] != "") 			? $dateinfo['PTO'] 			: 0;
-		$leave		= (isset($dateinfo['VACATION']) 	&& $dateinfo['VACATION'] != "") 	? $dateinfo['VACATION'] 	: 0;
-
-		$starttime 	= date("H:i:s", strtotime($starttime));
-		$endtime 	= date("H:i:s", strtotime($endtime));
-		$startbreak = date("H:i:s", strtotime($startbreak));
-		$endbreak 	= date("H:i:s", strtotime($endbreak));
-
-		if($startbreak == $endbreak)
-		{
-			$startbreak = "";
-			$endbreak = "";
-		}
-		if($starttime == $endtime)
-		{
-			$starttime = "";
-			$endtime = "";
-		}
-
-		$result = array(
-				"status"  => "success",
-				"message" => "",
-				"content" => array(
-					"start" => $starttime,
-					"end"	=> $endtime,
-					"begbr" => $startbreak,
-					"endbr" => $endbreak,
-					"pto"	=> $pto,
-					"leave" => $leave,
-					"note"	=> $note
-				)
-		);
-		echo json_encode($result);
-	}
-
-
 	function getStephScheduleHtml($P)
 	{
 		$P = escapeArray($P);
@@ -748,173 +993,6 @@
 		$m_html .= "</tbody></table>";
 
 		return $m_html;
-	}
-
-
-	function addUpdateTimeEntry($P)
-	{
-		$P = escapeArray($P);
-
-		$userid  = $P['userid'];
-		$status  = "success";
-		$message = "Record successfully update";
-		$content = array();
-
-		$datearr  = explode("_", $P['dateid']);
-		$nummonth = $datearr[1];
-		$numday   = $datearr[2]; //keeping as number...just in case...
-
-		$month 	= sprintf("%02d", $datearr[1]);
-		$day 	= sprintf("%02d", $datearr[2]);
-		$suffix = $datearr[1] . "_" . $datearr[2];
-		$year 	= $P['year'];
-
-		$date 	 = $year . "-" . $month . "-" . $day;
-		$wordday = date("l", strtotime($date));
-
-		$start  = "";
-		$end 	= "";
-		$sbreak = "";
-		$ebreak = "";
-
-		$pto 	= (isset($P['pto'])		&& $P['pto'] != "" 	 && $P['pto'] > 0) 	 ? $P['pto']   : 0;
-		$leave  = (isset($P['leave'])	&& $P['leave'] != "" && $P['leave'] > 0) ? $P['leave'] : 0;
-		$note 	= (isset($P['note'])) ? $P['note'] : "";
-
-		if(isset($P['start']))
-		{
-			$start = $date . " " . $P['start'];
-			$end   = $date . " " . $P['end'];
-		}
-
-		if(isset($P['startbr']) && isset($P['endbr']))
-		{
-			$sbreak = $date . " " . $P['startbr'];
-			$ebreak = $date . " " . $P['endbr'];
-		}
-
-		if($sbreak == $ebreak)
-		{
-			$sbreak = "";
-			$ebreak = "";
-		}
-
-		if($start == $end)
-		{
-			$start = "";
-			$end = "";
-		}
-
-		//CALCULATE HOURS
-		$hours = strtotime($end) - strtotime($start);
-		$break = 0;
-		if($sbreak != "" && $ebreak != "")
-		{
-			$break = strtotime($ebreak) - strtotime($sbreak);
-		}
-		$hours = ($hours - $break) / 3600;
-
-		//update old entry or add new??
-		$checkdate = mysql_fetch_assoc(mysql_query("SELECT ID FROM timesheet WHERE DATE='" . $date . "' AND USERID='" . $userid . "';"));
-
-		$mysqlresult = "";
-		if(isset($checkdate['ID']))
-		{
-			//update existing record
-			$mysqlresult = mysql_query("UPDATE timesheet SET
-											DATE='" . $date . "',
-											STARTTIME='" . $start . "',
-											BEGINBREAK='" . $sbreak . "',
-											ENDBREAK='" . $ebreak . "',
-											ENDTIME='" . $end . "',
-											HOURS='" . $hours . "',
-											PTO='" . $pto . "',
-											VACATION='" . $leave . "',
-											NOTE='" . $note . "'
-										WHERE ID='" . $checkdate['ID'] . "';");
-		}
-		else
-		{
-			//insert new record
-			$mysqlresult = mysql_query("
-								INSERT INTO timesheet (DATE, STARTTIME, BEGINBREAK, ENDBREAK, ENDTIME, HOURS, PTO, VACATION, NOTE, USERID)
-								VALUES ('" . $date . "', '" . $start . "', '" . $sbreak . "', '" . $ebreak . "',
-										'" . $end . "', '" . $hours . "', '" . $pto . "', " . $leave . ", '" . $note . "', '" . $userid . "');");
-		}
-
-		$firstdate 	 = $year . "-" . $month . "-01";
-		$currnumdays = date("t", strtotime($firstdate));
-
-		$pp1start 	= $year . "-" . $month . "-01";
-		$pp1end 	= $year . "-" . $month . "-15";
-		$pp2start 	= $year . "-" . $month . "-16";
-		$pp2end 	= $year . "-" . $month . "-" . $currnumdays;
-
-		$pp1exp = getWorkingDays($pp1start, $pp1end) * 8;
-		$pp2exp = getWorkingDays($pp2start, $pp2end) * 8;
-
-		$pp1tot = getPayPeriodTotal($pp1start, $pp1end, $userid);
-		$pp2tot = getPayPeriodTotal($pp2start, $pp2end, $userid);
-
-		$pp1diff = $pp1exp - $pp1tot;
-		$pp2diff = $pp2exp - $pp2tot;
-
-		$pptotal = $pp1tot + $pp2tot;
-		$ppexpct = $pp1exp + $pp2exp;
-		$ppdiff  = $pptotal - $ppexpct;
-
-		$tdcolor  = ($ppdiff  < 0) ? "redtext" : "blacktext";
-		$pp1color = ($pp1diff > 0) ? "redtext" : "blacktext";
-		$pp2color = ($pp2diff > 0) ? "redtext" : "blacktext";
-
-		if($mysqlresult)
-		{
-			$content['ID'] 		 = mysql_insert_id();
-			$content['date'] 	 = date("m/d/Y", strtotime($date));
-			$content['start'] 	 = ($start != "")  ? date("H:i:s", strtotime($start))  : "";
-			$content['sbreak'] 	 = ($sbreak != "") ? date("H:i:s", strtotime($sbreak)) : "";
-			$content['ebreak'] 	 = ($ebreak != "") ? date("H:i:s", strtotime($ebreak)) : "";
-			$content['end'] 	 = ($end != "")    ? date("H:i:s", strtotime($end)) : "";
-			$content['hours'] 	 = $hours;
-			$content['leave']	 = $leave;
-			$content['pto'] 	 = $pto;
-			$content['tothours'] = $hours + $pto + $leave;
-			$content['note'] 	 = $note;
-			$content['wordday']  = $wordday;
-			$content['suffix']	 = $suffix;
-			$content['pp1total'] = ($pp1tot == 0) ? "" : $pp1tot;
-			$content['pp2total'] = ($pp2tot == 0) ? "" : $pp2tot;
-			$content['ppdiff']	 = $ppdiff;
-			$content['ppcol']	 = $tdcolor;
-			$content['pp1col']	 = $pp1color;
-			$content['pp2col']	 = $pp2color;
-		}
-		else
-		{
-			$status = "failure";
-			$message = "ERROR NUMBER: " . mysql_errno($mysqlresult) . ":\n" . mysql_error($mysqlresult);
-		}
-
-		$result = array(
-				"status" => $status,
-				"message" => $message,
-				"content" => $content
-		);
-		echo json_encode($result);
-	}
-
-	//need the following:
-	//pp start (date string), pp end (date string), userid
-	function getPayPeriodTotal($s, $e, $u)
-	{
-		$info = mysql_fetch_assoc(mysql_query(
-								"SELECT COALESCE(SUM(HOURS),0) AS HOURS, COALESCE(SUM(PTO),0) AS PTO,
-								COALESCE(SUM(VACATION),0) AS VACATION FROM timesheet
-								WHERE DATE >='" . $s . "' AND DATE <= '" . $e . "'
-									AND USERID='" . $u . "';"));
-
-		$total = $info['HOURS'] + $info['PTO'] + $info['VACATION'];
-		return $total;
 	}
 
 

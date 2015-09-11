@@ -150,6 +150,7 @@ function showNewTimeForm(i)
 	var y = FUSION.get.selectedValue("year");
 	var m = darray[1];
 	var d = darray[2];
+	var cm = FUSION.get.node("month").value;
 	var ui = FUSION.get.node("userid").value;
 
 	var suffix = m + "_" + d;
@@ -164,6 +165,7 @@ function showNewTimeForm(i)
 				year:  y,
 				month: m,
 			   	day: d,
+			    currmonth: cm,
 			    userid: ui,
 				firstload: 0},
 		success: function(result){
@@ -246,6 +248,7 @@ function addUpdateTimeEntry()
 	var darray = id.split("_");
 	var mn = darray[1];
 	var dy = darray[2];
+	var cm = FUSION.get.node("month").value;
 	var yr = FUSION.get.selectedValue("year");
 	var userid = FUSION.get.node("userid").value;
 
@@ -364,6 +367,7 @@ function addUpdateTimeEntry()
 		"data": {
 			"method": "addUpdateTimeEntry",
 			"userid": userid,
+			"currmonth": cm,
 			"year": yr,
 			"dateid": id,
 			"libcheck": true,
@@ -399,18 +403,26 @@ function editTimeResponse(h)
 			FUSION.get.node("totalhours_" + sfx).innerHTML = hash['tothours'];
 			FUSION.get.node("note_" + sfx).innerHTML = hash['note'];
 
-			var pp1tottd = FUSION.get.node("pp1total");
-			var pp2tottd = FUSION.get.node("pp2total");
+// 			var pp1tottd = FUSION.get.node("pp1total");
+// 			var pp2tottd = FUSION.get.node("pp2total");
 			var ppdifftd = FUSION.get.node("ppdiff");
 			var mthtottd = FUSION.get.node("monthtotal");
 
-			mthtottd.innerHTML = hash['pp1total'] + hash['pp2total'];
-			pp1tottd.innerHTML = hash['pp1total'];
-			pp2tottd.innerHTML = hash['pp2total'];
+			mthtottd.innerHTML = hash['pptotal'];
+// 			pp1tottd.innerHTML = hash['pp1total'];
+// 			pp2tottd.innerHTML = hash['pp2total'];
+// 			ppdifftd.innerHTML = hash['ppdiff'];
+// 			ppdifftd.className = hash['ppcol'];
+// 			pp1tottd.className = hash['pp1col'];
+// 			pp2tottd.className = hash['pp2col'];
+
+// 			mthtottd.innerHTML = hash['pp1total'] + hash['pp2total'];
+// 			pp1tottd.innerHTML = hash['pp1total'];
+// 			pp2tottd.innerHTML = hash['pp2total'];
 			ppdifftd.innerHTML = hash['ppdiff'];
 			ppdifftd.className = hash['ppcol'];
-			pp1tottd.className = hash['pp1col'];
-			pp2tottd.className = hash['pp2col'];
+// 			pp1tottd.className = hash['pp1col'];
+// 			pp2tottd.className = hash['pp2col'];
 
 			hideNewTimeForm();
 		}
