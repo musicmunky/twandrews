@@ -309,12 +309,8 @@ a {
     transition-timing-function: linear;
 }
 
-.hour:hover {
-	margin-top:-1px;
-}
-
 .hourofday:hover {
-	box-shadow: 0 2px 3px 0px #CCC;
+/* 	box-shadow: 0 2px 3px 0px #CCC; */
 }
 
 .searchbox {
