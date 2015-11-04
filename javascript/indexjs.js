@@ -234,8 +234,8 @@ function createLi(hash)
 	}
 
 	newli.appendChild(plink);
-	newli.appendChild(elink);
 	newli.appendChild(rlink);
+	newli.appendChild(elink);
 
 	return newli;
 }

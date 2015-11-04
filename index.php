@@ -45,10 +45,10 @@
 					$dvlpmhtml .= "<li id='li_" . $row['ID'] . "' class='linav' title='Currently under development'>
 								<a id='link_" . $row['ID'] . "' href='" . $row['PAGELINK'] . "' target='_blank'>" .
 									"<span id='gispan_" . $row['ID'] . "' class='glyphicon glyphicon-exclamation-sign navspan nswarning' aria-hidden='true'></span>" . $row['PAGENAME'] . "</a>
-								<a title=\"Edit " . $row['PAGENAME'] . "\"
-								   class='editlnk glyphicon glyphicon-pencil' id='editlnk_" . $row['ID'] . "'></a>
 								<a title=\"Remove " . $row['PAGENAME'] . "\"
 								   class='remlnk glyphicon glyphicon-remove' id='remlnk_" . $row['ID'] . "'></a>
+								<a title=\"Edit " . $row['PAGENAME'] . "\"
+								   class='editlnk glyphicon glyphicon-pencil' id='editlnk_" . $row['ID'] . "'></a>
 							</li>";
 				}
 				else
@@ -57,10 +57,10 @@
 								<a id='link_" . $row['ID'] . "' href='" . $row['PAGELINK'] . "' target='_blank'>" .
 									"<span id='gispan_" . $row['ID'] . "' class='glyphicon glyphicon-ok-sign navspan nsokay' aria-hidden='true'>" .
 									"</span>" . $row['PAGENAME'] . "</a>
-								<a title=\"Edit " . $row['PAGENAME'] . "\"
-								   class='editlnk glyphicon glyphicon-pencil' id='editlnk_" . $row['ID'] . "'></a>
 								<a title=\"Remove " . $row['PAGENAME'] . "\"
 								   class='remlnk glyphicon glyphicon-remove' id='remlnk_" . $row['ID'] . "'></a>
+								<a title=\"Edit " . $row['PAGENAME'] . "\"
+								   class='editlnk glyphicon glyphicon-pencil' id='editlnk_" . $row['ID'] . "'></a>
 							</li>";
 				}
 			}
@@ -75,10 +75,10 @@
 			{
 				$toolshtml .= "<li id='li_" . $row['ID'] . "' class='linav'>
 								<a id='link_" . $row['ID'] . "' href='" . $row['PAGELINK'] . "' target='_blank'>" . $row['PAGENAME'] . "</a>
-								<a title=\"Edit " . $row['PAGENAME'] . "\"
-								   class='editlnk glyphicon glyphicon-pencil' id='editlnk_" . $row['ID'] . "'></a>
 								<a title=\"Remove " . $row['PAGENAME'] . "\"
-								   class='remlnk glyphicon glyphicon-remove' id='remlnk_" . $row['ID'] . "'></a>
+									class='remlnk glyphicon glyphicon-remove' id='remlnk_" . $row['ID'] . "'></a>
+								<a title=\"Edit " . $row['PAGENAME'] . "\"
+									class='editlnk glyphicon glyphicon-pencil' id='editlnk_" . $row['ID'] . "'></a>
 							</li>";
 			}
 		}
@@ -91,12 +91,12 @@
 	<head>
 		<title>MyDevelopment Projects</title>
 		<link rel="icon" type="image/png" href="images/calicon.png" />
-		<link rel='stylesheet' href='../steph/css/bootstrap.css' type="text/css" media="screen" charset="utf-8">
-		<link rel='stylesheet' href='../steph/css/bootstrap-theme.css' type="text/css" media="screen" charset="utf-8">
+		<link rel='stylesheet' href='css/bootstrap.css' type="text/css" media="screen" charset="utf-8">
+		<link rel='stylesheet' href='css/bootstrap-theme.css' type="text/css" media="screen" charset="utf-8">
 		<link rel='stylesheet' href='css/fusionlib.css' type="text/css" media="screen" charset="utf-8">
 		<link rel='stylesheet' href='css/indexstyle.css' type="text/css" media="screen" charset="utf-8">
 		<script language="javascript" type="text/javascript" src="javascript/jquery-1.11.0.min.js"></script>
-		<script language="javascript" type="text/javascript" src="../steph/javascript/bootstrap.js"></script>
+<!--		<script language="javascript" type="text/javascript" src="../steph/javascript/bootstrap.js"></script>//-->
 		<script language="javascript" type="text/javascript" src="javascript/fusionlib.js"></script>
 		<script language="javascript" type="text/javascript" src="javascript/indexjs.js"></script>
 	</head>
@@ -132,7 +132,7 @@
 		</div>
 
 		<div id="new_item_overlay" class="fl_alert_overlay">
-			<div id="new_item_wrapper" class="fl_alert_wrapper" style="width:350px;height:500px;padding:15px;top:200px">
+			<div id="new_item_wrapper" class="fl_alert_wrapper" style="width:350px;height:520px;padding:15px;top:200px">
 				<div id="new_item_header" class="alert_content alert_dragable">
 					<span id="new_item_title" class="fl_alert_modal_title">
 						Add New Item
@@ -171,7 +171,7 @@
 						<label class="new_item_lbl">Page Description:</label>
 						<textarea id="ni_pagedesc" class="new_item_txtarea"></textarea>
 					</div>
-					<div class="new_item_cell" style="margin-top:30px;">
+					<div class="new_item_cell" style="margin-top:20px;">
 						<input type="button" class="new_item_btn" value="Save" onclick="updateItem()" style="float:left;" />
 						<input type="button" class="new_item_btn" value="Cancel" onclick="hideNewItem()" style="float:right;" />
 					</div>
