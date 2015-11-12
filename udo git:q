@@ -1,0 +1,66 @@
+diff --git a/.gitignore b/.gitignore
+index 18b41c8..9b0d8aa 100755
+--- a/.gitignore
++++ b/.gitignore
+@@ -54,3 +54,4 @@ myworship
+ stephcalendar
+ boringssl
+ control_freak
++control_freak_tim
+diff --git a/css/indexstyle.css b/css/indexstyle.css
+index 2c5a28f..2dc6967 100755
+--- a/css/indexstyle.css
++++ b/css/indexstyle.css
+@@ -47,6 +47,7 @@ ul {
+ 	color:#666;
+ 	font-weight:bold;
+ 	margin-bottom:10px;
++	padding-bottom:10px;
+ }
+ 
+ .nswarning { color:#dd9a3b; }
+diff --git a/css/style.css b/css/style.css
+index a7b6dd3..a1e0317 100755
+--- a/css/style.css
++++ b/css/style.css
+@@ -216,14 +216,14 @@ input[type=button]:hover, input[type=submit]:hover {
+ 
+ .login {
+ 	width:100%;
+-	height:160px;
+-	background-color:#EDEDED;
+-	padding-top:20px;
+-	border-radius:2px;
+-	border: 1px solid #eee;
+-	-webkit-box-shadow: 0px 0px 10px #bbb;
+-	-moz-box-shadow: 0px 0px 10px #bbb;
+-	box-shadow: 0px 10px 10px -7px #bbb;
++/* 	height:160px;
++ 	background-color:#EDEDED;
++ 	padding-top:20px;
++ 	border-radius:2px;
++ 	border: 1px solid #eee;
++ 	-webkit-box-shadow: 0px 0px 10px #bbb;
++ 	-moz-box-shadow: 0px 0px 10px #bbb;
++ 	box-shadow: 0px 10px 10px -7px #bbb; */
+ 	font-family: Monaco, Consolas, "Lucida Console", monospace;
+ }
+ 
+@@ -243,7 +243,7 @@ input[type=button]:hover, input[type=submit]:hover {
+ 	height: 25px;
+ 	margin-top: 5px;
+ 	text-align: center;
+-	width: 140px;
++	width: 170px;
+ 	border-radius:4px;
+ }
+ 
+@@ -254,7 +254,7 @@ input[type=button]:hover, input[type=submit]:hover {
+ .logintxt {
+ 	border: medium none;
+ 	color: #5F5F5F;
+-/* 	background-color:#E5E5E5; */
++	background-color:#E5E5E5;
+ 	font-family: Arial,Helvetica,sans-serif;
+ 	font-size: 12px;
+ 	height: 25px;
