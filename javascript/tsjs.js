@@ -147,9 +147,10 @@ function showNewTimeForm(i)
 
 	FUSION.get.node("dateid").value = i;
 	var darray = i.split("_");
-	var y = FUSION.get.selectedValue("year");
+// 	var y = FUSION.get.selectedValue("year");
 	var m = darray[1];
 	var d = darray[2];
+	var y = darray[3];
 	var cm = FUSION.get.node("month").value;
 	var ui = FUSION.get.node("userid").value;
 
@@ -248,8 +249,9 @@ function addUpdateTimeEntry()
 	var darray = id.split("_");
 	var mn = darray[1];
 	var dy = darray[2];
+	var yr = darray[3];
 	var cm = FUSION.get.node("month").value;
-	var yr = FUSION.get.selectedValue("year");
+// 	var yr = FUSION.get.selectedValue("year");
 	var userid = FUSION.get.node("userid").value;
 
 	var start 	= FUSION.get.node("starttime").value;

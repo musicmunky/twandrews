@@ -182,6 +182,8 @@
 		$endpp = date("Y-m-d", strtotime("last Friday of " . $mname . " " . $cyear));
 
 		$lastfriday = date("j", strtotime("last Friday of " . $mname . " " . $cyear));
+
+
 //		for($i = $daysback; $i <= $daysfrwd; $i++)
 		for($i = $daysback; $i <= $lastfriday; $i++)
 		{
@@ -190,6 +192,7 @@
 			$btnclass  = "tdbtn";
 			$onclick = "onclick='showNewTimeForm(this.id)'";
 			$addtime = false;
+			$idyr = "";
 
 			if($i <= 0)
 			{
@@ -203,6 +206,7 @@
 // 				$onclick = "";
 // 				$btnclass = "";
 				$addtime = true;
+				$idyr = $prevyear;
 			}
 			elseif($i > $currnumdays)
 			{
@@ -212,6 +216,7 @@
 				$mid = 0;
 				$onclick = "";
 				$btnclass = "";
+				$idyr = $nextyear;
 			}
 			else
 			{
@@ -219,6 +224,7 @@
 				$did  = $i;
 				$mid  = $nummonth;
 				$addtime = true;
+				$idyr = $cyear;
 			}
 			$day  = date("l", strtotime($date));
 			$date = date("m/d/Y", strtotime($date));
@@ -288,18 +294,18 @@
 			}
 
 			$maintablehtml .= "<tr class='" . $class . "'>
-					<td class='" 		. $btnclass . "' " . $onclick . " id='date_" . $mid . "_" . $did . "'>" . $date . "</td>
-					<td id='start_" 	. $mid . "_" . $did . "'>" . $stime  . "</td>
-					<td id='begbreak_" 	. $mid . "_" . $did . "'>" . $sbtime . "</td>
-					<td id='endbreak_" 	. $mid . "_" . $did . "'>" . $ebtime . "</td>
-					<td id='end_" 		. $mid . "_" . $did . "'>" . $etime  . "</td>
-					<td id='hours_" 	. $mid . "_" . $did . "'>" . $hours  . "</td>
-					<td id='pto_" 		. $mid . "_" . $did . "'>" . $totpto . "</td></tr>";
+					<td class='" 		. $btnclass . "' " . $onclick . " id='date_" . $mid . "_" . $did . "_" . $idyr . "'>" . $date . "</td>
+					<td id='start_" 	. $mid . "_" . $did . "_" . $idyr . "'>" . $stime  . "</td>
+					<td id='begbreak_" 	. $mid . "_" . $did . "_" . $idyr . "'>" . $sbtime . "</td>
+					<td id='endbreak_" 	. $mid . "_" . $did . "_" . $idyr . "'>" . $ebtime . "</td>
+					<td id='end_" 		. $mid . "_" . $did . "_" . $idyr . "'>" . $etime  . "</td>
+					<td id='hours_" 	. $mid . "_" . $did . "_" . $idyr . "'>" . $hours  . "</td>
+					<td id='pto_" 		. $mid . "_" . $did . "_" . $idyr . "'>" . $totpto . "</td></tr>";
 
 			$sidetablehtml .= "<tr class='" . $class . $sideclass . "'>
-					<td id='day_" . $mid . "_" . $did . "'>" . $day . "</td>
-					<td id='totalhours_" . $mid . "_" . $did . "'>" . $tothours . "</td>
-					<td style='text-align:left;' id='note_" . $mid . "_" . $did . "'>" . $note . "</td></tr>";
+					<td id='day_" . $mid . "_" . $did . "_" . $idyr . "'>" . $day . "</td>
+					<td id='totalhours_" . $mid . "_" . $did . "_" . $idyr . "'>" . $tothours . "</td>
+					<td style='text-align:left;' id='note_" . $mid . "_" . $did . "_" . $idyr . "'>" . $note . "</td></tr>";
 		}
 
 		$ppexp = getWorkingDays($begpp, $endpp) * 8;
@@ -389,7 +395,7 @@
 
 		$month 	= sprintf("%02d", $datearr[1]);
 		$day 	= sprintf("%02d", $datearr[2]);
-		$suffix = $datearr[1] . "_" . $datearr[2];
+		$suffix = $datearr[1] . "_" . $datearr[2] . "_" . $datearr[3];
 		$year 	= $P['year'];
 
 		$date 	 = $year . "-" . $month . "-" . $day;
