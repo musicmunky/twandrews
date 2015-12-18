@@ -96,7 +96,6 @@
 		<link rel='stylesheet' href='css/fusionlib.css' type="text/css" media="screen" charset="utf-8">
 		<link rel='stylesheet' href='css/indexstyle.css' type="text/css" media="screen" charset="utf-8">
 		<script language="javascript" type="text/javascript" src="javascript/jquery-1.11.0.min.js"></script>
-<!--		<script language="javascript" type="text/javascript" src="../steph/javascript/bootstrap.js"></script>//-->
 		<script language="javascript" type="text/javascript" src="javascript/fusionlib.js"></script>
 		<script language="javascript" type="text/javascript" src="javascript/indexjs.js"></script>
 	</head>
