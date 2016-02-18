@@ -1213,7 +1213,11 @@
 
 		//The total number of days between the two dates. We compute the no. of seconds and divide it to 60*60*24
 		//We add one to inlude both dates in the interval.
-		$days = floor(($endDate - $startDate) / 86400) + 1;
+
+		//$days = floor(($endDate - $startDate) / 86400) + 1;
+		// changed from "floor" to "round" to account for decimal difference in change to DST in March
+		// (losing an hour caused the result to be 1 hour short, and the floor caused that to drop a full work day)
+		$days = round(($endDate - $startDate) / 86400) + 1;
 		$no_full_weeks = floor($days / 7);
 		$no_remaining_days = fmod($days, 7);
 
@@ -1259,51 +1263,6 @@
 			$workingDays += $no_remaining_days;
 		}
 		return $workingDays;
-	}
-
-
-	function getWeatherInfo($P)
-	{
-		$P = escapeArray($P);
-
-		//are we just loading existing info?
-		$load = isset($P['load']) ? $P['load'] : false;
-		//should (can) we create a new localStorage entry?
-		$lcst = isset($P['localstore']) ? $P['localstore'] : true;
-
-		//all pretty self-explanatory
-		$yw = new yWeather();
-		$id = $load ? $P['woeid'] : $yw->getWoeidByZip($P['zipcode']);
-		$yw->setUrl("http://weather.yahooapis.com/forecastrss?w=" . $id);
-		$yw->loadFeed();
-
-		$content = array();
-		$ast = $yw->getAstronomy();
-		$con = $yw->getConditions();
-		$loc = $yw->getLocation();
-		$atm = $yw->getAtmosphere();
-		$wnd = $yw->getWind();
-		$frc = $yw->getForecast();
-
-		$content['astronomy'] 	= $ast;
-		$content['conditions'] 	= $con;
-		$content['location'] 	= $loc;
-		$content['atmosphere'] 	= $atm;
-		$content['wind'] 		= $wnd;
-		$content['forecast'] 	= $frc;
-		$content['woeid'] 		= $id;
-		$content['adddiv'] 		= $load ? false : true;
-		$content['localstore']  = $lcst;
-
-		//clear the weather object for garbage collection
-		unset($yw);
-
-		$result = array(
-				"status" => "success",
-				"message" => "",
-				"content" => $content
-		);
-		echo json_encode($result);
 	}
 
 ?>
