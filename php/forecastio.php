@@ -114,15 +114,23 @@
 				$content = file_get_contents($requrl);
 				$rsltcon = json_decode($content, true);
 
+				//initialize number of requests to 0, just in case they change the key for the number of API calls
+				$this->setNumReqs();
+				for($i = 0; $i < count($http_response_header); $i++) {
+					if(preg_match('/^x-forecast-api-calls:\s?\d{1,}$/i', $http_response_header[$i])) {
+						$numreqs = explode(" ", $http_response_header[$i]);
+						$this->setNumReqs($numreqs[1]);
+						break;
+					}
+				}
+
 				$reqstat = explode(" ", $http_response_header[0]);
-				$numreqs = explode(" ", $http_response_header[8]);
 
 				if(!isset($reqstat[1]) || $reqstat[1] != "200")
 				{
 					throw new Exception("Bad result from forecast server - please check parameters and try again");
 				}
 
-				$this->setNumReqs($numreqs[1]);
 				$this->fordat = $rsltcon;
 				$this->status = $reqstat[1];
 			}
