@@ -1,4 +1,3 @@
-
 /**
  *	FUSION javascipt library
  *
@@ -15,6 +14,21 @@ var loadjq = window.jQuery ? true : false;
 if(!loadjq){
 	console.log("NOTICE: jQuery library is not loaded");
 }
+
+
+// Example uses for array.clean:
+// test = new Array("","One","Two","", "Three","","Four").clean("");
+// test2 = [1,2,,3,,3,,,,,,4,,4,,5,,6,,,,];
+// test2.clean(undefined);
+Array.prototype.clean = function(deleteValue) {
+	for (var i = 0; i < this.length; i++) {
+		if (this[i] == deleteValue) {
+			this.splice(i, 1);
+			i--;
+		}
+	}
+	return this;
+};
 
 
 //Getter methods
@@ -131,44 +145,29 @@ FUSION.get = {
 	//don't really have a "size" per se
 	objSize: function(obj) {
 		try {
-			var hasNonLeafNodes = false;
 			var childCount = 0;
-
 			for(var child in obj)
 			{
-				if(typeof obj[child] === 'object')
-				{
+				if(typeof obj[child] === 'object') {
 					childCount += FUSION.get.objSize(obj[child]);
-					hasNonLeafNodes = true;
 				}
-				else
-				{
+				else {
 					childCount++;
 				}
 			}
-			/*if(hasNonLeafNodes)
-			{
-				obj.num_children = childCount;
-				return childCount;
-			}
-			else
-			{
-				return childCount;
-			}*/
 			return childCount;
 		}
 		catch(err) {
-			//obj.is_error = true;
-			//obj.error_message = err;
 			FUSION.error.logError(err);
-			return 0;
+			return -1;
 		}
 	},
 
 	//returns the value of a URL parameter by name
 	urlParamByName: function(name) {
+		var rgx = new RexExp(name + "=" + "(.+?)(&|$)");
 		return decodeURI(
-			(RexExp(name + "=" + "(.+?)(&|$)").exec(location.search)||[,null])[1]
+			(rgx.exec(location.search)||[,null])[1]
 		);
 	},
 
@@ -179,7 +178,7 @@ FUSION.get = {
 			var pstr = window.location.search;
 			if(pstr && !FUSION.lib.isBlank(pstr))
 			{
-				var parr = pstr.substring[1].split("&");
+				var parr = pstr.toString().substring(1).split("&");
 				for(var i = 0; i < parr.length; i++)
 				{
 					var a = parr[i].split("=");
@@ -245,12 +244,28 @@ FUSION.set = {
 
 	//Set the mouse cursor to the "waiting" icon
 	overlayMouseWait: function() {
-		jQuery("body").addClass("wait");
+		var bd = document.body;
+		var cn = bd.className;
+
+		//body has no class applied
+		if(FUSION.lib.isBlank(cn)) {
+			bd.className = "wait";
+		}
+		else {
+			//body has existing css classes, don't apply
+			//the 'wait' class more than once
+			var cn_arry = cn.split(" ");
+			var cn_indx = cn_arry.indexOf("wait");
+			if(cn_indx == -1) {
+				bd.className += " wait";
+			}
+		}
 	},
 
 	//Set the mouse cursor back to the "default" icon
 	overlayMouseNormal: function() {
-		jQuery("body").removeClass("wait");
+		//remove the 'wait' class from the body
+		document.body.className = document.body.className.replace(/(?:^|\s)wait(?!\S)/, "");
 	},
 
 	//set the selected text of a select box / dropdown list
@@ -600,6 +615,7 @@ FUSION.lib = {
 					FUSION.set.overlayMouseNormal();
 					FUSION.error.showErrorDialog({'stacktrace':response['content'],
 												  'message':response['message'],
+												  'errormessage':response['content'],
 												  'linkvisible':false});
 				}
 			},
@@ -746,6 +762,7 @@ FUSION.lib = {
 			var click = hash['onclick'];
 			var chnge = hash['onchange'];
 			var keyup = hash['keyup'];
+			var blur  = hash['onblur'];
 			var styls = hash['style'];
 			var attrs = hash['attributes'];
 
@@ -778,13 +795,22 @@ FUSION.lib = {
 			{
 				//jQuery( el ).css(styls);
 				var stylename = "";
+				var stylearry = [];
 				for (var key in styls)
 				{
 					stylename = key;
 					if(key.match(/^float/)){
 						stylename = "cssFloat";
 					}
-					el.style[stylename] = styls[key];
+					stylearry = styls[key].split(" ");
+					if(stylearry.length > 1 && stylearry[1] == "!important")
+					{
+						el.style.setProperty(key, stylearry[0], "important");
+					}
+					else
+					{
+						el.style[stylename] = styls[key];
+					}
 				}
 			}
 
@@ -799,6 +825,11 @@ FUSION.lib = {
 				//el.onclick = function(){ showRemoveMentorForm(me_id, mr_id, me_name, mr_name); };
 				//callback issues here with variable assignment...trying this way to see if it will work
 				el.onclick = new Function(click);
+			}
+
+			if(blur && !FUSION.lib.isBlank(blur))
+			{
+				el.onblur = new Function(blur);
 			}
 
 			if(chnge && !FUSION.lib.isBlank(chnge))

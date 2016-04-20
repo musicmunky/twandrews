@@ -93,7 +93,7 @@
 		<link rel='stylesheet' type="text/css" href='css/weather.css'  media="screen" charset="utf-8">
 		<link rel='stylesheet' type="text/css" href='css/fusionlib.css' media="screen" charset="utf-8">
 		<link rel='stylesheet' type="text/css" href='css/jquery-ui.min.css' media="screen" charset="utf-8">
-		<link rel='stylesheet' type="text/css" href='css/bootstrap.css' media="screen" charset="utf-8">
+<!--		<link rel='stylesheet' type="text/css" href='css/bootstrap.css' media="screen" charset="utf-8">//-->
 		<link rel='stylesheet' type="text/css" href='css/radio.css' media="screen" charset="utf-8">
 		<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Lato">
 <!--	<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans">//-->

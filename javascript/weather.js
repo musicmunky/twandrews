@@ -4,29 +4,16 @@
 // it also uses jQuery, because I'm inherently lazy and jQuery makes life
 // so much easier sometimes.
 
-var directions = ["N", "NNE", "NE", "ENE",
-				  "E", "ESE", "SE", "SSE",
-				  "S", "SSW", "SW", "WSW",
-				  "W", "WNW", "NW", "NNW"];
-
-var months = ["Jan", "Feb", "Mar",
-			  "Apr", "May", "Jun",
-			  "Jul", "Aug", "Sep",
-			  "Oct", "Nov", "Dec"];
-
-var days = ["Sun", "Mon", "Tue",
-			"Wed", "Thu", "Fri", "Sat"];
-
-var validunits = ["us", "ca"];
-
-var fulldays = ["Sunday", "Monday", "Tuesday",
-				"Wednesday", "Thursday", "Friday", "Saturday"];
-
-var cnvrtflds = ["condition", "wind", "hrwind1", "hrwind2", "hrwind3",
-				 "hrwind4", "hrwind5", "hrwind6", "hrwind7", "hrwind8",
-				 "hrtemp1", "hrtemp2", "hrtemp3", "hrtemp4", "hrtemp5",
-				 "hrtemp6", "hrtemp7", "hrtemp8", "high", "high2", "high3",
-				 "high4", "high5", "low", "low2", "low3", "low4", "low5"];
+var MYWEATHER = {
+	directions: ["N", "NNE", "NE", "ENE","E", "ESE", "SE", "SSE","S", "SSW", "SW", "WSW","W", "WNW", "NW", "NNW"],
+	months:["Jan", "Feb", "Mar","Apr", "May", "Jun","Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+	days: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+	validunits: ["us", "ca"],
+	fulldays: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+	cnvrtflds: ["condition", "wind", "hrwind1", "hrwind2", "hrwind3", "hrwind4", "hrwind5", "hrwind6", "hrwind7", "hrwind8",
+				"hrtemp1", "hrtemp2", "hrtemp3", "hrtemp4", "hrtemp5", "hrtemp6", "hrtemp7", "hrtemp8", "high", "high2", "high3",
+				"high4", "high5", "low", "low2", "low3", "low4", "low5"]
+};
 
 $( document ).ready(function() {
 
@@ -107,7 +94,7 @@ $( document ).ready(function() {
 function setUnits(u)
 {
 	try {
-		if(validunits.indexOf(u) > -1){
+		if(MYWEATHER.validunits.indexOf(u) > -1){
 			localStorage.setItem("defaultunits", u);
 		}
 		else {
@@ -125,10 +112,10 @@ function setUnits(u)
 		var wu = (u == "us") ? " mph" : " kph";
 		var tu = (u == "us") ? "&deg; F" : "&deg; C";
 
-		for(var i = 0; i < cnvrtflds.length; i++)
+		for(var i = 0; i < MYWEATHER.cnvrtflds.length; i++)
 		{
-			f = FUSION.get.node(cnvrtflds[i] + "_cnvrt");
-			h = FUSION.get.node(cnvrtflds[i]);
+			f = FUSION.get.node(MYWEATHER.cnvrtflds[i] + "_cnvrt");
+			h = FUSION.get.node(MYWEATHER.cnvrtflds[i]);
 			if(typeof f !== null && typeof h !== null)
 			{
 				try {
@@ -146,7 +133,7 @@ function setUnits(u)
 					}
 				}
 				catch(err) {
-					FUSION.error.logError(err, "Error updating unit data for field " + cnvrtflds[i] + "_cnvrt: ");
+					FUSION.error.logError(err, "Error updating unit data for field " + MYWEATHER.cnvrtflds[i] + "_cnvrt: ");
 				}
 			}
 		}
@@ -422,7 +409,7 @@ function processForecast(h)
 		var daly = hash['daily'];
 
 		var ct = new Date((crnt['time'] + ofst) * 1000);
-		var dstr = fulldays[ct.getDay()] + " / " + months[ct.getMonth()] + " " + ct.getDate() + ", " + ct.getFullYear();
+		var dstr = MYWEATHER.fulldays[ct.getDay()] + " / " + MYWEATHER.months[ct.getMonth()] + " " + ct.getDate() + ", " + ct.getFullYear();
 		FUSION.get.node("date").innerHTML 		= dstr;
 
 		var cntp = { "type":"temperature",
@@ -472,7 +459,7 @@ function processForecast(h)
 			FUSION.get.node("low" + k + "_cnvrt").value  = JSON.stringify(lotp);
 
 			dte  = new Date((daly[j]['time'] + ofst) * 1000);
-			dstr = days[dte.getDay()] + ", " + months[dte.getMonth()] + " " + dte.getDate();
+			dstr = MYWEATHER.days[dte.getDay()] + ", " + MYWEATHER.months[dte.getMonth()] + " " + dte.getDate();
 			FUSION.get.node("dayofweek" + k).innerHTML  = dstr;
 			FUSION.get.node("condition" + k).innerHTML  = daly[j]['summary'];
 			FUSION.get.node("conditiontext" + k).value 	= daly[j]['summary'];
@@ -624,7 +611,7 @@ function getWindBearing(b)
 	var brng = b || 0;
 	var drct = Math.floor((brng + 11.25) / 22.5);
 	if(drct < 16){
-		return directions[drct];
+		return MYWEATHER.directions[drct];
 	}
 	else{
 		return "N/A";
