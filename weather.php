@@ -118,7 +118,7 @@
 							</div>
 						</div>
 					</div>
-					<div class="h100fl">
+					<div id="datediv" class="h100fl">
 						<div id="datewrapper" class="h100fl">
 							<span id="date" class="headspan"></span>
 						</div>
