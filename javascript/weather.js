@@ -20,8 +20,7 @@ $( document ).ready(function() {
 	//IE doesn't like Google fonts...apparently it's Google's fault
 	//at the moment, but whatever...load Web Safe font for IE users
 	var gbr = FUSION.get.browser();
-	if(gbr.browser && gbr.browser == "IE")
-	{
+	if(gbr.browser && gbr.browser == "IE") {
 		document.body.style.fontFamily = "'Trebuchet MS', Helvetica, sans-serif";
 	}
 
@@ -45,16 +44,13 @@ $( document ).ready(function() {
 				//that can not be parsed by JSON.  The match statement above
 				//should catch them, but juuuust in case, this will filter out
 				//any other weirdness
-				try
-				{
+				try {
 					lso = JSON.parse(lss);
-					if(lso.placeid)
-					{
+					if(lso.placeid) {
 						lsa.push(lso);
 					}
 				}
-				catch(err)
-				{
+				catch(err) {
 					FUSION.error.logError(err);
 				}
 			}
