@@ -606,19 +606,12 @@ function showCondition(c)
 }
 
 
-
 function getWindBearing(b)
 {
 	var brng = b || 0;
 	var drct = Math.floor((brng + 11.25) / 22.5);
-	drct = (drct == 16) ? 0 : drct;
-	if(drct < 16){
-		return MYWEATHER.directions[drct];
-	}
-	else{
-		return "N/A";
-	}
-
+	drct = drct % 16; //handling when drct >= 16
+	return MYWEATHER.directions[drct];
 }
 
 
