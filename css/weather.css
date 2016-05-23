@@ -499,9 +499,9 @@ a {
 }
 
 .tempdiv {
-	width:50%;
+	width:33%;
 	line-height:40px;
-	font-size:23px;
+	font-size:20px;
 	height:40px;
 }
 
@@ -752,6 +752,14 @@ a {
 		padding-left:5px;
 	}
 
+	.tempdiv {
+		font-size:15px;
+	}
+
+	.hrrainchanceicon {
+    	width: 10px;
+    	height: 10px;
+	}
 	.title {
 		font-size: 14px;
 		line-height: 60px;

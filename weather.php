@@ -52,9 +52,13 @@
 							<span id='high{$i}' class='wrmclr'></span>
 							<input type='hidden' id='high{$i}_cnvrt' value='' />
 						</div>
-						<div class='tempdiv fr'>
+						<div class='tempdiv fl'>
 							<span id='low{$i}' class='cldclr'></span>
 							<input type='hidden' id='low{$i}_cnvrt' value='' />
+						</div>
+						<div class='tempdiv fl'>
+							<img src='images/iconic/rain-2x.png' class='hrrainchanceicon' />
+							<span id='rainchance{$i}'></span>
 						</div>
 					</div>";
 	}

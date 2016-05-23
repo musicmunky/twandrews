@@ -442,6 +442,8 @@ function processForecast(h)
 		var dte = 0;
 		var dstr = "";
 		var k = 0;
+
+		rain = 0;
 		hitp = {};
 		lotp = {};
 		for(var j = 1; j < 5; j++)
@@ -461,6 +463,9 @@ function processForecast(h)
 			FUSION.get.node("conditiontext" + k).value 	= daly[j]['summary'];
 			FUSION.get.node("high" + k).innerHTML 		= Math.round(daly[j]['temperatureMax']) + "&deg; " + tu;
 			FUSION.get.node("low" + k).innerHTML 		= Math.round(daly[j]['temperatureMin']) + "&deg; " + tu;
+			rain = Math.round(daly[j]['precipProbability'] * 100);
+			rain += "%";
+			FUSION.get.node("rainchance" + k).innerHTML = rain;
 			skycons.add("condimg" + k, daly[j]['icon']);
 		}
 
@@ -606,6 +611,7 @@ function getWindBearing(b)
 {
 	var brng = b || 0;
 	var drct = Math.floor((brng + 11.25) / 22.5);
+	drct = (drct == 16) ? 0 : drct;
 	if(drct < 16){
 		return MYWEATHER.directions[drct];
 	}
