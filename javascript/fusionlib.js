@@ -9,6 +9,7 @@
 
 //create the FUSION object
 var FUSION = FUSION || {};
+var $F = FUSION;
 
 var loadjq = window.jQuery ? true : false;
 if(!loadjq){
@@ -336,13 +337,14 @@ FUSION.remove = {
 	node: function(el) {
 		try {
 			var elm = FUSION.get.node(el);
-			var par = elm.parentNode;
-			par.removeChild(elm);
+			if(elm !== null) {
+				var par = elm.parentNode;
+				par.removeChild(elm);
+			}
 			return true;
 		}
 		catch(err) {
 			FUSION.error.logError(err);
-			FUSION.error.showError(err);
 		}
 	},
 };

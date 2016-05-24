@@ -1,6 +1,50 @@
 //start with the jQuery stuff...
 $( document ).ready(function() {
 
+/*
+	document.body.addEventListener('mousedown', function(evt) {
+		if(FUSION.get.node("fusion_left_click") !== null) {
+			var mouseX = FUSION.get.mouseX(evt);
+			var mouseY = FUSION.get.mouseY(evt);
+			var menu = FUSION.get.node("fusion_left_click");
+
+			var wdth = menu.style.width;
+			var hght = menu.style.height;
+			var left = menu.style.left;
+			var mtop = menu.style.top;
+
+			wdth = parseInt(wdth.replace(/px/g, ''))
+			hght = parseInt(hght.replace(/px/g, ''))
+			left = parseInt(left.replace(/px/g, ''))
+			mtop = parseInt(mtop.replace(/px/g, ''))
+			var bttm = hght + mtop;
+			var rght = left + wdth;
+
+			if(mouseX >= left && mouseX <= rght && mouseY >= mtop && mouseY <= bttm) {
+				alert("WIDTH: " + wdth + "\nHEIGHT: " + hght + "\nLEFT: " + left + "\nTOP: " + mtop + "\nMOUSELEFT: " + mouseX + "\nMOUSETOP: " + mouseY);
+			}
+			else {
+				FUSION.remove.node("fusion_left_click");
+			}
+		}
+	}, false);
+
+	document.body.addEventListener('contextmenu', function(evt) {
+		evt.preventDefault();
+		var left = FUSION.get.mouseX(evt);
+		var top = FUSION.get.mouseY(evt);
+
+		FUSION.remove.node("fusion_left_click");
+		var div = FUSION.lib.createHtmlElement({"type":"div",
+												"attributes":{"id":"fusion_left_click", "class":"fl_alert_wrapper fl_alert_message_div"},
+												"style":{"position":"absolute", "top":top + "px", "left":left + "px", "height":"300px",
+														 "width":"100px", "zIndex":"99999", "backgroundColor":"#EEE", "border":"1px solid #CCC"},
+												"text":"FOO"});
+
+		document.body.appendChild(div);
+	}, false);
+*/
+
 	$( "#newtimeform" ).dialog({
 		autoOpen: false,
 		height: 460,
