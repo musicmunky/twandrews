@@ -89,43 +89,44 @@ $( document ).ready(function() {
 
 function setUnits(u)
 {
+	var units = u;
 	try {
-		if(MYWEATHER.validunits.indexOf(u) > -1){
-			localStorage.setItem("defaultunits", u);
+		if(MYWEATHER.validunits.indexOf(units) > -1){
+			localStorage.setItem("defaultunits", units);
 		}
 		else {
-			u = "us";
+			units = "us";
 			FUSION.error.logError(err, "Invalid unit parameter supplied - defaulting to US: ");
-			localStorage.setItem("defaultunits", u);
+			localStorage.setItem("defaultunits", units);
 		}
 
-		var f = null;
-		var h = null;
-		var v = {};
-		var x = 0;
-		var y = 0;
-		var s = "";
-		var wu = (u == "us") ? " mph" : " kph";
-		var tu = (u == "us") ? "&deg; F" : "&deg; C";
+		var jsonfield = null;
+		var dispfield = null;
+		var jsonvalue = {};
+		var origvalue = 0;
+		var cvrtvalue = 0;
+		var jsonstrng = "";
+		var windunits = (units == "us") ? " mph" : " kph";
+		var tempunits = (units == "us") ? "&deg; F" : "&deg; C";
 
 		for(var i = 0; i < MYWEATHER.cnvrtflds.length; i++)
 		{
-			f = FUSION.get.node(MYWEATHER.cnvrtflds[i] + "_cnvrt");
-			h = FUSION.get.node(MYWEATHER.cnvrtflds[i]);
-			if(typeof f !== null && typeof h !== null)
+			jsonfield = FUSION.get.node(MYWEATHER.cnvrtflds[i] + "_cnvrt");
+			dispfield = FUSION.get.node(MYWEATHER.cnvrtflds[i]);
+			if(typeof jsonfield !== null && typeof dispfield !== null)
 			{
 				try {
-					v = JSON.parse(f.value);
-					if(v.units != u) //make sure you don't try to convert unless the units are different!
+					jsonvalue = JSON.parse(jsonfield.value);
+					if(jsonvalue.units != units) //make sure you don't try to convert unless the units are different!
 					{
-						x = parseInt(v.value);
-						y = (v.type == "wind") ? convertWind(x, u) : convertTemp(x, u);
-						s = v.text.left + y + v.text.right;
-						h.innerHTML = (v.type == "wind") ? s + wu : s + tu;
+						origvalue = parseInt(jsonvalue.value);
+						cvrtvalue = (jsonvalue.type == "wind") ? convertWind(origvalue, units) : convertTemp(origvalue, units);
+						jsonstrng = jsonvalue.text.left + cvrtvalue + jsonvalue.text.right;
+						dispfield.innerHTML = (jsonvalue.type == "wind") ? jsonstrng + windunits : jsonstrng + tempunits;
 
-						v.value = y;
-						v.units = u;
-						f.value = JSON.stringify(v);
+						jsonvalue.value = cvrtvalue;
+						jsonvalue.units = units;
+						jsonfield.value = JSON.stringify(jsonvalue);
 					}
 				}
 				catch(err) {
