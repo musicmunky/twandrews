@@ -87,6 +87,8 @@
 	</head>
 	<body>
 
+<!--	<div id="fusion_left_click_menu"></div>//-->
+
 		<div id="header" class="header">
 			<div id="headercont" class="header-content">
 				<div class="header-logo">
