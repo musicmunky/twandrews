@@ -175,17 +175,20 @@
 // 		sprintf("%02d", $datearr[1]);
 
 		$begday = $prevnumdays + $daysback;
-		$begpp = ($daysback <= 0) ?
-			$prevyear . "-" . sprintf("%02d", $prevmonth) . "-" . sprintf("%02d", $begday) :
-				date("Y-m-d", strtotime("first Monday of " . $mname . " " . $cyear));
+// 		$begpp = ($daysback <= 0) ?
+// 			$prevyear . "-" . sprintf("%02d", $prevmonth) . "-" . sprintf("%02d", $begday) :
+// 				date("Y-m-d", strtotime("first Monday of " . $mname . " " . $cyear));
 
-		$endpp = date("Y-m-d", strtotime("last Friday of " . $mname . " " . $cyear));
+// 		$endpp = date("Y-m-d", strtotime("last Friday of " . $mname . " " . $cyear));
+
+		$begpp = $firstdate;
+		$endpp = $cyear . "-" . $nummonth . "-" . $currnumdays;
 
 		$lastfriday = date("j", strtotime("last Friday of " . $mname . " " . $cyear));
 
 
-//		for($i = $daysback; $i <= $daysfrwd; $i++)
-		for($i = $daysback; $i <= $lastfriday; $i++)
+		for($i = $daysback; $i <= $daysfrwd; $i++)
+// 		for($i = $daysback; $i <= $lastfriday; $i++)
 		{
 			$class = "tablerow";
 			$sideclass = "";
@@ -198,13 +201,13 @@
 			{
 				$day   = $prevnumdays + $i;
 				$date  = $prevmonth . "/" . $day . "/" . $prevyear;
-// 				$class = "redtablerow";
-				$did = $day;
-				$mid = $prevmonth;
-// 				$did = 0;
-// 				$mid = 0;
-// 				$onclick = "";
-// 				$btnclass = "";
+				$class = "redtablerow";
+// 				$did = $day;
+// 				$mid = $prevmonth;
+				$did = 0;
+				$mid = 0;
+ 				$onclick = "";
+ 				$btnclass = "";
 				$addtime = true;
 				$idyr = $prevyear;
 			}
@@ -486,7 +489,7 @@
 		$mname 		 = date("F", strtotime($firstdate));
 		$firstday  	 = date("l", strtotime($firstdate));
 		$daysback	 = $begadddays[$firstday];
-
+/*
 		if($daysback < 1)
 		{
 			$prevmonth 	 = date("n", strtotime($mname . " " . $year . " -5 days"));
@@ -500,8 +503,12 @@
 		{
 			$begpp = date("Y-m-d", strtotime("first Monday of " . $mname . " " . $year));
 		}
+*/
 
-		$endpp = date("Y-m-d", strtotime("last Friday of " . $mname . " " . $year));
+		$currnumdays = date("t", strtotime($firstdate));
+		$begpp = $firstdate;
+		$endpp = $year . "-" . sprintf("%02d", $currentmonth) . "-" . $currnumdays;
+// 		$endpp = date("Y-m-d", strtotime("last Friday of " . $mname . " " . $year));
 
 		$ppexp = getWorkingDays($begpp, $endpp) * 8;
 		$pptot = getPayPeriodTotal($begpp, $endpp, $userid);
@@ -553,10 +560,10 @@
 			$content['ppdiff']   = $ppdiff;
 			$content['ppcol']	 = $ppcolor;
 
-// 			$content['ppbegin']  = $begpp;
-// 			$content['ppend']    = $endpp;
-// 			$content['firstdate'] = $firstdate;
-// 			$content['monthname'] = $mname;
+ 			$content['ppbegin']  = $begpp;
+ 			$content['ppend']    = $endpp;
+ 			$content['firstdate'] = $firstdate;
+ 			$content['monthname'] = $mname;
 
 // 			$content['pp1total'] = ($pp1tot == 0) ? "" : $pp1tot;
 // 			$content['pp2total'] = ($pp2tot == 0) ? "" : $pp2tot;

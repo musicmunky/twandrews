@@ -103,22 +103,18 @@ function getNextMonth()
 }
 
 
-function getPreviousMonth()
-{
+function getPreviousMonth() {
 	var dorefresh = true;
 	var yrind = FUSION.get.node("year").selectedIndex;
 	var mnind = FUSION.get.node("month").selectedIndex;
 	var prevbtn = FUSION.get.node("previousbutton");
 	FUSION.get.node("nextbutton").disabled = false;
-	if((mnind - 1) >= 0)
-	{
+	if((mnind - 1) >= 0) {
 		FUSION.get.node("month").selectedIndex = mnind - 1;
 		prevbtn.disabled = false;
 	}
-	else
-	{
-		if((yrind - 1) >= 0)
-		{
+	else {
+		if((yrind - 1) >= 0) {
 			FUSION.get.node("month").selectedIndex = FUSION.get.node("month").length - 1;
 			FUSION.get.node("year").selectedIndex = yrind - 1;
 			prevbtn.disabled = false;
