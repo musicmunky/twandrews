@@ -221,11 +221,11 @@
 					<input id="endtime" type="text" class="time ui-timepicker-input" data-time-format="H:i:s" style="width:170px" autocomplete="off">
 				</div>
 				<div class="fielddivs">
-					<div class="userdivs">Holiday/PTO: </div>
+					<div class="userdivs">Holiday: </div>
 					<input type="text" id="pto" class="userinputs" style="width:170px" value="" />
 				</div>
 				<div class="fielddivs">
-					<div class="userdivs">Leave: </div>
+					<div class="userdivs">Leave/PTO: </div>
 					<input type="text" id="leave" class="userinputs" style="width:170px" value="" />
 				</div>
 				<div class="fielddivs">
