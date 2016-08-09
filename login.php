@@ -77,7 +77,7 @@
 		<script language='javascript'>
 			if(<?php echo $badsub; ?>){
 				FUSION.lib.alert('<?php echo $message; ?>');
-				//window.alert('<?php echo $message; ?>');
+				//window.alert('<?php //echo $message; ?>');
 				//document.location.href = 'login.php';
 			}
 		</script>
