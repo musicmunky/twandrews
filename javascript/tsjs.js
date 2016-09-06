@@ -155,7 +155,7 @@ function refreshTimesheet()
 			if(response['status'] == "success")
 			{
 				FUSION.get.node("sidetableheader").innerHTML = response['content']['headstr'];
-				var mainhtml = response['content']['mainhtml']
+				var mainhtml = response['content']['mainhtml'];
 				var sidehtml = response['content']['sidehtml'] + response['content']['finalhtml'];
 				FUSION.lib.modifyIETable("maintabletbody", mainhtml);
 				FUSION.lib.modifyIETable("sidetabletbody", sidehtml);
