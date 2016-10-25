@@ -186,6 +186,9 @@
 
 		$lastfriday = date("j", strtotime("last Friday of " . $mname . " " . $cyear));
 
+		$today_day = date("j");
+		$today_mth = date("n");
+		$today_yer = date("Y");
 
 		for($i = $daysback; $i <= $daysfrwd; $i++)
 // 		for($i = $daysback; $i <= $lastfriday; $i++)
@@ -296,7 +299,9 @@
 				}
 			}
 
-			$maintablehtml .= "<tr class='" . $class . "'>
+			$curr_row_color = ($today_day == $did && $today_mth == $mid && $today_yer == $idyr) ? " style='background-color:#DFD;'" : "";
+
+			$maintablehtml .= "<tr class='" . $class . "'" . $curr_row_color . ">
 					<td class='" 		. $btnclass . "' " . $onclick . " id='date_" . $mid . "_" . $did . "_" . $idyr . "'>" . $date . "</td>
 					<td id='start_" 	. $mid . "_" . $did . "_" . $idyr . "'>" . $stime  . "</td>
 					<td id='begbreak_" 	. $mid . "_" . $did . "_" . $idyr . "'>" . $sbtime . "</td>
@@ -305,7 +310,7 @@
 					<td id='hours_" 	. $mid . "_" . $did . "_" . $idyr . "'>" . $hours  . "</td>
 					<td id='pto_" 		. $mid . "_" . $did . "_" . $idyr . "'>" . $totpto . "</td></tr>";
 
-			$sidetablehtml .= "<tr class='" . $class . $sideclass . "'>
+			$sidetablehtml .= "<tr class='" . $class . $sideclass . "'" . $curr_row_color . ">
 					<td id='day_" . $mid . "_" . $did . "_" . $idyr . "'>" . $day . "</td>
 					<td id='totalhours_" . $mid . "_" . $did . "_" . $idyr . "'>" . $tothours . "</td>
 					<td style='text-align:left;' id='note_" . $mid . "_" . $did . "_" . $idyr . "'>" . $note . "</td></tr>";
