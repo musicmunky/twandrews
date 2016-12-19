@@ -179,7 +179,7 @@
 					<table id="sidetable" style="float:right;">
 						<thead>
 							<tr style="border:2px solid;">
-								<th id="sidetableheader" colspan="3" style="background-color:#CCFFCC;">
+								<th id="sidetableheader" colspan="3" style="background-color:#CFC;">
 									<?php echo $headstring; ?>
 								</th>
 							</tr>
@@ -203,39 +203,39 @@
 		<div id="newtimeform" title="New Timesheet Entry">
 			<div>
 				<form id="ntform">
-				<input type="hidden" id="dateid" value="" />
-				<div class="fielddivs" style="padding-top:15px;">
-					<div class="userdivs">Start: </div>
-					<input id="starttime" type="text" class="time ui-timepicker-input" data-time-format="H:i:s" style="width:170px" autocomplete="off">
-				</div>
-				<div class="fielddivs">
-					<div class="userdivs">Begin Break: </div>
-					<input id="startbreaktime" type="text" class="time ui-timepicker-input" data-time-format="H:i:s" style="width:170px" autocomplete="off">
-				</div>
-				<div class="fielddivs">
-					<div class="userdivs">End Break: </div>
-					<input id="endbreaktime" type="text" class="time ui-timepicker-input" data-time-format="H:i:s" style="width:170px" autocomplete="off">
-				</div>
-				<div class="fielddivs">
-					<div class="userdivs">End: </div>
-					<input id="endtime" type="text" class="time ui-timepicker-input" data-time-format="H:i:s" style="width:170px" autocomplete="off">
-				</div>
-				<div class="fielddivs">
-					<div class="userdivs">Holiday: </div>
-					<input type="text" id="pto" class="userinputs" style="width:170px" value="" />
-				</div>
-				<div class="fielddivs">
-					<div class="userdivs">Leave/PTO: </div>
-					<input type="text" id="leave" class="userinputs" style="width:170px" value="" />
-				</div>
-				<div class="fielddivs">
-					<div class="userdivs">Note: </div>
-					<input type="text" id="note" class="userinputs" style="width:170px" value="" />
-				</div>
-				<div class="fielddivs" style="text-align: center;">
-					<input type="button" class="createuserbtn" value="Update Entry" onclick="addUpdateTimeEntry()" />
-					<input type="button" class="createuserbtn" value="Cancel" onclick="hideNewTimeForm()" />
-				</div>
+					<input type="hidden" id="dateid" value="" />
+					<div class="fielddivs" style="padding-top:15px;">
+						<div class="userdivs">Start: </div>
+						<input id="starttime" type="text" class="time ui-timepicker-input" data-time-format="H:i:s" style="width:170px" autocomplete="off">
+					</div>
+					<div class="fielddivs">
+						<div class="userdivs">Begin Break: </div>
+						<input id="startbreaktime" type="text" class="time ui-timepicker-input" data-time-format="H:i:s" style="width:170px" autocomplete="off">
+					</div>
+					<div class="fielddivs">
+						<div class="userdivs">End Break: </div>
+						<input id="endbreaktime" type="text" class="time ui-timepicker-input" data-time-format="H:i:s" style="width:170px" autocomplete="off">
+					</div>
+					<div class="fielddivs">
+						<div class="userdivs">End: </div>
+						<input id="endtime" type="text" class="time ui-timepicker-input" data-time-format="H:i:s" style="width:170px" autocomplete="off">
+					</div>
+					<div class="fielddivs">
+						<div class="userdivs">Holiday: </div>
+						<input type="text" id="pto" class="userinputs" style="width:170px" value="" />
+					</div>
+					<div class="fielddivs">
+						<div class="userdivs">Leave/PTO: </div>
+						<input type="text" id="leave" class="userinputs" style="width:170px" value="" />
+					</div>
+					<div class="fielddivs">
+						<div class="userdivs">Note: </div>
+						<input type="text" id="note" class="userinputs" style="width:170px" value="" />
+					</div>
+					<div class="fielddivs" style="text-align: center;">
+						<input type="button" class="createuserbtn" value="Update Entry" onclick="addUpdateTimeEntry()" />
+						<input type="button" class="createuserbtn" value="Cancel" onclick="hideNewTimeForm()" />
+					</div>
 				</form>
 			</div>
 		</div>
