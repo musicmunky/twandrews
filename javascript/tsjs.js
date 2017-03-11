@@ -1,6 +1,5 @@
 //start with the jQuery stuff...
 $( document ).ready(function() {
-
 /*
 	document.body.addEventListener('mousedown', function(evt) {
 		if(FUSION.get.node("fusion_left_click") !== null) {
@@ -185,9 +184,13 @@ function showNewTimeForm(i)
 {
 	clearNewTimeForm();
 
+	if(FUSION.lib.isBlank(i)) {
+		FUSION.lib.alert("Please make sure the date id is not blank! (try refreshing the page)");
+		return false;
+	}
+
 	FUSION.get.node("dateid").value = i;
 	var darray = i.split("_");
-// 	var y = FUSION.get.selectedValue("year");
 	var m = darray[1];
 	var d = darray[2];
 	var y = darray[3];
@@ -291,7 +294,6 @@ function addUpdateTimeEntry()
 	var dy = darray[2];
 	var yr = darray[3];
 	var cm = FUSION.get.node("month").value;
-// 	var yr = FUSION.get.selectedValue("year");
 	var userid = FUSION.get.node("userid").value;
 
 	var start 	= FUSION.get.node("starttime").value;
