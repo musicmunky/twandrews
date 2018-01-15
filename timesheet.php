@@ -25,27 +25,36 @@
 	else
 	{
 		$cyear = date('Y');
-		$eyear = $cyear + 5;
 		$nummonth = date('n');
 
-		$months = array(1 => "January",
-						2 => "February",
-						3 => "March",
-						4 => "April",
-						5 => "May",
-						6 => "June",
-						7 => "July",
-						8 => "August",
-						9 => "September",
+		$months = array(1  => "January",
+						2  => "February",
+						3  => "March",
+						4  => "April",
+						5  => "May",
+						6  => "June",
+						7  => "July",
+						8  => "August",
+						9  => "September",
 						10 => "October",
 						11 => "November",
 						12 => "December");
 
-		$yearhtml = "";
-		for($i = ($cyear - 1); $i <= $eyear; $i++)
+        $yeararray = array();
+        $yearquery = mysql_query("SELECT DISTINCT LEFT(DATE, 4) AS years FROM timesheet ORDER BY years ASC;");
+        while($row = mysql_fetch_assoc($yearquery))
 		{
-			$sel = ($i == $cyear) ? " selected" : "";
-			$yearhtml .= "<option value='" . $i . "'" . $sel . ">" . $i . "</option>";
+			array_push($yeararray, $row['years']);
+		}
+
+        $endyear = $yeararray[count($yeararray) - 1];
+        $endyear++;
+        array_push($yeararray, $endyear);
+		$yearhtml = "";
+		for($i = 0; $i < count($yeararray); $i++)
+		{
+			$sel = ($yeararray[$i] == $cyear) ? " selected" : "";
+			$yearhtml .= "<option value='" . $yeararray[$i] . "'" . $sel . ">" . $yeararray[$i] . "</option>";
 		}
 
 		$monthhtml = "";
@@ -103,7 +112,10 @@
 				<div class="h100fl" style="float:left;width:400px;height:100%;">
 					<div style="width:100%;height:100%;">
 						<div class="h100fl" style="width:100px;line-height:56px;text-align:center;">
-							<input id="previousbutton" class="nav-buttons" type="button" value="<< Prev" onclick="getPreviousMonth();" />
+                            <button id="previousbutton" class="nav-buttons" style="border-radius:4px;" onclick="getPreviousMonth()">
+                                <span id="legud" class="menuopen" style="display: inline-block;float: left;margin-top: 11px;width:20px;height: 12px;background-image:url(../images/iconic/chevron-left-2x.png)"></span>
+                                Prev
+                            </button>
 						</div>
 						<div class="h100fl" style="width:100px;line-height:60px;">
 							<select id="month" style="width:90px;" onchange="refreshTimesheet()">
@@ -117,7 +129,10 @@
 							</select>
 						</div>
 						<div class="h100fl" style="width:100px;line-height:56px;text-align:center;">
-							<input id="nextbutton" class="nav-buttons" type="button" value="Next >>" onclick="getNextMonth();" />
+                            <button id="nextbutton" class="nav-buttons" style="border-radius:4px;" onclick="getNextMonth()">
+                                Next
+                                <span id="legud" class="menuopen" style="display:inline-block;float:right;margin-top:11px;margin-left:10px;width:10px;height: 12px;background-image:url(../images/iconic/chevron-right-2x.png)"></span>
+                            </button>
 						</div>
 					</div>
 				</div>
@@ -137,7 +152,7 @@
 								</div>
 								<div class="legcont">
 									<div id="legholidaytext" class="noselect" style="line-height: 3em; margin-left: 15px;">
-										<a href="timesheet.php?logout" style="text-decoration: none; display: block; width: 100%; height: 100%;">
+										<a href="timesheet.php?logout" style="text-decoration:none; display: block; width: 100%; height: 100%;">
 											Logout
 										</a>
 									</div>

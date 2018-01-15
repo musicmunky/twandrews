@@ -1,0 +1,189 @@
+* {
+	color: #FFF;
+	outline: 0;
+	padding: 0;
+	margin: 0;
+}
+
+:active, :focus {
+	outline:0;
+	text-decoration:none;
+	outline-style:none;
+	-moz-outline-style:none;
+}
+
+body,html {
+	border: 0px;
+	padding: 0px;
+	margin: 0px;
+	height: calc(100% - 30px) !important;
+	width:100%;
+	background-color:#31a4d9;
+	font-family: 'Open Sans', serif;
+}
+
+thead > tr > th {
+	padding:20px;
+	font-size:24px;
+}
+
+thead > tr:nth-child(1) > th {
+    background: #8bd554;
+    border-radius: 32px;
+}
+
+thead > tr:nth-child(2) > th {}
+
+tbody > tr {
+	font-size:24px;
+}
+
+tbody > tr > td {
+	background-color:#FFF;
+	color:#333;
+	padding:20px;
+}
+
+tbody > tr > td:nth-child(1) {
+	border-radius: 32px 0px 0px 32px;
+}
+
+tbody > tr > td:nth-child(2) {
+    text-align: center;
+	border-radius: 0px 32px 32px 0px;
+}
+
+.exercise {
+	width:320px;
+	text-align:left;
+}
+
+.reps {
+	width:210px;
+	text-align:center;
+}
+
+.maindiv {
+	width:600px;
+	margin-left:auto;
+	margin-right:auto;
+	margin-top:60px;
+}
+
+.h100fl {
+	height:100%;
+	float:left;
+}
+
+.w100fl {
+	width:100%;
+	float:left;
+}
+
+.header {
+    background-color: #FFF;
+	color:#666;
+    position: fixed;
+    width: 100%;
+    height: 60px;
+    top: 0;
+    z-index: 2000;
+	border-bottom:1px solid #DDD;
+}
+
+.header-logo {
+	height:100%;
+	float:left;
+	padding-left:50px;
+	width:200px;
+}
+
+.header-content {
+	width:100%;
+	height:100%;
+	line-height:1.5;
+}
+
+.innerheader {
+	width: 600px;
+    height: 100%;
+    color: #333;
+    margin-left: calc(50% - 300px);
+    margin-right: calc(50% - 300px);
+    text-align: center;
+    line-height: 60px;
+    font-size: 40px;
+    font-weight: bold;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.logowrapper {}
+.header-nav {}
+.header-search {}
+
+.tablewrapper {
+	width:100%;
+	height:650px;
+/* 	background-color:#FFF; */
+}
+
+.carouselcontainer {
+	height:875px;
+	padding:20px;
+}
+
+.wotable {
+	width:100%;
+}
+
+
+
+@media (min-width : 526px) and (max-width : 1024px) {
+	.header {
+		height:120px;
+	}
+
+	.innerheader {
+		width: 100%;
+		margin-left: 0;
+		margin-right: 0;
+		line-height: 120px;
+		font-size: 70px;
+	}
+
+	.maindiv {
+		width:100%;
+		margin-left:auto;
+		margin-right:auto;
+		margin-top:120px;
+		height: calc(100% - 120px);
+	}
+
+	thead > tr > th {
+		font-size: 44px;
+	}
+
+	tbody > tr {
+		font-size:44px;
+	}
+
+	.carouselcontainer {
+		height:100%;
+	}
+
+	body,html {
+		height: calc(100% - 50px) !important;
+	}
+
+}
+
+@media (min-width : 320px) and (max-width : 525px) {
+
+	.header {}
+
+	.mainwrapper {
+		width: calc(100% - 22px);
+		height:1520px;
+	}
+
+}

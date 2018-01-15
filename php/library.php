@@ -248,8 +248,8 @@
 			elseif($day == "Saturday" || $day == "Sunday")
 			{
 				$sideclass  = " weekendrow";
-				$onclick 	= "";
-				$btnclass 	= "";
+				//$onclick 	= "";
+				//$btnclass 	= "";
 			}
 
 			$dateinfo = mysql_fetch_assoc(mysql_query("SELECT * FROM timesheet WHERE DATE='" . $mydate . "' AND USERID=" . $userid . ";"));
