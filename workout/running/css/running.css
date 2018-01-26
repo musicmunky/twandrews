@@ -41,11 +41,12 @@ li {
     line-height:30px;
 }
 
+li .btn {
+    margin-left:5px;
+}
+
 .main_wrapper {
 	width:800px;
-	margin-left:auto;
-    margin-right:auto;
-    padding-bottom:100px;
 }
 
 .main_wrapper div {
@@ -80,6 +81,10 @@ li {
     font-style: italic;
 }
 
+.total_mileage {
+    margin-bottom:20px;
+}
+
 .training_wrapper {}
 
 .notes {}
@@ -88,7 +93,7 @@ li {
     font-weight:bold;
 }
 
-#week_17 {
+#week_16 {
     margin-bottom:100px;
 }
 
