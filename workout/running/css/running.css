@@ -45,8 +45,13 @@ li .btn {
     margin-left:5px;
 }
 
+.main_header {
+	width:800px;
+}
+
 .main_wrapper {
 	width:800px;
+    margin-top:100px;
 }
 
 .main_wrapper div {

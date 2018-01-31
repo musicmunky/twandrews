@@ -13,10 +13,16 @@
 		<script language="javascript" type="text/javascript" src="js/workout.js"></script>
     </head>
     <body>
-        <div id="main_wrapper" class="container main_wrapper">
-            <div class="heading_wrapper">
-                Half Marathon Training Program
+        <nav class="navbar navbar-default navbar-fixed-top">
+            <div class="container main_header">
+<!--                <div class="navbar-header">//-->
+                    <div class="heading_wrapper">
+                        Half Marathon Training Program
+                    </div>
+<!--                </div>//-->
             </div>
+        </nav>
+        <div id="main_wrapper" class="container main_wrapper">
             <div id="week_01" class="week_wrapper">
                 <div class="week_list">Week 01 <span class="week_span">Jan 22 - Jan 27</span></div>
                 <div id="training_01" class="training_wrapper">
@@ -42,13 +48,13 @@
                         </ul>
                         <li>Saturday - 3rd Workout: Long run 7 miles EASY (7:45 or so)</li>
                         <ul>
-                            <li>7 miles</li>
+                            <li>7.3 miles <a target="_blank" class="btn btn-primary btn-xs" href="https://www.strava.com/activities/1381112301">View on Strava</a></li>
                         </ul>
                         <li>Sunday - Rest day</li>
                     </ul>
                 </div>
                 <div class="total_mileage">
-                    <span class="note_span">Total Mileage: </span>32 miles
+                    <span class="note_span">Total Mileage: </span>32.6 miles
                 </div>
                 <div class="notes">
                     <span class="note_span">Note:</span> let me know how easy/hard Friday's work out is so I can gauge your pace.  Fill in the rest of the mileage until you get to 27-30 miles for the week.
@@ -57,9 +63,35 @@
             <div id="week_02" class="week_wrapper">
                 <div class="week_list">Week 02 <span class="week_span">Jan 29 - Feb 3</span></div>
                 <div id="training_02" class="training_wrapper">
+                    <ul><li>Monday - 1st Workout: 1 mile warmup, 8 x 400m uphill / 400m slow jog down, 1 mile cooldown</li>
+                        <ul>
+                            <li>7.6 miles <a target="_blank" class="btn btn-primary btn-xs" href="https://www.strava.com/activities/1382072358">View on Strava</a></li>
+                        </ul>
+                        <li>Tuesday - Normal Run</li>
+                        <ul>
+                            <li>5.6 miles <a target="_blank" class="btn btn-primary btn-xs" href="https://www.strava.com/activities/1382745983">View on Strava</a></li>
+                        </ul>
+                        <li>Wednesday - Normal Run</li>
+                        <ul>
+                            <li>5.1 miles <a target="_blank" class="btn btn-primary btn-xs" href="https://www.strava.com/activities/1384502928">View on Strava</a></li>
+                        </ul>
+                        <li>Thurday - Normal Run</li>
+                        <ul>
+                            <li>5 miles</li>
+                        </ul>
+                        <li>Friday - Normal Run</li>
+                        <ul>
+                            <li>5 miles </li>
+                        </ul>
+                        <li>Saturday - 2nd Workout: Long run 8 miles easy (7:40 or so)</li>
+                        <ul>
+                            <li>8 miles</li>
+                        </ul>
+                        <li>Sunday - Rest day</li>
+                    </ul>
                 </div>
                 <div class="total_mileage">
-                    <span class="note_span">Total Mileage: </span>
+                    <span class="note_span">Total Mileage: </span>33 miles
                 </div>
                 <div class="notes">
                     <span class="note_span">Note:</span>
