@@ -112,39 +112,91 @@
                         </ul>
                         <li>Friday - Workout: 10 x 1 min @ 80% with 1 min jog, 2 mile warm up / cool down</li>
                         <ul>
-                            <li>## miles <a target="_blank" class="btn btn-primary btn-xs" href="">View on Strava</a></li>
+                            <li>6.9 miles <a target="_blank" class="btn btn-primary btn-xs" href="https://www.strava.com/activities/1398981505">View on Strava</a></li>
                         </ul>
                         <li>Saturday - Long run 8 miles easy (7:40 or so)</li>
                         <ul>
-                            <li>8 miles <a target="_blank" class="btn btn-primary btn-xs" href="">View on Strava</a></li>
+                            <li>8.3 miles <a target="_blank" class="btn btn-primary btn-xs" href="https://www.strava.com/activities/1400807694">View on Strava</a></li>
                         </ul>
                         <li>Sunday - Rest day</li>
                     </ul>
                 </div>
                 <div class="total_mileage">
-                    <span class="note_span">Total Mileage: </span>
+                    <span class="note_span">Total Mileage: </span>31 miles
                 </div>
                 <div class="notes">
-                    <span class="note_span">Note:</span>
+                    <span class="note_span">Note:</span> Should have had another 5 miles or so this week, need to really step things up next week
                 </div>
             </div>
             <div id="week_04" class="week_wrapper">
                 <div class="week_list">Week 04 <span class="week_span">Feb 12 - Feb 17</span></div>
                 <div id="training_04" class="training_wrapper">
+                    <ul><li>Monday - Workout: 10 x 90 sec @ 6:40 pace, 1 min jog / 2 mile warm up / cool down</li>
+                        <ul>
+                            <li>7.4 miles <a target="_blank" class="btn btn-primary btn-xs" href="https://www.strava.com/activities/1403989140">View on Strava</a></li>
+                        </ul>
+                        <li>Tuesday - Normal Run</li>
+                        <ul>
+                            <li>6.4 miles <a target="_blank" class="btn btn-primary btn-xs" href="https://www.strava.com/activities/1405453870">View on Strava</a></li>
+                        </ul>
+                        <li>Wednesday - Normal Run</li>
+                        <ul>
+                            <li>5.4 miles <a target="_blank" class="btn btn-primary btn-xs" href="https://www.strava.com/activities/1407079914">View on Strava</a></li>
+                        </ul>
+                        <li>Thurday - Normal Run</li>
+                        <ul>
+                            <li>5.0 miles <a target="_blank" class="btn btn-primary btn-xs" href="https://www.strava.com/activities/1408535005">View on Strava</a></li>
+                        </ul>
+                        <li>Friday - Workout: 2.5 mile tempo @ 6:55 pace, 2 mile warm up / cool down</li>
+                        <ul>
+                            <li>6.5 miles <a target="_blank" class="btn btn-primary btn-xs" href="https://www.strava.com/activities/1410101828">View on Strava</a></li>
+                        </ul>
+                        <li>Saturday - Long run 9 miles (easy pace)</li>
+                        <ul>
+                            <li>9 miles <a target="_blank" class="btn btn-primary btn-xs" href="https://www.strava.com/activities/1412424891">View on Strava</a></li>
+                        </ul>
+                        <li>Sunday - Rest day</li>
+                    </ul>
                 </div>
                 <div class="total_mileage">
-                    <span class="note_span">Total Mileage: </span>
+                    <span class="note_span">Total Mileage: </span>40 miles
                 </div>
                 <div class="notes">
                     <span class="note_span">Note:</span>
                 </div>
             </div>
             <div id="week_05" class="week_wrapper">
-                <div class="week_list">Week 05 <span class="week_span">Feb 12 - Feb 17</span></div>
+                <div class="week_list">Week 05 <span class="week_span">Feb 19 - Feb 24</span></div>
                 <div id="training_05" class="training_wrapper">
+                    <ul><li>Monday - Workout: 8 x 2 mins @ 90% effort, 1 min jog / 2 mile warm up / cool down</li>
+                        <ul>
+                            <li>7.5 miles <a target="_blank" class="btn btn-primary btn-xs" href="https://www.strava.com/activities/1415463552">View on Strava</a></li>
+                        </ul>
+                        <li>Tuesday - Normal Run</li>
+                        <ul>
+                            <li>6.1 miles <a target="_blank" class="btn btn-primary btn-xs" href="https://www.strava.com/activities/1416967508">View on Strava</a></li>
+                        </ul>
+                        <li>Wednesday - Normal Run</li>
+                        <ul>
+                            <li>6.7 miles <a target="_blank" class="btn btn-primary btn-xs" href="https://www.strava.com/activities/1418759651">View on Strava</a></li>
+                        </ul>
+                        <li>Thurday - Normal Run</li>
+                        <ul>
+                            <li>6.6 miles <a target="_blank" class="btn btn-primary btn-xs" href="https://www.strava.com/activities/1420364101">View on Strava</a></li>
+                        </ul>
+                        <li>Friday - Normal Run</li>
+                        <ul>
+                            <li>5.3 miles <a target="_blank" class="btn btn-primary btn-xs" href="https://www.strava.com/activities/1421788396">View on Strava</a></li>
+                        </ul>
+                        <li>Saturday - Workout: 5 miles easy, 3 mile tempo @ 6:55-7:05 pace, 2 miles easy</li>
+                        <ul>
+                            <li>10 miles <a target="_blank" class="btn btn-primary btn-xs" href="https://www.strava.com/activities/">View on Strava</a></li>
+                        </ul>
+                        <li>Sunday - Rest day</li>
+                    </ul>
                 </div>
                 <div class="total_mileage">
-                    <span class="note_span">Total Mileage: </span>
+                    <span class="note_span">Total Mileage: </span>42 miles
                 </div>
                 <div class="notes">
                     <span class="note_span">Note:</span>
@@ -153,9 +205,35 @@
             <div id="week_06" class="week_wrapper">
                 <div class="week_list">Week 06 <span class="week_span">Feb 26 - Mar 3</span></div>
                 <div id="training_06" class="training_wrapper">
+                    <ul><li>Monday - Workout: 10 x 400m hills @ 90% effort (jog down) / 2 mile warm up / cool down</li>
+                        <ul>
+                            <li>9.1 miles <a target="_blank" class="btn btn-primary btn-xs" href="https://www.strava.com/activities/1426918825">View on Strava</a></li>
+                        </ul>
+                        <li>Tuesday - Normal Run</li>
+                        <ul>
+                            <li>6.8 miles <a target="_blank" class="btn btn-primary btn-xs" href="https://www.strava.com/activities/1428339212">View on Strava</a></li>
+                        </ul>
+                        <li>Wednesday - Short Run (sick)</li>
+                        <ul>
+                            <li>3.1 miles <a target="_blank" class="btn btn-primary btn-xs" href="https://www.strava.com/activities/1429950493">View on Strava</a></li>
+                        </ul>
+                        <li>Thurday - Normal Run</li>
+                        <ul>
+                            <li>6 miles <a target="_blank" class="btn btn-primary btn-xs" href="https://www.strava.com/activities/">View on Strava</a></li>
+                        </ul>
+                        <li>Friday - Workout: 6 x 3 min @ 90% / 2 min jog, 2 mile warm up / cool down</li>
+                        <ul>
+                            <li>6 miles <a target="_blank" class="btn btn-primary btn-xs" href="https://www.strava.com/activities/">View on Strava</a></li>
+                        </ul>
+                        <li>Saturday - Long run: 11 miles</li>
+                        <ul>
+                            <li>11 miles <a target="_blank" class="btn btn-primary btn-xs" href="https://www.strava.com/activities/">View on Strava</a></li>
+                        </ul>
+                        <li>Sunday - Rest day</li>
+                    </ul>
                 </div>
                 <div class="total_mileage">
-                    <span class="note_span">Total Mileage: </span>
+                    <span class="note_span">Total Mileage: </span>44 miles
                 </div>
                 <div class="notes">
                     <span class="note_span">Note:</span>

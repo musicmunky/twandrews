@@ -3,7 +3,6 @@ jQuery(document).ready(function() {
 	jQuery('.ulnav').on('click', 'a.remlnk', function (event) { removeItem(this.id); });
 	jQuery('.ulnav').on('click', 'a.editlnk', function (event) { getItemInfo(this.id); });
 	jQuery("#addlnk").click(function(){ showAddItem({"pageid":0}); });
-
 });
 
 
