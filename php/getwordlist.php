@@ -52,10 +52,10 @@
 
                         for($j = 0; $j < $nWordLen; $j++)
                         {
-                            $sChar = substr ( $sWord, $j, 1 );
-                            $nPos  = strpos($sSearchString, $sChar);
+                            $sChar = substr( $sWord, $j, 1 );
+                            $nPos  = strpos( $sSearchString, $sChar );
 
-                            if(isset($oLetterCount[$sChar]))
+                            if( isset($oLetterCount[$sChar]) )
                             {
                                 $oLetterCount[$sChar] += 1;
                             }
@@ -64,7 +64,7 @@
                                 $oLetterCount[$sChar] = 1;
                             }
 
-                            if($nPos === false || $oLetterCount[$sChar] > $oOccurs[$sChar])
+                            if( $nPos === false || $oLetterCount[$sChar] > $oOccurs[$sChar] )
                             {
                                 $bAddWord = false;
                                 break;
@@ -75,7 +75,7 @@
                             }
                         }
 
-                        if($bAddWord)
+                        if( $bAddWord )
                         {
                             if( !in_array( $sWord, $aWords ))
                             {

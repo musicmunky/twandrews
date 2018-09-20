@@ -21,10 +21,19 @@
             }
 
             li {
-                padding: 5px;
-                list-style: decimal;
+                padding: 10px;
+                list-style: inside decimal-leading-zero;
                 float: left;
-                width: 10em;
+                width: 150px;
+                margin-right: 20px;
+                border-radius: 10px;
+                font-family: monospace;
+                font-size: 18px;
+            }
+
+            li:hover {
+                background-color:#eee;
+                cursor:pointer;
             }
         </style>
 	</head>
@@ -42,7 +51,7 @@
                 <button type="button" class="btn btn-primary" onclick="parseWords()">Search!</button>
             </form>
 
-            Words Found: <span id="numresults"></span><br>
+            Words Found: <span id="numresults">0</span><br>
             <div style="width:100%;height:500px;" id="wordlist"></div>
 		</div>
 	</body>
