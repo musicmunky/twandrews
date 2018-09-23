@@ -3,7 +3,7 @@
 function parseWords()
 {
     var eLetters = FUSION.get.node("letters");
-    var oMinLen = FUSION.get.node("minlength");
+    var oMinLen  = FUSION.get.node("minlength");
 
     var sLetters = eLetters.value;
     var nMinLen  = oMinLen.value;

@@ -50,8 +50,9 @@
                 </div>
                 <button type="button" class="btn btn-primary" onclick="parseWords()">Search!</button>
             </form>
-
-            Words Found: <span id="numresults">0</span><br>
+            <div style="width:100%;margin: 30px 0px;border-bottom: 1px solid #ccc;padding: 10px 0px;font-size: 24px;">
+                Words Found: <span id="numresults">0</span>
+            </div>
             <div style="width:100%;height:500px;" id="wordlist"></div>
 		</div>
 	</body>

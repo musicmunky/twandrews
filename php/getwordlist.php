@@ -7,6 +7,7 @@
 
     echo json_encode($aWords);
 
+    exit();
 
     function getWordList($sSearchString, $nMinLength)
 	{
@@ -19,74 +20,83 @@
 
         $sSearchString = strtolower($sSearchString);
 
-        for($i = 0; $i < $nSSLen; $i++)
+        try
         {
-            $sChar = substr($sSearchString, $i, 1);
-            if(isset($oOccurs[$sChar]))
+            for($i = 0; $i < $nSSLen; $i++)
             {
-                $oOccurs[$sChar] += 1;
-            }
-            else
-            {
-                $oOccurs[$sChar] = 1;
-            }
-        }
-
-
-        if ($oFile = fopen($sFile, 'r'))
-        {
-            while (!feof($oFile))
-            {
-                $sWord = trim( fgets($oFile) );
-                $sWord = strtolower($sWord);
-
-                $nWordLen = strlen($sWord);
-                if( $nWordLen < 8 && $nWordLen >= $nMinLength )
+                $sChar = substr($sSearchString, $i, 1);
+                if(isset($oOccurs[$sChar]))
                 {
-                    $aMatch = array();
-                    preg_match("/\d+|\W+/i", $sWord, $aMatch);
-                    if(count($aMatch) === 0)
+                    $oOccurs[$sChar] += 1;
+                }
+                else
+                {
+                    $oOccurs[$sChar] = 1;
+                }
+            }
+
+
+            if ($oFile = fopen($sFile, 'r'))
+            {
+                while (!feof($oFile))
+                {
+                    $sWord = trim( fgets($oFile) );
+                    $sWord = strtolower($sWord);
+
+                    $nWordLen = strlen($sWord);
+                    if( $nWordLen < 8 && $nWordLen >= $nMinLength )
                     {
-                        $bAddWord = false;
-                        $oLetterCount = array();
-
-                        for($j = 0; $j < $nWordLen; $j++)
+                        $aMatch = array();
+                        preg_match("/\d+|\W+/i", $sWord, $aMatch);
+                        if(count($aMatch) === 0)
                         {
-                            $sChar = substr( $sWord, $j, 1 );
-                            $nPos  = strpos( $sSearchString, $sChar );
+                            $bAddWord = false;
+                            $oLetterCount = array();
 
-                            if( isset($oLetterCount[$sChar]) )
+                            for($j = 0; $j < $nWordLen; $j++)
                             {
-                                $oLetterCount[$sChar] += 1;
-                            }
-                            else
-                            {
-                                $oLetterCount[$sChar] = 1;
+                                $sChar = substr( $sWord, $j, 1 );
+                                $nPos  = strpos( $sSearchString, $sChar );
+
+                                if( isset($oLetterCount[$sChar]) )
+                                {
+                                    $oLetterCount[$sChar] += 1;
+                                }
+                                else
+                                {
+                                    $oLetterCount[$sChar] = 1;
+                                }
+
+                                if( $nPos === false || $oLetterCount[$sChar] > $oOccurs[$sChar] )
+                                {
+                                    $bAddWord = false;
+                                    break;
+                                }
+                                else
+                                {
+                                    $bAddWord = true;
+                                }
                             }
 
-                            if( $nPos === false || $oLetterCount[$sChar] > $oOccurs[$sChar] )
+                            if( $bAddWord )
                             {
-                                $bAddWord = false;
-                                break;
-                            }
-                            else
-                            {
-                                $bAddWord = true;
-                            }
-                        }
-
-                        if( $bAddWord )
-                        {
-                            if( !in_array( $sWord, $aWords ))
-                            {
-                                $aWords[] = $sWord;
+                                if( !in_array( $sWord, $aWords ))
+                                {
+                                    $aWords[] = $sWord;
+                                }
                             }
                         }
                     }
                 }
+                fclose($oFile);
+                sort($aWords);
             }
-            fclose($oFile);
-            sort($aWords);
+
+        }
+        catch(Exception $e) {
+            $status  = "failed";
+            $message = "Error during processing: " . $e->getMessage();
+            $aWords  = array();
         }
 
 		$result = array(
