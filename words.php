@@ -38,8 +38,8 @@
         </style>
 	</head>
 	<body>
-		<div id="mainwrapper" class="container" style="padding-top:30px;">
-            <form style="margin-bottom:50px;">
+		<div id="mainwrapper" class="container">
+            <form style="padding-top:30px;">
                 <div class="form-group">
                     <label for="letters">Search String:</label>
                     <input type="text" class="form-control" id="letters" placeholder="Enter search string">

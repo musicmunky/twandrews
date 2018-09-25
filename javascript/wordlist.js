@@ -44,7 +44,7 @@ function parseWords()
             },
             error: function(){
                 FUSION.set.overlayMouseNormal();
-                FUSION.error.showError("There was a problem retrieving the timesheet data");
+                FUSION.error.showError("There was a problem retrieving the word list");
     		}
 		});
 		return false;
