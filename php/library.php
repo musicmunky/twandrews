@@ -17,7 +17,6 @@
 
 	define('INCLUDE_CHECK',true);
 	require 'connect.php';
-	require 'yweather.php';
 	date_default_timezone_set('America/New_York');
 
 	$webaddress = "http://twandrews.com/";
@@ -46,18 +45,6 @@
 				break;
 			case 'getWorkingDays': getWorkingDays($REQ);
 				break;
-			case 'getStephScheduleHtml': getStephScheduleHtml($REQ);
-				break;
-			case 'getStephDateInfo': getStephDateInfo($REQ);
-				break;
-			case 'changeStephDateInfo': changeStephDateInfo($REQ);
-				break;
-			case 'getFwInfo': getFwInfo($REQ);
-				break;
-			case 'setFwInfo': setFwInfo($REQ);
-				break;
-			case 'getWeatherInfo': getWeatherInfo($REQ);
-				break;
 			default: noFunction($REQ['method']);
 				break;
 		}
@@ -74,31 +61,6 @@
 				"content"	=> "You seem to have encountered an error - Contact the DHD web admin if this keeps happening!"
 		);
 		echo json_encode($result);
-	}
-
-
-	function getActivityInfo($P)
-	{
-		$P = escapeArray($P);
-		$rangebeg = $P['strdate'];
-		$rangeend = $P['enddate'];
-		$result  = "";
-		$content = "";
-		$message = "Data returned successfully!";
-		$status  = "success";
-
-		$result = array(
-			"status"	=> $status,
-			"message"	=> $message,
-			"content"	=> array()
-		);
-
-		if($firstload){
-			return $result;
-		}
-		else{
-			echo json_encode($result);
-		}
 	}
 
 
@@ -396,13 +358,14 @@
 		$content = array();
 
 		$datearr  = explode("_", $P['dateid']);
-		$nummonth = $datearr[1];
-		$numday   = $datearr[2]; //keeping as number...just in case...
 
 		$currentmonth = $P['currmonth'];
 
-		$month 	= sprintf("%02d", $datearr[1]);
-		$day 	= sprintf("%02d", $datearr[2]);
+        $nMonth = $datearr[1];
+        $nDay   = $datearr[2];
+
+		$month 	= sprintf("%02d", $nMonth);
+		$day 	= sprintf("%02d", $nDay);
 		$suffix = $datearr[1] . "_" . $datearr[2] . "_" . $datearr[3];
 		$year 	= $P['year'];
 
@@ -459,6 +422,9 @@
 		{
 			//update existing record
 			$mysqlresult = mysql_query("UPDATE timesheet SET
+                                            TSYEAR=" . $year . ",
+                                            TSMONTH=" . $nMonth . ",
+                                            TSDAY=" . $nDay . ",
 											DATE='" . $date . "',
 											STARTTIME='" . $start . "',
 											BEGINBREAK='" . $sbreak . "',
@@ -474,8 +440,8 @@
 		{
 			//insert new record
 			$mysqlresult = mysql_query("
-								INSERT INTO timesheet (DATE, STARTTIME, BEGINBREAK, ENDBREAK, ENDTIME, HOURS, PTO, VACATION, NOTE, USERID)
-								VALUES ('" . $date . "', '" . $start . "', '" . $sbreak . "', '" . $ebreak . "',
+								INSERT INTO timesheet (TSYEAR, TSMONTH, TSDAY, DATE, STARTTIME, BEGINBREAK, ENDBREAK, ENDTIME, HOURS, PTO, VACATION, NOTE, USERID)
+								VALUES (" . $year . ", " . $nMonth . ", " . $nDay . ", '" . $date . "', '" . $start . "', '" . $sbreak . "', '" . $ebreak . "',
 										'" . $end . "', '" . $hours . "', '" . $pto . "', " . $leave . ", '" . $note . "', '" . $userid . "');");
 		}
 
@@ -658,359 +624,6 @@
 
 		$total = $info['HOURS'] + $info['PTO'] + $info['VACATION'];
 		return $total;
-	}
-
-
-	function changeStephDateInfo($P)
-	{
-		$P = escapeArray($P);
-
-		$result = array();
-		$year = $P['year'];
-		$mnth = $P['month'];
-		$day  = $P['day'];
-		$daytypes = $P['daytypes'];
-
-		$status = "success";
-		$message = "";
-		$types = array("holiday" => 10, "kelly" => 20, "payday" => 30);
-
-		$cssarray = explode("-", $P['cssclass']);
-		$csstype = $cssarray[2];
-
-		$remdates = mysql_query("DELETE FROM scheddates
-								 WHERE YEAR=" . $year . "
-								 	AND MONTH=" . $mnth . "
-									AND DAY=" . $day . "
-									AND DAYTYPE != 40;");
-
-		foreach($types as $key => $val)
-		{
-			if($daytypes[$key] == 1)
-			{
-				$newentry = mysql_query("INSERT INTO scheddates (YEAR, MONTH, DAY, DAYTYPE)
-										 VALUES (" . $year . ", " . $mnth . ", " . $day . ", " . $val . ");");
-			}
-		}
-
-		$tdcolor = $daytypes['holiday'] == 1 ? "#FFFF88" : "#FFFFFF";
-		$spanstyle = $daytypes['payday'] == 1 ? "italic" : "normal";
-		$tdclass = "calendar-day-off";
-
-		if($daytypes['kelly'] == 1)
-		{
-			$tdclass = "calendar-day-kelly";
-		}
-		elseif($csstype == "work" || $csstype == "kelly")
-		{
-			$tdclass = "calendar-day-work";
-		}
-
-		$begq = mysql_fetch_assoc(mysql_query("SELECT DISTINCT YEAR FROM scheddates ORDER BY YEAR ASC LIMIT 1;"));
-		$endq = mysql_fetch_assoc(mysql_query("SELECT DISTINCT YEAR FROM scheddates ORDER BY YEAR DESC LIMIT 1;"));
-		$beg = $begq['YEAR'] - 1;
-		$end = $endq['YEAR'] + 1;
-
-		$result = array(
-			"status"	=> $status,
-			"message"	=> $message,
-			"content"	=> array(
-				"tdclass" 	=> $tdclass,
-				"tdcolor" 	=> $tdcolor,
-				"tdid"		=> "td_" . $mnth . "_" . $day,
-				"spanstyle"	=> $spanstyle,
-				"minyear"	=> $beg,
-				"maxyear"	=> $end
-			)
-		);
-
-		echo json_encode($result);
-	}
-
-
-	function getFwInfo($P)
-	{
-		$P = escapeArray($P);
-
-		$result = array();
-		$year 	= $P['year'];
-		$mnth 	= $P['month'];
-		$mn 	= $P['mname'];
-		$status = "success";
-		$message = "";
-
-		$fwinfo = mysql_query( "SELECT * FROM scheddates
-								WHERE YEAR=" . $year . " AND MONTH=" . $mnth . " AND DAYTYPE=40;");
-		$fw = 0;
-		if(mysql_num_rows($fwinfo) > 0)
-		{
-			$row = mysql_fetch_assoc($fwinfo);
-			$fw = $row['DAY'];
-		}
-
-		$result = array(
-			"status"	=> $status,
-			"message"	=> $message,
-			"content"	=> array(
-				"monthnum" 	=> $mnth,
-				"monthname"	=> $mn,
-				"firstwork"	=> $fw
-			)
-		);
-
-		echo json_encode($result);
-	}
-
-
-	function setFwInfo($P)
-	{
-		$P = escapeArray($P);
-		$result = array();
-		$year 	= $P['year'];
-		$mnth 	= $P['month'];
-		$mn 	= $P['mname'];
-		$fw 	= $P['firstwork'];
-		$status = "success";
-		$message = "";
-
-		$delfw = mysql_query("DELETE FROM scheddates WHERE YEAR=" . $year . " AND MONTH=" . $mnth . " AND DAYTYPE=40;");
-		$newfw = mysql_query("INSERT INTO scheddates (YEAR, MONTH, DAY, DAYTYPE)
-								VALUES (" . $year . ", " . $mnth . ", " . $fw . ", 40);");
-
-		$html = getStephMonthHtml($year, $mnth, $mn);
-
-		$begq = mysql_fetch_assoc(mysql_query("SELECT DISTINCT YEAR FROM scheddates ORDER BY YEAR ASC LIMIT 1;"));
-		$endq = mysql_fetch_assoc(mysql_query("SELECT DISTINCT YEAR FROM scheddates ORDER BY YEAR DESC LIMIT 1;"));
-		$beg = $begq['YEAR'] - 1;
-		$end = $endq['YEAR'] + 1;
-
-		$result = array(
-			"status"	=> $status,
-			"message"	=> $message,
-			"content"	=> array(
-				"year"		=> $year,
-				"monthhtml" => $html,
-				"monthnum" 	=> $mnth,
-				"monthname"	=> $mn,
-				"firstwork"	=> $fw,
-				"minyear"	=> $beg,
-				"maxyear"	=> $end
-			)
-		);
-
-		echo json_encode($result);
-	}
-
-
-	function getStephDateInfo($P)
-	{
-		$P = escapeArray($P);
-
-		$result = array();
-		$year 	= $P['year'];
-		$mnth 	= $P['month'];
-		$day  	= $P['day'];
-		$status = "success";
-		$message = "";
-		$types 	= array("kelly" => 0, "holiday" => 0, "payday" => 0);
-
-		$dinfo = mysql_query(  "SELECT N.TYPENAME FROM scheddates T, schedtypes N
-								WHERE T.DAYTYPE=N.TYPEVAL
-								AND T.YEAR=" . $year . "
-									AND T.MONTH=" . $mnth . "
-										AND DAY=" . $day . ";");
-		if(mysql_num_rows($dinfo) > 0)
-		{
-			while($row = mysql_fetch_assoc($dinfo))
-			{
-				switch($row['TYPENAME'])
-				{
-					case "HOLIDAY": //holiday
-						$types['holiday'] = 1;
-						break;
-					case "KELLY": //kelly day
-						$types['kelly'] = 1;
-						break;
-					case "PAYDAY": //payday
-						$types['payday'] = 1;
-						break;
-					default: break;
-				}
-			}
-		}
-
-		$result = array(
-			"status"	=> $status,
-			"message"	=> $message,
-			"content"	=> array(
-				"datetypes" => $types,
-				"month" => $mnth,
-				"day"	=> $day,
-				"year"	=> $year
-			)
-		);
-
-		echo json_encode($result);
-	}
-
-
-	function getStephScheduleHtml($P)
-	{
-		$P = escapeArray($P);
-
-		//is this the initial page load (called from steph.php) or an AJAX request? determines echo or return
-		$firstload 	= (isset($P['firstload']) && !empty($P['firstload']) && $P['firstload'] == 1) ? 1 : 0;
-		$year 		= $P['year'];
-
-		$html = "<div id='caltable' style='width:100%;height:100%;'>";
-		for($i = 1; $i <= 12; $i++)
-		{
-			$datestr = $year . "-" . $i . "-" . "01";
-			$mname 	 = date("F", strtotime($datestr));
-			$html 	.= "<div id='div" . $mname . "' class='monthFloat'>" 	. getStephMonthHtml($year, $i, $mname) . "</div>";
-		}
-		$html .= "</div>";
-
-		$result = array(
-				"status"  => "success",
-				"message" => "",
-				"content" => array(
-					"table" => $html,
-					"title" => $year
-				)
-		);
-
-		if($firstload){
-			return $result;
-		}
-		else{
-			echo json_encode($result);
-		}
-	}
-
-
-	function getStephMonthHtml($y, $mnum, $name)
-	{
-		$m_html = "";
-		$num 	= $mnum;
-		$year 	= $y;
-		$mn 	= $name;
-		$firstwork 	= 0;
-		$fstr 		= $year . "-" . $num . "-" . "01";
-		$numdays 	= date("t", strtotime($fstr));
-		$startday 	= date("w", strtotime($fstr));
-
-		$dy = mysql_query(	"SELECT T.DAY,N.TYPENAME
-							FROM scheddates T, schedtypes N
-							WHERE T.DAYTYPE=N.TYPEVAL
-								AND T.YEAR=" . $year . "
-									AND T.MONTH=" . $num . " ORDER BY T.DAY;");
-		$kell = array();
-		$hols = array();
-		$pays = array();
-
-		//fill the individual day type arrays
-		while($row = mysql_fetch_assoc($dy))
-		{
-			switch($row['TYPENAME'])
-			{
-				case "HOLIDAY": //holiday
-					array_push($hols, $row['DAY']);
-					break;
-				case "KELLY": //kelly day
-					array_push($kell, $row['DAY']);
-					break;
-				case "PAYDAY": //payday
-					array_push($pays, $row['DAY']);
-					break;
-				case "FIRSTWORK": //first workday of the month...should only be one entry for each month
-					$firstwork = $row['DAY'];
-					break;
-				default: break;
-			}
-		}
-
-		$m_html = "<table class='calendar-table'><tbody><tr><th colspan='7'>
-					<a href='javascript:void(0);' id='month_" . $num . "'
-						style='text-decoration:none;color:#000;'
-						onclick='getFwInfo(" . $num . ", \"" . $mn . "\")'>" . $mn . " " . $year . "</a>
-					</th></tr><tr class='calendar-header'>
-						<td class='calendar-header-day'>Sun</td>
-						<td class='calendar-header-day'>Mon</td>
-						<td class='calendar-header-day'>Tue</td>
-						<td class='calendar-header-day'>Wed</td>
-						<td class='calendar-header-day'>Thr</td>
-						<td class='calendar-header-day'>Fri</td>
-						<td class='calendar-header-day'>Sat</td>
-					</tr>";
-		//ititialize the day counter...all months start with 1
-		$day = 1;
-		$cssclass = "";
-		$holstyle = "";
-		$dayhtml  = "";
-		$daystyl  = "";
-		$onclick  = "";
-		$spancls  = "";
-		$workday  = $firstwork;
-
-		//six possible weeks covered in a month (eg, the month has 31 days and starts on a Saturday)
-		for($j = 0; $j < 6; $j++)
-		{
-			//open the row...
-			$m_html .= "<tr>";
-			//seven days in a week...duh
-			for($k = 0; $k < 7; $k++)
-			{
-				//set the default values for a given day - no work, no kelly, etc
-				$holstyle 	= "#FFFFFF";
-				$cssclass 	= "calendar-day-off";
-				$tdid 		= "td_" . $num . "_" . $day;
-				$onclick 	= "onclick='getDateInfo(\"" . $tdid . "\");' ";
-				$daystyl 	= "cursor:pointer;";
-				$spancls 	= "clickclass";
-				$valid 		= ($j > 0 || $k >= $startday) ? true : false;
-
-				if($workday == $day && $valid)
-				{
-					//if it's both a workday AND a kelly day, set the kelly class
-					$cssclass = in_array($day, $kell) ? "calendar-day-kelly" : "calendar-day-work";
-					$workday += 3;
-				}
-
-				//if we are still within the range of days for the month, check for various conditions
-				if($day <= $numdays && $valid)
-				{
-					//if it's a holiday, set the background to yellow, if it's a payday, make the text italic
-					$dayhtml  = $day;
-					$holstyle = in_array($day, $hols) ? "#FFFF88" : "#FFFFFF";
-					$daystyl .= in_array($day, $pays) ? "font-style:italic;" : "";
-					//don't start incrementing the day counter until we have hit the first day of the month
-					//this accounts for months when the first day isn't a Sunday...soooo...most months.
-					$day++;
-				}
-				else
-				{
-					//otherwise blank out the cell and set the background to grey
-					//so if the month starts on a Monday, the previous day would be empty with a grey background
-					$dayhtml 	= "";
-					$daystyl 	= "";
-					$onclick 	= "";
-					$spancls 	= "";
-					$holstyle	= "#FFF";
-					$tdid 		= "";
-				}
-				//build the td for the day
-				$m_html .= "<td " . $onclick . "id='" . $tdid . "' class='" . $cssclass . "' " .
-									"style='height:28px;background-color:" . $holstyle . ";'>" .
-								"<span class='" . $spancls . "' style='" . $daystyl . "'>" . $dayhtml . "</span>
-							</td>";
-			}
-			//...close the row
-			$m_html .= "</tr>";
-		}
-		$m_html .= "</tbody></table>";
-
-		return $m_html;
 	}
 
 

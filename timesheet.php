@@ -41,7 +41,7 @@
 						12 => "December");
 
         $yeararray = array();
-        $yearquery = mysql_query("SELECT DISTINCT LEFT(DATE, 4) AS years FROM timesheet ORDER BY years ASC;");
+        $yearquery = mysql_query("SELECT DISTINCT TSYEAR AS years FROM timesheet ORDER BY years ASC;");
         while($row = mysql_fetch_assoc($yearquery))
 		{
 			array_push($yeararray, $row['years']);

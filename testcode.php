@@ -2,8 +2,50 @@
 
 // 	phpinfo();
 
-// 	define('LIBRARY_CHECK',true);
+ 	define('LIBRARY_CHECK',true);
+	require 'php/library.php';
 // 	require 'golf/php/golflib.php';
+
+$sResults = "";
+
+/*
+$aAllDates = array();
+
+$query = mysql_query("SELECT ID, DATE FROM timesheet ORDER BY ID asc");
+while($row = mysql_fetch_assoc($query))
+{
+    $sDate = $row['DATE'];
+    $aDate = explode("-", $sDate);
+    $aDateData = array(
+        "ID" => $row['ID'],
+        "YEAR" => $aDate[0],
+        "MONTH" => intval($aDate[1]),
+        "DAY" => intval($aDate[2])
+    );
+
+    $aAllDates[] = $aDateData;
+}*/
+/*
+for($i = 0;$i < count($aAllDates); $i++)
+{
+    $aDate = $aAllDates[$i];
+    $sResults .= "OLD RESULT: " . print_r($aDate, true) . "<br>";
+    $sUpdateQuery = "UPDATE timesheet SET TSYEAR = " . $aDate['YEAR'] . ", TSMONTH = " . $aDate['MONTH'] . ", TSDAY = " . $aDate['DAY'] . "
+                     WHERE ID = " . $aDate['ID'] . ";";
+    try
+    {
+        $sResults .= "RUNNING QUERY '" . $sUpdateQuery . "'<br>";
+        mysql_query($sUpdateQuery);
+    }
+    catch(Exception $e)
+    {
+        $sResults .= "ERROR: " . $e->getMessage();
+    }
+}*/
+
+
+
+
 /*
 	date_default_timezone_set('America/New_York');
 	$p1  = array(
@@ -222,7 +264,7 @@
 										DAYTYPE INT(10) NOT NULL);");
 */
 ?>
-<!--
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11-strict.dtd">
 <html>
 	<head>
@@ -241,45 +283,16 @@
 			{
 				$( "#generalerrorform" ).dialog( "close" );
 			}*/
-			function callError()
-			{
-				//title
-				//message
-				//linktext
-				//emailfunction
-				//stacktrace
-				//errormessage
-				var h = {
-					"title": "Fatal Error",
-					"message": "There was a massive error!",
-					"linktext": "Click here to panic!",
-					"emailfunction": "alert(\"CRAP\")",
-				};
-				FUSION.error.showErrorDialog(h)
-			}
+
+            /*$('strong.badge').click(function(event)
+            {
+                event.preventDefault();
+                $('#RandomDivId').toggleClass("randomClassName");
+                return false;
+            });*/
 
 
-			function testvardump()
-			{
 
-				var foo = {};
-				foo['test1'] = "bar1";
-				foo['test2'] = "bar2";
-				foo['test3'] = {"h1":"aragorn", "h2":[1,2,"bleh1","bleh2"], "h3":"gandalf"};
-				foo['test4'] = 4;
-
-				//var foo = document.getElementById("textdiv");
-				var bar = FUSION.lib.vardump(foo, "foo", false);
-				document.getElementById("textdiv").innerHTML = "<pre>" + bar + "</pre>";
-			}
-
-			function showAlert()
-			{
-				FUSION.lib.alert({
-					'message':'There was an error<br>...of some kind...',
-					'height':100,
-					'text-align':'center'});
-			}
 
 		</script>
 	</head>
@@ -288,8 +301,13 @@
 			<input type="button" value="Show Popup" onclick="callError();" style="padding:5px;" /><br>
 			<input type="button" value="Show Vdump" onclick="testvardump();" style="padding:5px;" /><br>
 			<input type="button" value="testalert"  onclick="showAlert();" style="padding:5px;" />
-			<div id="textdiv" style="float:left;width:100%;margin-top:20px;"></div>
+			<div id="textdiv" style="float:left;width:100%;margin-top:20px;">
+                <strong class="badge" style="cursor:pointer;">CLICK HERE</strong>
+                <div id="RandomDivId"></div>
+                <div>
+                    <?php echo $sResults ?>
+                </div>
+            </div>
 		</div>
 	</body>
 </html>
--->

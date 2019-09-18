@@ -13,7 +13,7 @@
 	{
         $status  = "success";
         $message = "";
-        $sFile   = "aspellwords.txt";
+        $sFile   = "linuxwords.txt";
         $aWords  = array();
         $oOccurs = array();
         $nSSLen  = strlen($sSearchString);
@@ -91,7 +91,11 @@
                 fclose($oFile);
                 sort($aWords);
             }
-
+            else
+            {
+                $status = "error";
+                $message = "Unable to open word list";
+            }
         }
         catch(Exception $e) {
             $status  = "failed";

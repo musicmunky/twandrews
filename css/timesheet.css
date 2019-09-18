@@ -53,6 +53,10 @@ table {
 	font-size:12px;
 }
 
+.legcont:hover {
+	background-color:#efefef;
+}
+
 .tstpwrapper {
 	width:178px !important;
 }
@@ -382,8 +386,8 @@ input:focus {
     width: 225px;
     z-index: 999;
 	height:100px;
-	box-shadow: 0 3px 4px 0 #666;
-	border-top:2px solid #ccc;
+	box-shadow: 0 5px 4px 0 #666;
+	border-top:0px;
 }
 
 .container-open {
